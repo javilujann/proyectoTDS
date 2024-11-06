@@ -1,5 +1,5 @@
 package JuanManuelRuiz_JavierLujan.AppChat;
-/**/
+/*el cambio llega a gitlab*/
 /**
  * Hello world!
  */
