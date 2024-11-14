@@ -18,6 +18,7 @@ import javax.swing.border.LineBorder;
 import tds.BubbleText;
 
 //llega bien
+//llega bien commit
 
 public class VentanaPrincipal extends JFrame{
 	private JPanel contenido;
