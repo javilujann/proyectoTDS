@@ -6,7 +6,7 @@ public class Mensaje {
 	private String texto;
 	private LocalDateTime hora;
 	private String emoticon;			//url de la imagen
-	//private Tipo tipo;
+	private TipoMensaje tipo;
 	
 	
 	public Mensaje(String texto, LocalDateTime hora, String emoticon) {

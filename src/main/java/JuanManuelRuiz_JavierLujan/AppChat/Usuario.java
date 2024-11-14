@@ -8,7 +8,7 @@ public class Usuario {
 	private String contraseña;
 	private String imagen;				//url de la imagen usada//
 	private Boolean isPremium;
-	//private ArrayList<Contacto> listaContactos;
+	private ArrayList<Contacto> listaContactos;
 	
 	
 	public Usuario(String nombre, String movil, String contraseña, String imagen, Boolean isPremium) {
