@@ -17,6 +17,8 @@ import javax.swing.border.LineBorder;
 
 import tds.BubbleText;
 
+//llega bien
+
 public class VentanaPrincipal extends JFrame{
 	private JPanel contenido;
 	private JPanel cajaIzq, cajaDer, cajaArriba;
