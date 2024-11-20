@@ -1,7 +1,10 @@
 package dao;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -17,6 +20,9 @@ import tds.driver.ServicioPersistencia;
 //Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
+	
+	private SimpleDateFormat dateFormat; // para formatear la fecha de nacimiento en la base de datos
+	
 	private static AdaptadorUsuarioDAO unicaInstancia = null;
 
 	public static AdaptadorUsuarioDAO getUnicaInstancia() { // patron singleton
@@ -28,6 +34,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 
 	private AdaptadorUsuarioDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
+		dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	}
 
 	/* cuando se registra un usuario se le asigna un identificador unico */
@@ -54,7 +61,8 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 				Arrays.asList(new Propiedad("nombre", usuario.getNombre()), new Propiedad("apellidos", usuario.getApellidos()),
 						new Propiedad("movil",usuario.getMovil()),new Propiedad("contraseña",usuario.getContraseña()),
 						new Propiedad("imagen",usuario.getImagen()),new Propiedad("Premium",String.valueOf(usuario.isPremium())),
-						new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())) )));
+						new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())), 
+						new Propiedad("biografia",usuario.getBiografia()), new Propiedad("fechaNacimiento",dateFormat.format(usuario.getFechaNacimiento())) )));
 
 		// registrar entidad Usuario
 		eUsuario = servPersistencia.registrarEntidad(eUsuario);
@@ -91,6 +99,10 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 			} else if (prop.getNombre().equals("contactos")) {
 			    String contactos = obtenerCodigosContactos(usuario.getContactos());
 			    prop.setValor(contactos);
+			} else if (prop.getNombre().equals("biografia")) {
+			    prop.setValor(usuario.getBiografia());
+			} else if (prop.getNombre().equals("fechaNacimiento")) {
+			    prop.setValor(dateFormat.format(usuario.getFechaNacimiento()));
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -113,6 +125,8 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		String contraseña;
 		String imagen;
 		Boolean premium;
+		String biografia;
+		Date fechaNacimiento = null;
 
 		// recuperar entidad
 		eUsuario = servPersistencia.recuperarEntidad(codigo);
@@ -124,22 +138,30 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
 		imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
 		premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre"));
+		biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
+		try {
+			fechaNacimiento = dateFormat.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 
-		Usuario Usuario = new Usuario(nombre,apellidos,movil,contraseña,imagen,premium);
-		Usuario.setCodigo(codigo);
+		Usuario usuario = new Usuario(nombre,apellidos,movil,contraseña,imagen,biografia,fechaNacimiento);
+		usuario.setCodigo(codigo);
+		usuario.setPremium(premium);
+		
 
-		// IMPORTANTE:aï¿½adir el Usuario al pool antes de llamar a otros
+		// IMPORTANTE:añadir el Usuario al pool antes de llamar a otros
 		// adaptadores
-		PoolDAO.getUnicaInstancia().addObjeto(codigo, Usuario);
+		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
 
 		// recuperar propiedades que son objetos llamando a adaptadores
 		// contactos
 		contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "ventas"));
 
 		for (Contacto c : contactos)
-			Usuario.addContacto(c);
+			usuario.addContacto(c);
 
-		return Usuario;
+		return usuario;
 	}
 
 	public List<Usuario> recuperarTodosUsuarios() {

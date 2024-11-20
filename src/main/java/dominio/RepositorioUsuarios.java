@@ -22,7 +22,7 @@ public class RepositorioUsuarios {
   			factoria = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
   			daoUsuario = factoria.getUsuarioDAO();
   			usuariosRegistrados = new HashMap<String,Usuario>();
-  			this.cargarCatalogo();
+  			this.cargarRepositorio();
   		} catch (DAOException eDAO) {
   			eDAO.printStackTrace();
   		}
@@ -59,7 +59,7 @@ public class RepositorioUsuarios {
 	}
 	
 	/*Recupera todos los usuarios para trabajar con ellos en memoria*/
-	private void cargarCatalogo() throws DAOException {
+	private void cargarRepositorio() throws DAOException {
 		 List<Usuario> usuariosBD = daoUsuario.recuperarTodosUsuarios();
 		 for (Usuario usuario: usuariosBD) 
 			     usuariosRegistrados.put(usuario.getMovil(),usuario);

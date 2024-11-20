@@ -1,6 +1,7 @@
 package dominio;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Usuario {
@@ -13,9 +14,12 @@ public class Usuario {
 	private String imagen;				//url de la imagen usada//
 	private Boolean premium;
 	private List<Contacto> contactos;
+	private String biografia;
+	private Date fechaNacimiento;
 	
 	
-	public Usuario(String nombre, String apellidos, String movil, String contraseña, String imagen,Boolean premium) {
+	public Usuario(String nombre, String apellidos, String movil, String contraseña, String imagen,
+			String biografia,Date fechaNacimiento) {
 		super();
 		this.codigo = 0;
 		this.nombre = nombre;
@@ -23,8 +27,11 @@ public class Usuario {
 		this.movil = movil;
 		this.contraseña = contraseña;
 		this.imagen = imagen;
-		this.premium = premium;
+		this.premium = false;
 		this.contactos = new ArrayList<Contacto>();
+		this.biografia =  biografia;
+		this.fechaNacimiento = fechaNacimiento;
+		
 	}
 
 
@@ -71,9 +78,7 @@ public class Usuario {
 		return imagen;
 	}
 
-	public int getCodigo() {
-		return codigo;
-	}
+
 
 	public void setImagen(String imagen) {
 		this.imagen = imagen;
@@ -99,9 +104,32 @@ public class Usuario {
 		this.contactos.add(contacto);
 	}
 
+	public int getCodigo() {
+		return codigo;
+	}
 
 	public void setCodigo(int codigo) {
 		this.codigo = codigo;
+	}
+
+	public String getBiografia() {
+		return biografia;
+	}
+
+	public void setBiografia(String biografia) {
+		this.biografia = biografia;
+	}
+
+
+
+	public Date getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+
+
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
 	}
 
 
