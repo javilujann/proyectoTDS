@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -117,28 +118,18 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 			return (Usuario) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
 		// si no, la recupera de la base de datos
-		Entidad eUsuario;
-		List<Contacto> contactos = new ArrayList<Contacto>();
-		String nombre;
-		String apellidos;
-		String movil;
-		String contraseña;
-		String imagen;
-		Boolean premium;
-		String biografia;
-		Date fechaNacimiento = null;
-
 		// recuperar entidad
-		eUsuario = servPersistencia.recuperarEntidad(codigo);
+		Entidad eUsuario = servPersistencia.recuperarEntidad(codigo);
 
 		// recuperar propiedades que no son objetos
-		nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre");
-		apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, "apellidos");
-		movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, "movil");
-		contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
-		imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
-		premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre"));
-		biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
+		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre");
+		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, "apellidos");
+		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, "movil");
+		String contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
+		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
+		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre"));
+		String biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
+		Date fechaNacimiento = null;
 		try {
 			fechaNacimiento = dateFormat.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento"));
 		} catch (ParseException e) {
@@ -156,23 +147,19 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 
 		// recuperar propiedades que son objetos llamando a adaptadores
 		// contactos
-		contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "ventas"));
-
-		for (Contacto c : contactos)
-			usuario.addContacto(c);
-
+		List<Contacto> contactos = new ArrayList<Contacto>();
+		contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos"));
+		for (Contacto c : contactos) usuario.addContacto(c);  //PUEDE SER MEJOR QUE LO HAGA EL PROPIO USUARIO
+				
 		return usuario;
 	}
 
 	public List<Usuario> recuperarTodosUsuarios() {
 
-		List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("Usuario");
-		List<Usuario> Usuarios = new LinkedList<Usuario>();
-
-		for (Entidad eUsuario : eUsuarios) {
-			Usuarios.add(recuperarUsuario(eUsuario.getId()));
-		}
-		return Usuarios;
+		 return servPersistencia.recuperarEntidades("Usuario").stream()
+				 .map(entidad -> recuperarUsuario(entidad.getId()))
+				 .collect(Collectors.toList());
+		
 	}
 
 	// -------------------Funciones auxiliares-----------------------------
