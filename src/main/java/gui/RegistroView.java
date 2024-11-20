@@ -5,21 +5,29 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.sql.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+
+import com.toedter.calendar.JDateChooser;
 
 import controlador.Controlador;
 
@@ -30,34 +38,40 @@ import javax.swing.SwingConstants;
 public class RegistroView extends JDialog {
 
 	//private JFrame frmRegistroView;
+	private JFrame owner;
 	private JLabel lblNombre;
 	private JLabel lblApellidos;
 	private JLabel lblFechaNacimiento;
-	private JLabel lblEmail;
-	private JLabel lblUsuario;
+	private JLabel lblMovil;
+	private JLabel lblBio;
+	//private JLabel lblUsuario;
 	private JLabel lblPassword;
 	private JLabel lblPasswordChk;
 	private JTextField txtNombre;
 	private JTextField txtApellidos;
-	private JTextField txtFechaNacimiento;
-	private JTextField txtEmail;
-	private JTextField txtUsuario;
+	private JDateChooser txtFechaNacimiento;
+	private JTextField txtMovil;
+	private JTextArea txtBio;
+	private File imagen;
 	private JPasswordField txtPassword;
 	private JPasswordField txtPasswordChk;
 	private JButton btnRegistrar;
 	private JButton btnCancelar;
+	private JButton btnImagen;
 
 	private JLabel lblNombreError;
 	private JLabel lblApellidosError;
 	private JLabel lblFechaNacimientoError;
-	private JLabel lblEmailError;
-	private JLabel lblUsuarioError;
+	private JLabel lblMovilError;
+	private JLabel lblBioError;
+	//private JLabel lblUsuarioError;
 	private JLabel lblPasswordError;
 	private JPanel panelCampoNombre;
 	private JPanel panel;
 	private JPanel panelCampoApellidos;
-	private JPanel panelCamposEmail;
-	private JPanel panelCamposUsuario;
+	private JPanel panelCamposMovil;
+	private JPanel panelCampoBio;
+	//private JPanel panelCamposUsuario;
 	private JPanel panelCamposFechaNacimiento;
 
 	public RegistroView(JFrame owner){
@@ -65,6 +79,7 @@ public class RegistroView extends JDialog {
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
 		this.crearPanelRegistro();
+		this.owner = owner;
 	}
 
 	private void crearPanelRegistro() {
@@ -77,10 +92,12 @@ public class RegistroView extends JDialog {
 
 		datosPersonales.add(creaLineaNombre());
 		datosPersonales.add(crearLineaApellidos());
-		datosPersonales.add(crearLineaEmail());
-		datosPersonales.add(crearLineaUsuario());
+		datosPersonales.add(crearLineaMovil());
 		datosPersonales.add(crearLineaPassword());
 		datosPersonales.add(crearLineaFechaNacimiento());
+		datosPersonales.add(crearLineaBio());
+		//datosPersonales.add(crearLineaUsuario());
+		
 		
 		this.crearPanelBotones();
 
@@ -137,48 +154,52 @@ public class RegistroView extends JDialog {
 		return lineaApellidos;
 	}
 
-	private JPanel crearLineaEmail() {
-		JPanel lineaEmail = new JPanel();
-		lineaEmail.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-		lineaEmail.setLayout(new BorderLayout(0, 0));
+	private JPanel crearLineaMovil() {
+		JPanel lineaMovil = new JPanel();
+		lineaMovil.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+		lineaMovil.setLayout(new BorderLayout(0, 0));
 		
-		panelCamposEmail = new JPanel();
-		lineaEmail.add(panelCamposEmail, BorderLayout.CENTER);
+		panelCamposMovil = new JPanel();
+		lineaMovil.add(panelCamposMovil, BorderLayout.CENTER);
 		
-		lblEmail = new JLabel("Email: ", JLabel.RIGHT);
-		panelCamposEmail.add(lblEmail);
-		fixedSize(lblEmail, 75, 20);
-		txtEmail = new JTextField();
-		panelCamposEmail.add(txtEmail);
-		fixedSize(txtEmail, 270, 20);
-		lblEmailError = new JLabel("El Email es obligatorio", SwingConstants.CENTER);
-		fixedSize(lblEmailError, 150, 15);
-		lblEmailError.setForeground(Color.RED);
-		lineaEmail.add(lblEmailError, BorderLayout.SOUTH);
+		lblMovil = new JLabel("Móvil: ", JLabel.RIGHT);
+		panelCamposMovil.add(lblMovil);
+		fixedSize(lblMovil, 75, 20);
+		txtMovil = new JTextField();
+		panelCamposMovil.add(txtMovil);
+		fixedSize(txtMovil, 270, 20);
+		lblMovilError = new JLabel("El teléfono móvil es obligatorio", SwingConstants.CENTER);
+		fixedSize(lblMovilError, 150, 15);
+		lblMovilError.setForeground(Color.RED);
+		lineaMovil.add(lblMovilError, BorderLayout.SOUTH);
 		
-		return lineaEmail;
+		return lineaMovil;
 	}
-
-	private JPanel crearLineaUsuario() {
-		JPanel lineaUsuario = new JPanel();
-		lineaUsuario.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-		lineaUsuario.setLayout(new BorderLayout(0, 0));
+	
+	private JPanel crearLineaBio() {
+		JPanel lineaBio = new JPanel();
+		lineaBio.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+		lineaBio.setLayout(new BorderLayout(0, 0));
 		
-		panelCamposUsuario = new JPanel();
-		lineaUsuario.add(panelCamposUsuario, BorderLayout.CENTER);
+		panelCampoBio = new JPanel();
+		lineaBio.add(panelCampoBio, BorderLayout.CENTER);
 		
-		lblUsuario = new JLabel("Usuario: ", JLabel.RIGHT);
-		panelCamposUsuario.add(lblUsuario);
-		fixedSize(lblUsuario, 75, 20);
-		txtUsuario = new JTextField();
-		panelCamposUsuario.add(txtUsuario);
-		fixedSize(txtUsuario, 270, 20);
-		lblUsuarioError = new JLabel("El usuario ya existe", SwingConstants.CENTER);
-		fixedSize(lblUsuarioError, 150, 15);
-		lblUsuarioError.setForeground(Color.RED);
-		lineaUsuario.add(lblUsuarioError, BorderLayout.SOUTH);
+		lblBio = new JLabel("Biografía: ", JLabel.RIGHT);
+		panelCampoBio.add(lblBio);
+		fixedSize(lblBio, 75, 20);
+		txtBio = new JTextArea();
+		txtBio.setLineWrap(true);
+		txtBio.setWrapStyleWord(true);
 		
-		return lineaUsuario;
+		panelCampoBio.add(txtBio);
+		fixedSize(txtBio, 300, 100);
+		lblBioError = new JLabel("La biografía no puede quedar vacía", SwingConstants.CENTER);
+		fixedSize(lblBioError, 150, 15);
+		lblBioError.setForeground(Color.RED);
+		lineaBio.add(lblBioError, BorderLayout.SOUTH);
+		
+		return lineaBio;
+		
 	}
 
 	private JPanel crearLineaPassword() {
@@ -220,13 +241,9 @@ public class RegistroView extends JDialog {
 		lblFechaNacimiento = new JLabel("Fecha de Nacimiento: ", JLabel.RIGHT);
 		panelCamposFechaNacimiento.add(lblFechaNacimiento);
 		fixedSize(lblFechaNacimiento, 130, 20);
-		txtFechaNacimiento = new JTextField();
+		txtFechaNacimiento = new JDateChooser();
 		panelCamposFechaNacimiento.add(txtFechaNacimiento);
 		fixedSize(txtFechaNacimiento, 215, 20);
-		lblFechaNacimientoError = new JLabel("Introduce la fecha de nacimiento", SwingConstants.CENTER);
-		fixedSize(lblFechaNacimientoError, 150, 15);
-		lblFechaNacimientoError.setForeground(Color.RED);
-		lineaFechaNacimiento.add(lblFechaNacimientoError, BorderLayout.SOUTH);
 		
 		return lineaFechaNacimiento;
 	}
@@ -243,10 +260,15 @@ public class RegistroView extends JDialog {
 		btnCancelar = new JButton("Cancelar");
 		lineaBotones.add(btnCancelar);
 
+		btnImagen = new JButton("Añadir imagen");
+		lineaBotones.add(btnImagen);
+		
 		this.crearManejadorBotonRegistrar();
 		this.crearManejadorBotonCancelar();
+		this.crearManejadorBotonImg();
 	}
 
+	//Cambiar para que el registro guarde los campos de nuestro usuario correctamente
 	private void crearManejadorBotonRegistrar() {
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -257,10 +279,11 @@ public class RegistroView extends JDialog {
 					registrado = Controlador.INSTANCE.registrarUsuario(
 							txtNombre.getText(),
 							txtApellidos.getText(), 
-							txtEmail.getText(), 
-							txtUsuario.getText(),
+							txtMovil.getText(), 
 							new String(txtPassword.getPassword()), 
-							txtFechaNacimiento.getText()
+							UtilsGui.getRutaResourceFromFile(imagen),
+							txtBio.getText(),
+							(Date) txtFechaNacimiento.getDate()
 					);
 					if (registrado) {
 						JOptionPane.showMessageDialog(RegistroView.this, "Usuario registrado correctamente.", "Registro",
@@ -288,6 +311,28 @@ public class RegistroView extends JDialog {
 			}
 		});
 	}
+	
+	private void crearManejadorBotonImg() {
+		btnImagen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PanelArrastraImagen emergente = new PanelArrastraImagen(owner);
+				imagen =  emergente.showDialog().get(0);
+				if(imagen.exists()) {
+					JOptionPane.showMessageDialog(emergente, "Imagen aceptada correctamente.", "Añadir imagen",
+					JOptionPane.INFORMATION_MESSAGE);
+					
+					/*LoginView loginView = new LoginView();
+					loginView.mostrarVentana();*/
+					emergente.dispose();
+				} else {
+					JOptionPane.showMessageDialog(RegistroView.this, "No se ha podido añadir la imagen.\n",
+							"Añadir imagen", JOptionPane.ERROR_MESSAGE);
+					//RegistroView.this.setTitle("Login Gestor Eventos");
+					emergente.dispose();
+				}
+			}
+		});
+	}
 
 	/**
 	 * Comprueba que los campos de registro están bien
@@ -308,17 +353,10 @@ public class RegistroView extends JDialog {
 			txtApellidos.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
-		if (txtEmail.getText().trim().isEmpty()) {
-			lblEmailError.setVisible(true);
-			lblEmail.setForeground(Color.RED);
-			txtEmail.setBorder(BorderFactory.createLineBorder(Color.RED));
-			salida = false;
-		}
-		if (txtUsuario.getText().trim().isEmpty()) {
-			lblUsuarioError.setText("El usuario es obligatorio");
-			lblUsuarioError.setVisible(true);
-			lblUsuario.setForeground(Color.RED);
-			txtUsuario.setBorder(BorderFactory.createLineBorder(Color.RED));
+		if (txtMovil.getText().trim().isEmpty()) {
+			lblMovilError.setVisible(true);
+			lblMovil.setForeground(Color.RED);
+			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
 		String password = new String(txtPassword.getPassword());
@@ -347,17 +385,11 @@ public class RegistroView extends JDialog {
 			salida = false;
 		}
 		/* Comprobar que no exista otro usuario con igual login */
-		if (!lblUsuarioError.getText().isEmpty() && Controlador.INSTANCE.esUsuarioRegistrado(txtUsuario.getText())) {
-			lblUsuarioError.setText("Ya existe ese usuario");
-			lblUsuarioError.setVisible(true);
-			lblUsuario.setForeground(Color.RED);
-			txtUsuario.setBorder(BorderFactory.createLineBorder(Color.RED));
-			salida = false;
-		}
-		if (txtFechaNacimiento.getText().isEmpty()) {
-			lblFechaNacimientoError.setVisible(true);
-			lblFechaNacimiento.setForeground(Color.RED);
-			txtFechaNacimiento.setBorder(BorderFactory.createLineBorder(Color.RED));
+		if (!lblMovilError.getText().isEmpty() && Controlador.INSTANCE.esUsuarioRegistrado(txtMovil.getText())) {
+			lblMovilError.setText("Ya existe ese usuario");
+			lblMovilError.setVisible(true);
+			lblMovil.setForeground(Color.RED);
+			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
 
@@ -373,29 +405,26 @@ public class RegistroView extends JDialog {
 	private void ocultarErrores() {
 		lblNombreError.setVisible(false);
 		lblApellidosError.setVisible(false);
-		lblFechaNacimientoError.setVisible(false);
-		lblEmailError.setVisible(false);
-		lblUsuarioError.setVisible(false);
+		lblMovilError.setVisible(false);
+		lblBioError.setVisible(false);
 		lblPasswordError.setVisible(false);
-		lblFechaNacimientoError.setVisible(false);
 		
 		Border border = new JTextField().getBorder();
 		txtNombre.setBorder(border);
 		txtApellidos.setBorder(border);
-		txtEmail.setBorder(border);
-		txtUsuario.setBorder(border);
+		txtMovil.setBorder(border);
+		txtBio.setBorder(border);
 		txtPassword.setBorder(border);
 		txtPasswordChk.setBorder(border);
 		txtPassword.setBorder(border);
 		txtPasswordChk.setBorder(border);
-		txtUsuario.setBorder(border);
 		txtFechaNacimiento.setBorder(border);
 		
 		lblNombre.setForeground(Color.BLACK);
 		lblApellidos.setForeground(Color.BLACK);
-		lblEmail.setForeground(Color.BLACK);
-		lblUsuario.setForeground(Color.BLACK);
+		lblMovil.setForeground(Color.BLACK);
 		lblPassword.setForeground(Color.BLACK);
+		lblBio.setForeground(Color.BLACK);
 		lblPasswordChk.setForeground(Color.BLACK);
 		lblFechaNacimiento.setForeground(Color.BLACK);
 	}
@@ -409,4 +438,5 @@ public class RegistroView extends JDialog {
 		o.setMaximumSize(d);
 		o.setPreferredSize(d);
 	}
+	
 }

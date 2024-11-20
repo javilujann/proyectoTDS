@@ -47,7 +47,7 @@ public class LoginView {
 	
 	private void initialize() {
 		frmLogin = new JFrame();
-		frmLogin.setTitle("Login AppVideo");
+		frmLogin.setTitle("Login AppChat");
 		frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogin.getContentPane().setLayout(new BorderLayout());
 
@@ -63,7 +63,7 @@ public class LoginView {
 		frmLogin.getContentPane().add(panel_Norte, BorderLayout.NORTH);
 		panel_Norte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 15));
 
-		JLabel lblTitulo = new JLabel("AppVideo");
+		JLabel lblTitulo = new JLabel("AppChat");
 		lblTitulo.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblTitulo.setForeground(Color.DARK_GRAY);
 		panel_Norte.add(lblTitulo);
@@ -89,7 +89,7 @@ public class LoginView {
 		panelCampos.add(panelCampoUsuario);
 		panelCampoUsuario.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblUsuario = new JLabel("Usuario: ");
+		JLabel lblUsuario = new JLabel("Teléfono: ");
 		panelCampoUsuario.add(lblUsuario);
 		lblUsuario.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblUsuario.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -134,14 +134,14 @@ public class LoginView {
 
 		JButton btnSalir = new JButton("Salir");
 		panelBotonSalir.add(btnSalir);
-/*
+
 		addManejadorBotonLogin(btnLogin);
 		addManejadorBotonRegistro(btnRegistro);
 		addManejadorBotonSalir(btnSalir);
-*/	
+
 		return panelBotones;
 	}
-/*
+
 	private void addManejadorBotonSalir(JButton btnSalir) {
 		btnSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -179,5 +179,5 @@ public class LoginView {
 			}
 		});
 	}
-*/
+
 }

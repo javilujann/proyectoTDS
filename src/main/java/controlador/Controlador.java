@@ -1,5 +1,7 @@
 package controlador;
 
+import java.sql.Date;
+
 import dao.DAOException;
 import dao.FactoriaDAO;
 import dao.UsuarioDAO;
@@ -24,42 +26,42 @@ public enum Controlador {
 		return usuarioActual;
 	}
 
-	public boolean esUsuarioRegistrado(String login) {
-		return RepositorioUsuarios.INSTANCE.findUsuario(login) != null;
+	public boolean esUsuarioRegistrado(String movil) {
+		return RepositorioUsuarios.getUnicaInstancia().getUsuario(movil) != null;
 	}
 
-	public boolean loginUsuario(String nombre, String password) {
-		Usuario usuario = RepositorioUsuarios.INSTANCE.findUsuario(nombre);
-		if (usuario != null && usuario.getContraseña().equals(password)) {
+	public boolean loginUsuario(String movil, String password) {
+		Usuario usuario = RepositorioUsuarios.getUnicaInstancia().getUsuario(movil);
+		if (usuario != null && usuario.getContraseña
+				().equals(password)) {
 			this.usuarioActual = usuario;
 			return true;
 		}
 		return false;
 	}
 
-	public boolean registrarUsuario(String nombre, String apellidos, String movil, String contraseña, String imagen,
-			String username) {
+	public boolean registrarUsuario(String nombre, String apellidos, String movil, String contraseña, String imagen, String bio, Date fechaNacimiento) {
 
-		if (esUsuarioRegistrado(username))
+		if (esUsuarioRegistrado(movil))
 			return false;
-		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, username);
+		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, bio, fechaNacimiento);
 
 		UsuarioDAO usuarioDAO = factoria
 				.getUsuarioDAO(); /* Adaptador DAO para almacenar el nuevo Usuario en la BD */
-		usuarioDAO.create(usuario);
+		usuarioDAO.registrarUsuario(usuario);
 
-		RepositorioUsuarios.INSTANCE.addUsuario(usuario);
+		RepositorioUsuarios.getUnicaInstancia().addUsuario(usuario);
 		return true;
 	}
 
 	public boolean borrarUsuario(Usuario usuario) {
-		if (!esUsuarioRegistrado(usuario.getUsername()))
+		if (!esUsuarioRegistrado(usuario.getMovil()))
 			return false;
 
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO(); /* Adaptador DAO para borrar el Usuario de la BD */
-		usuarioDAO.delete(usuario);
+		usuarioDAO.borrarUsuario(usuario);
 
-		RepositorioUsuarios.INSTANCE.removeUsuario(usuario);
+		RepositorioUsuarios.getUnicaInstancia().removeUsuario(usuario);
 		return true;
 	}
 }
