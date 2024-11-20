@@ -16,6 +16,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,6 +39,7 @@ public class PanelArrastraImagen extends JDialog {
 	private JLabel lblArchivoSubido;
 	private JButton btnAceptar;
 	private JButton btnCancelar;
+	private JButton btnElegir;
 
 
 	/**
@@ -98,10 +100,11 @@ public class PanelArrastraImagen extends JDialog {
 		lblArchivoSubido.setVisible(false);
 		contentPane.add(lblArchivoSubido);
 			
-		JButton botonElegir = new JButton("Seleccionar de tu ordenador");
-		botonElegir.setForeground(Color.WHITE);
-		botonElegir.setBackground(SystemColor.textHighlight);
-		contentPane.add(botonElegir);
+		btnElegir = new JButton("Seleccionar de tu ordenador");
+		btnElegir.setForeground(Color.WHITE);
+		btnElegir.setBackground(SystemColor.textHighlight);
+		contentPane.add(btnElegir);
+		this.crearManejadorBotonElegir();
 		
 		// Panel de botones Aceptar y Cancelar
         JPanel panelBotones = new JPanel();
@@ -123,6 +126,52 @@ public class PanelArrastraImagen extends JDialog {
 
         setLocationRelativeTo(owner); // Centra el diálogo en la ventana principal
     }
+	
+	private void crearManejadorBotonElegir() {
+		btnElegir.addActionListener(e -> {
+	        // Crear y configurar el JFileChooser
+	        JFileChooser fileChooser = new JFileChooser();
+	        fileChooser.setDialogTitle("Seleccionar una imagen");
+	        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+	        // Filtro opcional: limitar a imágenes
+	        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+	            @Override
+	            public boolean accept(File f) {
+	                if (f.isDirectory()) return true; // Permitir directorios
+	                String name = f.getName().toLowerCase();
+	                return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif");
+	            }
+
+	            @Override
+	            public String getDescription() {
+	                return "Imágenes (.jpg, .jpeg, .png, .gif)";
+	            }
+	        });
+
+	        // Mostrar el cuadro de diálogo de selección de archivo
+	        int resultado = fileChooser.showOpenDialog(PanelArrastraImagen.this);
+
+	        // Verificar la selección del archivo
+	        if (resultado == JFileChooser.APPROVE_OPTION) {
+	        	File selected = fileChooser.getSelectedFile();
+	            archivosSubidos.add(selected); // Guardar la imagen seleccionada
+	            System.out.println("Archivo seleccionado: " + selected.getAbsolutePath());
+	            
+	            JLabel imagenLabel = new JLabel();
+	            imagenLabel.setHorizontalAlignment(JLabel.CENTER);
+	            contentPane.add(imagenLabel);
+	            
+	            ImageIcon icon = new ImageIcon(selected.getAbsolutePath());
+                Image img = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                imagenLabel.setIcon(new ImageIcon(img));
+	        } else {
+	            archivosSubidos = null; // Restablecer si se cancela
+	            JOptionPane.showMessageDialog(PanelArrastraImagen.this, "No se seleccionó ninguna imagen.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	        }
+	        
+	    });
+	}
 
 	
 	public List<File> showDialog() {

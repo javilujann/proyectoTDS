@@ -1,6 +1,6 @@
 package controlador;
 
-import java.sql.Date;
+import java.util.Date;
 
 import dao.DAOException;
 import dao.FactoriaDAO;

@@ -9,7 +9,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -64,6 +64,7 @@ public class RegistroView extends JDialog {
 	private JLabel lblFechaNacimientoError;
 	private JLabel lblMovilError;
 	private JLabel lblBioError;
+	private JLabel lblImagenError;
 	//private JLabel lblUsuarioError;
 	private JLabel lblPasswordError;
 	private JPanel panelCampoNombre;
@@ -361,6 +362,7 @@ public class RegistroView extends JDialog {
 		}
 		String password = new String(txtPassword.getPassword());
 		String password2 = new String(txtPasswordChk.getPassword());
+		String imagenRuta = new String(UtilsGui.getRutaResourceFromFile(imagen));
 		if (password.isEmpty()) {
 			lblPasswordError.setText("El password no puede estar vacio");
 			lblPasswordError.setVisible(true);
@@ -392,6 +394,12 @@ public class RegistroView extends JDialog {
 			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
+		if (imagenRuta.isEmpty()) {
+			lblImagenError.setText("El password no puede estar vacio");
+			lblImagenError.setVisible(true);
+			btnImagen.setForeground(Color.RED);
+			salida = false;
+		} 
 
 		this.revalidate();
 		this.pack();
