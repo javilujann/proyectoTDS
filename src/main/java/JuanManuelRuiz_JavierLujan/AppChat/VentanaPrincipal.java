@@ -67,7 +67,7 @@ public class VentanaPrincipal extends JFrame{
 		//fixSize(chat, 300, 400);
 		JScrollPane scroll= new JScrollPane(chat);
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		fixSize(scroll, 360,400);
+		fixSize(scroll, 383,460);
 		cajaDer.add(scroll);
 		
 		

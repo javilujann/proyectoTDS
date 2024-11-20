@@ -45,6 +45,11 @@
     	<artifactId>chatWindowLib</artifactId>
     	<version>1.1</version>
     </dependency>
+    <dependency> 
+		<groupId>umu.tds</groupId> 
+		<artifactId>driverPersistencia</artifactId> 
+		<version>2.0</version> 
+	</dependency>
   </dependencies>
 
   <build>
