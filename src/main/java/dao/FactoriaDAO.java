@@ -7,7 +7,7 @@ package dao;
 
 public abstract class FactoriaDAO {
 	
-	public static final String DAO_TDS = "umu.tds.dao.TDSFactoriaDAO";
+	public static final String DAO_TDS = "dao.TDSFactoriaDAO";
 
 	private static FactoriaDAO unicaInstancia = null;
 	

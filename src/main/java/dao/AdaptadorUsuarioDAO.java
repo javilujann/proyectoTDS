@@ -131,7 +131,8 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		String biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
 		Date fechaNacimiento = null;
 		try {
-			fechaNacimiento = dateFormat.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento"));
+			String fecha = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento");
+			fechaNacimiento = dateFormat.parse(fecha);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -155,11 +156,10 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	}
 
 	public List<Usuario> recuperarTodosUsuarios() {
-
 		 return servPersistencia.recuperarEntidades("Usuario").stream()
 				 .map(entidad -> recuperarUsuario(entidad.getId()))
 				 .collect(Collectors.toList());
-		
+				 
 	}
 
 	// -------------------Funciones auxiliares-----------------------------
