@@ -1,4 +1,4 @@
-package JuanManuelRuiz_JavierLujan.AppChat;
+package dominio;
 
 public enum TipoMensaje {
 	SENT, RECEIVED;

@@ -1,4 +1,4 @@
-package JuanManuelRuiz_JavierLujan.AppChat;
+package dominio;
 
 import java.util.ArrayList;
 import java.util.HashMap;

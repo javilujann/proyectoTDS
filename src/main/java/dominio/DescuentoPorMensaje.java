@@ -1,5 +1,4 @@
-package JuanManuelRuiz_JavierLujan.AppChat;
-
+package dominio;
 
 public class DescuentoPorMensaje implements Descuento{
 	private int numeroMensajes;
