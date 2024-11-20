@@ -1,5 +1,10 @@
 package dao;
 
-public class DAOException extends Throwable{
+@SuppressWarnings("serial")
+public class DAOException extends Exception {
+
+	public DAOException(final String mensaje) {
+		super(mensaje);
+	}
 
 }
