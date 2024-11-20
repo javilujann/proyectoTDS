@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
 
@@ -13,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import tds.BubbleText;
@@ -20,7 +23,7 @@ import tds.BubbleText;
 //llega bien
 //llega bien commit
 
-public class VentanaPrincipal extends JFrame{
+/*public class VentanaPrincipal extends JFrame{
 	private JPanel contenido;
 	private JPanel cajaIzq, cajaDer, cajaArriba;
 	private JPanel chat;
@@ -100,5 +103,38 @@ public class VentanaPrincipal extends JFrame{
         c.setMaximumSize(new Dimension(x,y));
         c.setPreferredSize(new Dimension(x,y));
     }
+
+}*/
+
+public class VentanaPrincipal {
+
+	private JFrame frmVentanaPrincipal;
+	
+	public VentanaPrincipal() {
+		initialize();
+	}
+
+
+	public void mostrarVentana() {
+		frmVentanaPrincipal.setLocationRelativeTo(null);
+		frmVentanaPrincipal.setVisible(true);
+	}
+	
+	public void initialize() {
+		frmVentanaPrincipal = new JFrame();
+		frmVentanaPrincipal.setTitle("AppVideo- Ventana Principal");
+		frmVentanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel contentPane = (JPanel) frmVentanaPrincipal.getContentPane();
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		contentPane.setLayout(new BorderLayout());
+		
+		JLabel labelCompartirCoche = new JLabel("Bienvenidos a AppVideo");
+		labelCompartirCoche.setFont(new Font("Arial", Font.PLAIN, 30));
+		labelCompartirCoche.setHorizontalAlignment(SwingConstants.CENTER);
+		contentPane.add(labelCompartirCoche, BorderLayout.CENTER);
+
+		frmVentanaPrincipal.pack();
+	}
 
 }

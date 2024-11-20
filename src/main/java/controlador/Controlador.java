@@ -30,19 +30,19 @@ public enum Controlador {
 
 	public boolean loginUsuario(String nombre, String password) {
 		Usuario usuario = RepositorioUsuarios.INSTANCE.findUsuario(nombre);
-		if (usuario != null && usuario.getPassword().equals(password)) {
+		if (usuario != null && usuario.getContraseña().equals(password)) {
 			this.usuarioActual = usuario;
 			return true;
 		}
 		return false;
 	}
 
-	public boolean registrarUsuario(String nombre, String apellidos, String email, String login, String password,
-			String fechaNacimiento) {
+	public boolean registrarUsuario(String nombre, String apellidos, String movil, String contraseña, String imagen,
+			String username) {
 
-		if (esUsuarioRegistrado(login))
+		if (esUsuarioRegistrado(username))
 			return false;
-		Usuario usuario = new Usuario(nombre, apellidos, email, login, password, fechaNacimiento);
+		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, username);
 
 		UsuarioDAO usuarioDAO = factoria
 				.getUsuarioDAO(); /* Adaptador DAO para almacenar el nuevo Usuario en la BD */
@@ -53,7 +53,7 @@ public enum Controlador {
 	}
 
 	public boolean borrarUsuario(Usuario usuario) {
-		if (!esUsuarioRegistrado(usuario.getLogin()))
+		if (!esUsuarioRegistrado(usuario.getUsername()))
 			return false;
 
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO(); /* Adaptador DAO para borrar el Usuario de la BD */
