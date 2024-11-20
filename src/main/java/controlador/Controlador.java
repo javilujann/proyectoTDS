@@ -1,10 +1,12 @@
 package controlador;
 
-public enum Controlador{
-	
-}
+import dao.DAOException;
+import dao.FactoriaDAO;
+import dao.UsuarioDAO;
+import dominio.RepositorioUsuarios;
+import dominio.Usuario;
 
-/*public enum Controlador {
+public enum Controlador {
 	INSTANCE;
 	private Usuario usuarioActual;
 	private FactoriaDAO factoria;
@@ -44,7 +46,7 @@ public enum Controlador{
 
 		UsuarioDAO usuarioDAO = factoria
 				.getUsuarioDAO(); /* Adaptador DAO para almacenar el nuevo Usuario en la BD */
-		/*usuarioDAO.create(usuario);
+		usuarioDAO.create(usuario);
 
 		RepositorioUsuarios.INSTANCE.addUsuario(usuario);
 		return true;
@@ -55,9 +57,9 @@ public enum Controlador{
 			return false;
 
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO(); /* Adaptador DAO para borrar el Usuario de la BD */
-		/*usuarioDAO.delete(usuario);
+		usuarioDAO.delete(usuario);
 
 		RepositorioUsuarios.INSTANCE.removeUsuario(usuario);
 		return true;
 	}
-}*/
+}
