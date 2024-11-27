@@ -181,7 +181,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		}
 		return listaContactos;
 		*/
-		return null;
+		return new ArrayList<Contacto>();
 	}
 	
 		

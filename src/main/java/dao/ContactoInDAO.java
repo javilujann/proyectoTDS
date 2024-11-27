@@ -1,10 +1,11 @@
 package dao;
 
-import dominio.Contacto;
+
+import dominio.ContactoIndividual;
 
 public interface ContactoInDAO {
-	public void registrarContacto(Contacto contacto);
-	public void borrarContacto(Contacto contacto);
-	public void modificarContacto(Contacto contacto);
-	public Contacto recuperarContacto(int codigo);
+	public void registrarContacto(ContactoIndividual contacto);
+	public void borrarContacto(ContactoIndividual contacto);
+	public void modificarContacto(ContactoIndividual contacto);
+	public ContactoIndividual recuperarContacto(int codigo);
 }

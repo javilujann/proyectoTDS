@@ -8,5 +8,4 @@ public interface MensajeDAO {
 	public void borrarMensaje(Mensaje mensaje);
 	public void modificarMensaje(Mensaje mensaje);
 	public Mensaje recuperarMensaje(int codigo);
-
 }

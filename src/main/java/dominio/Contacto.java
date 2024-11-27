@@ -7,9 +7,9 @@ public abstract class Contacto {
 	private int codigo;
 	private ArrayList<Mensaje> listaMensajes;
 
-	public Contacto(ArrayList<Mensaje> listaMensajes) {
+	public Contacto() {
 		super();
-		this.listaMensajes = listaMensajes;
+		this.listaMensajes = new ArrayList<Mensaje>();
 		this.codigo = 0;
 	}
 	
@@ -29,6 +29,10 @@ public abstract class Contacto {
 
 	public void setListaMensajes(ArrayList<Mensaje> listaMensajes) {
 		this.listaMensajes = listaMensajes;
+	}
+	
+	public void addMensaje(Mensaje mensaje) {
+		this.listaMensajes.add(mensaje);
 	}
 
 	

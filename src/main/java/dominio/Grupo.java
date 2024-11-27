@@ -6,7 +6,7 @@ public class Grupo extends Contacto{
 	private ArrayList<ContactoIndividual> miembros;
 
 	public Grupo(ArrayList<Mensaje> listaMensajes) {
-		super(listaMensajes);
+		super();
 		this.miembros = new ArrayList<ContactoIndividual>();
 		// TODO Auto-generated constructor stub
 	}
