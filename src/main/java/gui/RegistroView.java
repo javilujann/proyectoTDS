@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -44,6 +45,7 @@ public class RegistroView extends JDialog {
 	private JLabel lblFechaNacimiento;
 	private JLabel lblMovil;
 	private JLabel lblBio;
+	private JLabel lblImg;
 	//private JLabel lblUsuario;
 	private JLabel lblPassword;
 	private JLabel lblPasswordChk;
@@ -74,6 +76,8 @@ public class RegistroView extends JDialog {
 	private JPanel panelCampoBio;
 	//private JPanel panelCamposUsuario;
 	private JPanel panelCamposFechaNacimiento;
+	private JPanel panelCampoImg;
+	
 
 	public RegistroView(JFrame owner){
 		super(owner, "Registro Usuario", true);
@@ -97,8 +101,10 @@ public class RegistroView extends JDialog {
 		datosPersonales.add(crearLineaPassword());
 		datosPersonales.add(crearLineaFechaNacimiento());
 		datosPersonales.add(crearLineaBio());
+		datosPersonales.add(crearLineaImagen());
 		//datosPersonales.add(crearLineaUsuario());
-		
+		JScrollPane scroll = new JScrollPane(datosPersonales); 
+		this.add(scroll);
 		
 		this.crearPanelBotones();
 
@@ -248,6 +254,31 @@ public class RegistroView extends JDialog {
 		
 		return lineaFechaNacimiento;
 	}
+	
+	private JPanel crearLineaImagen() {
+		JPanel lineaImagen = new JPanel();
+		lineaImagen.setAlignmentX(LEFT_ALIGNMENT);
+		lineaImagen.setAlignmentY(BOTTOM_ALIGNMENT);
+		lineaImagen.setLayout(new BorderLayout(0, 0));
+		
+		panelCampoImg = new JPanel();
+		lineaImagen.add(panelCampoImg, BorderLayout.CENTER);
+		lblImg = new JLabel("Icono de usuario:", JLabel.RIGHT);
+		panelCampoImg.add(lblImg);
+		fixedSize(lblImg, 100, 100);
+		
+		if(imagen != null) actualizarImagen();
+		/*if(imagen != null) {
+			 ImageIcon icono = new ImageIcon(UtilsGui.getRutaResourceFromFile(imagen));
+			 Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Ajusta el tamaño
+			 lblImg.setIcon(new ImageIcon(imgEscalada));
+		}
+		panelCampoImg.revalidate();
+		panelCampoImg.repaint();*/
+	    
+		return lineaImagen;
+
+	}
 
 	private void crearPanelBotones() {
 		JPanel lineaBotones = new JPanel(); 
@@ -317,16 +348,18 @@ public class RegistroView extends JDialog {
 		btnImagen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PanelArrastraImagen emergente = new PanelArrastraImagen(owner);
-				imagen =  emergente.showDialog().get(0);
-				if(imagen.exists()) {
+				if(!emergente.showDialog().isEmpty()) imagen =  emergente.showDialog().get(0);
+				else imagen = null;
+				if(imagen != null) {
 					JOptionPane.showMessageDialog(emergente, "Imagen aceptada correctamente.", "Añadir imagen",
-					JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.INFORMATION_MESSAGE);
 					
+					actualizarImagen();
 					/*LoginView loginView = new LoginView();
 					loginView.mostrarVentana();*/
 					emergente.dispose();
 				} else {
-					JOptionPane.showMessageDialog(RegistroView.this, "No se ha podido añadir la imagen.\n",
+					JOptionPane.showMessageDialog(RegistroView.this, "No se ha añadido la imagen.\n",
 							"Añadir imagen", JOptionPane.ERROR_MESSAGE);
 					//RegistroView.this.setTitle("Login Gestor Eventos");
 					emergente.dispose();
@@ -399,7 +432,7 @@ public class RegistroView extends JDialog {
 			salida = false;
 		}
 		if (imagenRuta == "") {
-			lblImagenError.setText("Se ha de selecccionar una imagen");
+			lblImagenError = new JLabel("Se ha de selecccionar una imagen");
 			lblImagenError.setVisible(true);
 			btnImagen.setForeground(Color.RED);
 			salida = false;
@@ -449,6 +482,19 @@ public class RegistroView extends JDialog {
 		o.setMinimumSize(d);
 		o.setMaximumSize(d);
 		o.setPreferredSize(d);
+	}
+	
+	private void actualizarImagen() {
+		if (imagen != null) {
+	        ImageIcon icono = new ImageIcon(UtilsGui.getRutaResourceFromFile(imagen));
+	        Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Ajusta el tamaño
+	        lblImg.setIcon(new ImageIcon(imgEscalada));
+	    } else {
+	        lblImg.setIcon(null); // Si no hay imagen, quita el ícono
+	    }
+	    panelCampoImg.revalidate();
+	    panelCampoImg.repaint();
+	    
 	}
 	
 }

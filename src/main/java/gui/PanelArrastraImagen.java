@@ -110,9 +110,9 @@ public class PanelArrastraImagen extends JDialog {
         JPanel panelBotones = new JPanel();
         btnAceptar = new JButton("Aceptar");
         btnCancelar = new JButton("Cancelar");
+        this.crearManejadorBotonAceptar();
 
         // Acción del botón Aceptar
-        btnAceptar.addActionListener(ev -> dispose());
 
         // Acción del botón Cancelar
         btnCancelar.addActionListener(ev -> {
@@ -171,6 +171,19 @@ public class PanelArrastraImagen extends JDialog {
 	        }
 	        
 	    });
+	}
+	
+	public void crearManejadorBotonAceptar() {
+		btnAceptar.addActionListener(e ->{
+			if (archivosSubidos.isEmpty()) {
+				JLabel lblAceptarError = new JLabel("No ha seleccionado una imagen");
+				lblAceptarError.setVisible(true);
+				btnAceptar.setForeground(Color.RED);
+			} else {
+				dispose();
+			}	
+				
+		});
 	}
 
 	
