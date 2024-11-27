@@ -11,4 +11,16 @@ public class Grupo extends Contacto{
 		// TODO Auto-generated constructor stub
 	}
 
+	public ArrayList<ContactoIndividual> getMiembros() {
+		return miembros;
+	}
+
+	public void setMiembros(ArrayList<ContactoIndividual> miembros) {
+		this.miembros = miembros;
+	}
+	
+	public void addMiembro(ContactoIndividual miembro) {
+		this.miembros.add(miembro);
+	}
+
 }
