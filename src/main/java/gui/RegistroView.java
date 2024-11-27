@@ -78,7 +78,7 @@ public class RegistroView extends JDialog {
 	public RegistroView(JFrame owner){
 		super(owner, "Registro Usuario", true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		this.setResizable(false);
+		this.setResizable(true);
 		this.crearPanelRegistro();
 		this.owner = owner;
 	}
@@ -362,7 +362,11 @@ public class RegistroView extends JDialog {
 		}
 		String password = new String(txtPassword.getPassword());
 		String password2 = new String(txtPasswordChk.getPassword());
-		String imagenRuta = new String(UtilsGui.getRutaResourceFromFile(imagen));
+		String imagenRuta;
+		if(imagen != null) {
+			imagenRuta = new String(UtilsGui.getRutaResourceFromFile(imagen));
+		}else {imagenRuta = "";}
+		
 		if (password.isEmpty()) {
 			lblPasswordError.setText("El password no puede estar vacio");
 			lblPasswordError.setVisible(true);
@@ -394,8 +398,8 @@ public class RegistroView extends JDialog {
 			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
-		if (imagenRuta.isEmpty()) {
-			lblImagenError.setText("El password no puede estar vacio");
+		if (imagenRuta == "") {
+			lblImagenError.setText("Se ha de selecccionar una imagen");
 			lblImagenError.setVisible(true);
 			btnImagen.setForeground(Color.RED);
 			salida = false;
