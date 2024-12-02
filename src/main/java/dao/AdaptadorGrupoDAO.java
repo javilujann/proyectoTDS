@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
-import dominio.Contacto;
 import dominio.ContactoIndividual;
 import dominio.Grupo;
-import dominio.Mensaje;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -33,7 +30,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 	}
 
 	/* cuando se registra un grupo se le asigna un identificador unico */
-	public void registrargrupo(Grupo grupo) {
+	public void registrarGrupo(Grupo grupo) {
 		Entidad eGrupo = null;
 
 		// Si la entidad esta registrada no la registra de nuevo
@@ -56,33 +53,28 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		eGrupo.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(
 				new Propiedad("miembros", obtenerCodigosMiembros(grupo.getMiembros())))));
 
-		// registrar entidad Contacto
-		eContacto = servPersistencia.registrarEntidad(eContacto);
+		// registrar entidad Grupo
+		eGrupo = servPersistencia.registrarEntidad(eGrupo);
 		// asignar identificador unico
 		// Se aprovecha el que genera el servicio de persistencia
-		contacto.setCodigo(eContacto.getId());
+		grupo.setCodigo(eGrupo.getId());
 	}
 
-	public void borrarContacto(ContactoIndividual contacto) {
-		// No se comprueban restricciones de integridad con Mensaje //WARNING
-		Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
-		servPersistencia.borrarEntidad(eContacto);
+	public void borrarGrupo(Grupo grupo) {
+		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
+		servPersistencia.borrarEntidad(eGrupo);
 	}
 
-	public void modificarContacto(ContactoIndividual contacto) {
+	public void modificarGrupo(Grupo grupo) {
 
-		Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
 
-		for (Propiedad prop : eContacto.getPropiedades()) {
+		for (Propiedad prop : eGrupo.getPropiedades()) {
 			if (prop.getNombre().equals("codigo")) {
-				prop.setValor(String.valueOf(contacto.getCodigo()));
-			} else if (prop.getNombre().equals("nombre")) {
-				prop.setValor(contacto.getNombre());
-			} else if (prop.getNombre().equals("movil")) {
-				prop.setValor(contacto.getMovil());
-			} else if (prop.getNombre().equals("listaMensajes")) {
-				String mensajes = obtenerCodigosMensajes(contacto.getListaMensajes());
-				prop.setValor(mensajes);
+				prop.setValor(String.valueOf(grupo.getCodigo()));
+			} else if (prop.getNombre().equals("miembros")) {
+				String miembros = obtenerCodigosMiembros(grupo.getMiembros());
+				prop.setValor(miembros);
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -90,41 +82,33 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 
 	}
 
-	public ContactoIndividual recuperarContacto(int codigo) {
+	public Grupo recuperarGrupo(int codigo) {
 
 		// Si la entidad esta en el pool la devuelve directamente
 		if (PoolDAO.getUnicaInstancia().contiene(codigo))
-			return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+			return (Grupo) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
 		// si no, la recupera de la base de datos
 		// recuperar entidad
-		Entidad eContacto = servPersistencia.recuperarEntidad(codigo);
+		Entidad eGrupo= servPersistencia.recuperarEntidad(codigo);
 
 		// recuperar propiedades que no son objetos
-		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
-		String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
-		ContactoIndividual contacto = new ContactoIndividual(nombre, movil);
-		contacto.setCodigo(codigo);
+		Grupo grupo = new Grupo();
+		grupo.setCodigo(codigo);
 
-		// IMPORTANTE:añadir el Contacto al pool antes de llamar a otros
+		// IMPORTANTE:añadir el Grupo al pool antes de llamar a otros
 		// adaptadores
-		PoolDAO.getUnicaInstancia().addObjeto(codigo, contacto);
+		PoolDAO.getUnicaInstancia().addObjeto(codigo, grupo);
 
 		// recuperar propiedades que son objetos llamando a adaptadores
-		// contactos
-		List<Mensaje> mensajes = new ArrayList<Mensaje>();
-		mensajes = obtenerMensajesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eContacto, "listaMensajes"));
-		for (Mensaje m : mensajes)
-			contacto.addMensaje(m); // PUEDE SER MEJOR QUE LO HAGA EL PROPIO USUARIO
+		List<ContactoIndividual> miembros = new ArrayList<ContactoIndividual>();
+		miembros = obtenerMiembrosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGrupo, "miembros"));
+		for (ContactoIndividual c : miembros)
+			grupo.addMiembro(c); // PUEDE SER MEJOR QUE LO HAGA EL PROPIO GRUPO
 
-		return contacto;
+		return grupo;
 	}
 
-	public List<Contacto> recuperarTodosContactos() {
-		return servPersistencia.recuperarEntidades("Contacto").stream()
-				.map(entidad -> recuperarContacto(entidad.getId())).collect(Collectors.toList());
-
-	}
 
 	// -------------------Funciones auxiliares-----------------------------
 	private String obtenerCodigosMiembros(List<ContactoIndividual> miembros) {
