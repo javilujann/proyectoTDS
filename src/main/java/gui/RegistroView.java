@@ -8,9 +8,14 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -51,6 +56,7 @@ public class RegistroView extends JDialog {
 	private JLabel lblPasswordChk;
 	private JTextField txtNombre;
 	private JTextField txtApellidos;
+	private JTextField txtImagen;
 	private JDateChooser txtFechaNacimiento;
 	private JTextField txtMovil;
 	private JTextArea txtBio;
@@ -256,26 +262,33 @@ public class RegistroView extends JDialog {
 	}
 	
 	private JPanel crearLineaImagen() {
+		//
 		JPanel lineaImagen = new JPanel();
-		lineaImagen.setAlignmentX(LEFT_ALIGNMENT);
-		lineaImagen.setAlignmentY(BOTTOM_ALIGNMENT);
+		lineaImagen.setAlignmentX(JLabel.LEFT_ALIGNMENT);
 		lineaImagen.setLayout(new BorderLayout(0, 0));
 		
 		panelCampoImg = new JPanel();
 		lineaImagen.add(panelCampoImg, BorderLayout.CENTER);
-		lblImg = new JLabel("Icono de usuario:", JLabel.RIGHT);
+		
+		lblImg = new JLabel("URL de imagen: ", JLabel.RIGHT);
 		panelCampoImg.add(lblImg);
+		fixedSize(lblImg, 75, 20);
+		txtImagen = new JTextField();
+		
+		panelCampoImg.add(txtImagen);
+		fixedSize(txtImagen, 100, 20);
+
+		lblImagenError = new JLabel("Error al introducir la imagen", JLabel.CENTER);
+		lineaImagen.add(lblPasswordError, BorderLayout.SOUTH);
+		lblImagenError.setForeground(Color.RED);
+		
+		//
+		//lblImg = new JLabel("Icono de usuario:", JLabel.RIGHT);
+		//panelCampoImg.add(lblImg);
+		actualizarImagen();
 		fixedSize(lblImg, 100, 100);
 		
 		if(imagen != null) actualizarImagen();
-		/*if(imagen != null) {
-			 ImageIcon icono = new ImageIcon(UtilsGui.getRutaResourceFromFile(imagen));
-			 Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Ajusta el tamaño
-			 lblImg.setIcon(new ImageIcon(imgEscalada));
-		}
-		panelCampoImg.revalidate();
-		panelCampoImg.repaint();*/
-	    
 		return lineaImagen;
 
 	}
@@ -488,6 +501,9 @@ public class RegistroView extends JDialog {
 		if (imagen != null) {
 	        ImageIcon icono = new ImageIcon(UtilsGui.getRutaResourceFromFile(imagen));
 	        Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Ajusta el tamaño
+	        lblImg.setOpaque(true);
+	        lblImg.setMinimumSize(new Dimension(240, 240));
+			lblImg.setMaximumSize(new Dimension(240, 240));
 	        lblImg.setIcon(new ImageIcon(imgEscalada));
 	    } else {
 	        lblImg.setIcon(null); // Si no hay imagen, quita el ícono
