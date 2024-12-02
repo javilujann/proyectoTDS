@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -172,16 +171,20 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	}
 
 	private List<Contacto> obtenerContactosDesdeCodigos(String contactos) {
-		/*
-		List<Contacto> listaContactos = new LinkedList<Contacto>();
+		
+		List<Contacto> listaContactos = new ArrayList<Contacto>();
 		StringTokenizer strTok = new StringTokenizer(contactos, " ");
-		AdaptadorContactoDAO adaptadorC = AdaptadorContactoDAO.getUnicaInstancia();
+		AdaptadorContactoInDAO adaptadorC = AdaptadorContactoInDAO.getUnicaInstancia();
+		AdaptadorGrupoDAO adaptadorG = AdaptadorGrupoDAO.getUnicaInstancia();
+		
 		while (strTok.hasMoreTokens()) {
-			listaContactos.add(adaptadorC.recuperarContacto(Integer.valueOf((String) strTok.nextElement())));
+			int codigo = Integer.valueOf((String) strTok.nextElement());
+			Contacto contacto = adaptadorG.recuperarGrupo(codigo);	
+			if(contacto != null) listaContactos.add(contacto);
+			else  listaContactos.add(adaptadorC.recuperarContacto(codigo));
 		}
+		
 		return listaContactos;
-		*/
-		return new ArrayList<Contacto>();
 	}
 	
 		

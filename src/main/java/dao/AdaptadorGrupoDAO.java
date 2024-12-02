@@ -83,22 +83,16 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 	}
 
 	public Grupo recuperarGrupo(int codigo) {
-
-		// Si la entidad esta en el pool la devuelve directamente
-		if (PoolDAO.getUnicaInstancia().contiene(codigo))
-			return (Grupo) PoolDAO.getUnicaInstancia().getObjeto(codigo);
-
-		// si no, la recupera de la base de datos
+		
 		// recuperar entidad
 		Entidad eGrupo= servPersistencia.recuperarEntidad(codigo);
+		
+		if(eGrupo.getNombre() != "Grupo") return null;
 
 		// recuperar propiedades que no son objetos
 		Grupo grupo = new Grupo();
 		grupo.setCodigo(codigo);
 
-		// IMPORTANTE:añadir el Grupo al pool antes de llamar a otros
-		// adaptadores
-		PoolDAO.getUnicaInstancia().addObjeto(codigo, grupo);
 
 		// recuperar propiedades que son objetos llamando a adaptadores
 		List<ContactoIndividual> miembros = new ArrayList<ContactoIndividual>();
