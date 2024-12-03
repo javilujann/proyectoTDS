@@ -14,7 +14,7 @@ import tds.driver.ServicioPersistencia;
 import dominio.Mensaje;
 import dominio.TipoMensaje;
 
-public class AdaptadorMensajeDAO {
+public class AdaptadorMensajeDAO implements MensajeDAO{
 	
 	private static ServicioPersistencia servPersistencia;
 	private SimpleDateFormat dateFormat; // para formatear la hora en la base de datos

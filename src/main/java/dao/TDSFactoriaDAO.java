@@ -13,22 +13,19 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 
 	@Override
 	public MensajeDAO getMensajeDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorMensajeDAO.getUnicaInstancia();
 	}
 
 
 	@Override
 	public GrupoDAO getGrupoDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorGrupoDAO.getUnicaInstancia();
 	}
 
 
 	@Override
 	public ContactoInDAO getContactoIDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorContactoInDAO.getUnicaInstancia();
 	}
 
 }
