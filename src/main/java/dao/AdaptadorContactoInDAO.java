@@ -40,6 +40,7 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 			eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
 		} catch (NullPointerException e) {
 		}
+		
 		if (eContacto != null)
 			return;
 

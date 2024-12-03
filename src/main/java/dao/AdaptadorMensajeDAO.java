@@ -8,10 +8,11 @@ import java.util.Date;
 
 import beans.Entidad;
 import beans.Propiedad;
-import dominio.Mensaje;
-import dominio.TipoMensaje;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
+
+import dominio.Mensaje;
+import dominio.TipoMensaje;
 
 public class AdaptadorMensajeDAO {
 	
@@ -41,8 +42,7 @@ public class AdaptadorMensajeDAO {
 		} catch (NullPointerException e) {}
 		if (eMensaje != null) return;
 
-		// registrar primero los atributos que son objetos(En este caso es la lista de contactos,pero da igual para el Login)
-			//Mensaje no tiene es el mas primitivo
+		// registrar primero los atributos que son objetos, Mensaje no tiene es el mas primitivo
 		
 		// crear entidad Mensaje
 		eMensaje = new Entidad();

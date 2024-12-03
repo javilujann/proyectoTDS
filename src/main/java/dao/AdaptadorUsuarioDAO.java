@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import beans.Entidad;
 import beans.Propiedad;
 import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Grupo;
 import dominio.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
@@ -47,12 +49,16 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		} catch (NullPointerException e) {}
 		if (eUsuario != null) return;
 
-		// registrar primero los atributos que son objetos(En este caso es la lista de contactos,pero da igual para el Login)
-		/*
-		AdaptadorVentaTDS adaptadorVenta = AdaptadorVentaTDS.getUnicaInstancia();
-		for (Venta v : Usuario.getVentas())
-			adaptadorVenta.registrarVenta(v);
-		*/
+		// registrar primero los atributos que son objetos(En este caso es la lista de
+		// contactos= grupos + individuales)
+		AdaptadorGrupoDAO adaptadorG = AdaptadorGrupoDAO.getUnicaInstancia();
+		AdaptadorContactoInDAO adaptadorC = AdaptadorContactoInDAO.getUnicaInstancia();
+		for (Contacto c : usuario.getContactos()) {
+			if(c instanceof Grupo) adaptadorG.registrarGrupo((Grupo) c);
+			else adaptadorC.registrarContacto((ContactoIndividual) c);
+		}
+			
+		
 		
 		// crear entidad Usuario
 		eUsuario = new Entidad();
@@ -126,7 +132,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, "movil");
 		String contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
 		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
-		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre"));
+		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
 		String biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
 		Date fechaNacimiento = null;
 		try {

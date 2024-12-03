@@ -42,7 +42,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 			return;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
-		// contactos)
+		// contactos individuales)
 		AdaptadorContactoInDAO adaptadorContacto = AdaptadorContactoInDAO.getUnicaInstancia();
 		for (ContactoIndividual c : grupo.getMiembros())
 			adaptadorContacto.registrarContacto(c);
