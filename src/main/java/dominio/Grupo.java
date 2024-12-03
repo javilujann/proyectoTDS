@@ -8,7 +8,6 @@ public class Grupo extends Contacto{
 	public Grupo() {
 		super();
 		this.miembros = new ArrayList<ContactoIndividual>();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ArrayList<ContactoIndividual> getMiembros() {

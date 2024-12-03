@@ -12,6 +12,8 @@ public enum Controlador {
 	INSTANCE;
 	private Usuario usuarioActual;
 	private FactoriaDAO factoria;
+	
+	//CONSTRUCTOR
 
 	private Controlador() {
 		usuarioActual = null;
@@ -21,14 +23,16 @@ public enum Controlador {
 			e.printStackTrace();
 		}
 	}
+	
+	//GETTERS AND SETTERS
 
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
+	
+	//METODOS
 
-	public boolean esUsuarioRegistrado(String movil) {
-		return RepositorioUsuarios.getUnicaInstancia().getUsuario(movil) != null;
-	}
+	//PARA EL LOGIN
 
 	public boolean loginUsuario(String movil, String password) {
 		Usuario usuario = RepositorioUsuarios.getUnicaInstancia().getUsuario(movil);
@@ -38,6 +42,12 @@ public enum Controlador {
 			return true;
 		}
 		return false;
+	}
+	
+	//PARA EL REGISTRO
+	
+	public boolean esUsuarioRegistrado(String movil) {
+		return RepositorioUsuarios.getUnicaInstancia().getUsuario(movil) != null;
 	}
 
 	public boolean registrarUsuario(String nombre, String apellidos, String movil, String contraseña, String imagen, String bio, Date fechaNacimiento) {
@@ -53,7 +63,26 @@ public enum Controlador {
 		RepositorioUsuarios.getUnicaInstancia().addUsuario(usuario);
 		return true;
 	}
-
+	
+	//PARA VENTANA PRINCIPAL
+		//PANEL IZQUIERDO
+			//SE NECESITARA ALGO QUE PROPORCIONE LA LISTA DE ULTIMOS MENSJES DEL USUARIO ACTUAL, NO NECESARIAMENTE DE CONTACTOS GUARDADOS
+			//SE NECESITARA UN METODO PARA AÑADIR CONTACTO SI ES DE UN NO AGREGADO,ESTO ES MAS GENERAL, EN ESTE CASO SE AUTORELLENA EL TELF
+		//PANEL DERECHO
+			//SE NECESITARA ALGO QUE FIJADO UN CONACTO DEL USUARIO LE DE TODOS LOS MENSAJES
+			//FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
+			//PARA UN GRUPO SE DEBE ACCEDER A EL DESDE ARRIBA; SI NO ES COMPLICADO MOSTRAR TODOS LOS ENVIDOS; CUANDO SE ENVIE
+			//
+	
+	//VENTANA CONTACTOS
+		//PARA LAS LISTAS MOSTRAR LOS CONTACTOS DEL USUARIO Y LOS DE UN GRUPO
+		//FUNCIONES PARA AÑADIR UN CONTACTO Y UN GRUPO A UN USUARIO
+		//FUNCIONES PARA AÑADIR Y ELIMINAR CONTACTOS DE UN GRUPO
+	
+	//PANEL DE BUSQUEDAD
+	
+	
+	//POR AHORA NO SE USA
 	public boolean borrarUsuario(Usuario usuario) {
 		if (!esUsuarioRegistrado(usuario.getMovil()))
 			return false;
@@ -64,4 +93,6 @@ public enum Controlador {
 		RepositorioUsuarios.getUnicaInstancia().removeUsuario(usuario);
 		return true;
 	}
+	
+	
 }

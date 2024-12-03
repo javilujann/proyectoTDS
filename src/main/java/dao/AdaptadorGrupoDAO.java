@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 import dominio.ContactoIndividual;
 import dominio.Grupo;
-
+import dominio.Mensaje;
 import beans.Entidad;
 import beans.Propiedad;
 
@@ -42,16 +42,23 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 			return;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
-		// contactos individuales)
+		// contactos individuales y la lista de los mensajes de difusion)
 		AdaptadorContactoInDAO adaptadorContacto = AdaptadorContactoInDAO.getUnicaInstancia();
 		for (ContactoIndividual c : grupo.getMiembros())
 			adaptadorContacto.registrarContacto(c);
+		
+		// registrar primero los atributos que son objetos(En este caso es la lista de
+		// mensajes)
+		AdaptadorMensajeDAO adaptadorMensaje = AdaptadorMensajeDAO.getUnicaInstancia();
+		for (Mensaje m : grupo.getListaMensajes())
+			adaptadorMensaje.registrarMensaje(m);
 
 		// crear entidad Grupo
 		eGrupo = new Entidad();
 		eGrupo.setNombre("Grupo");
 		eGrupo.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(
-				new Propiedad("miembros", obtenerCodigosMiembros(grupo.getMiembros())))));
+				new Propiedad("miembros", obtenerCodigosMiembros(grupo.getMiembros())),
+				new Propiedad("listaMensajes", obtenerCodigosMensajes(grupo.getListaMensajes())))));
 
 		// registrar entidad Grupo
 		eGrupo = servPersistencia.registrarEntidad(eGrupo);
@@ -61,6 +68,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 	}
 
 	public void borrarGrupo(Grupo grupo) {
+		// No se comprueban restricciones de integridad con Mensaje //WARNING
 		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
 		servPersistencia.borrarEntidad(eGrupo);
 	}
@@ -75,6 +83,9 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 			} else if (prop.getNombre().equals("miembros")) {
 				String miembros = obtenerCodigosMiembros(grupo.getMiembros());
 				prop.setValor(miembros);
+			} else if (prop.getNombre().equals("listaMensajes")) {
+				String mensajes = obtenerCodigosMensajes(grupo.getListaMensajes());
+				prop.setValor(mensajes);
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -87,7 +98,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		// recuperar entidad
 		Entidad eGrupo= servPersistencia.recuperarEntidad(codigo);
 		
-		if(eGrupo.getNombre() != "Grupo") return null;
+		if(eGrupo.getNombre() != "Grupo") return null; //En caso de que lo llamen para contactoIndividual
 
 		// recuperar propiedades que no son objetos
 		Grupo grupo = new Grupo();
@@ -99,6 +110,11 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		miembros = obtenerMiembrosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGrupo, "miembros"));
 		for (ContactoIndividual c : miembros)
 			grupo.addMiembro(c); // PUEDE SER MEJOR QUE LO HAGA EL PROPIO GRUPO
+		
+		List<Mensaje> mensajes = new ArrayList<Mensaje>();
+		mensajes = obtenerMensajesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGrupo, "listaMensajes"));
+		for (Mensaje m : mensajes)
+			grupo.addMensaje(m); // PUEDE SER MEJOR QUE LO HAGA EL PROPIO GRUPO
 
 		return grupo;
 	}
@@ -122,5 +138,24 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		}
 		return listaMiembros;
 	}
+	
+	private String obtenerCodigosMensajes(List<Mensaje> listaMensajes) {
+		String aux = "";
+		for (Mensaje m : listaMensajes) {
+			aux += m.getCodigo() + " ";
+		}
+		return aux.trim();
+	}
+
+	private List<Mensaje> obtenerMensajesDesdeCodigos(String mensajes) {
+		List<Mensaje> listaMensajes = new ArrayList<Mensaje>();
+		StringTokenizer strTok = new StringTokenizer(mensajes, " ");
+		AdaptadorMensajeDAO adaptadorM = AdaptadorMensajeDAO.getUnicaInstancia();
+		while (strTok.hasMoreTokens()) {
+			listaMensajes.add(adaptadorM.recuperarMensaje(Integer.valueOf((String) strTok.nextElement())));
+		}
+		return listaMensajes;
+	}
+
 
 }
