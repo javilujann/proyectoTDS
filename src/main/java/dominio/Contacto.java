@@ -5,12 +5,22 @@ import java.util.ArrayList;
 public abstract class Contacto {
 	
 	private int codigo;
+	private String nombre;
 	private ArrayList<Mensaje> listaMensajes;
 
-	public Contacto() {
+	public Contacto(String nombre) {
 		super();
+		this.nombre = nombre;
 		this.codigo = 0;
 		this.listaMensajes = new ArrayList<Mensaje>();
+	}
+	
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 	
 	public int getCodigo() {
@@ -33,5 +43,9 @@ public abstract class Contacto {
 		this.listaMensajes.add(mensaje);
 	}
 	
-
+	//METODOS
+	
+	//True si el movil pasado corresponde al contacto
+	public abstract boolean corresponde(String movil);
+	
 }

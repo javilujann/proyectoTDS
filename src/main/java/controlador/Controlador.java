@@ -3,11 +3,12 @@ package controlador;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import dao.AdaptadorMensajeDAO;
-import dao.DAOException;
+import dao.ContactoInDAO;
 import dao.FactoriaDAO;
 import dao.MensajeDAO;
 import dao.UsuarioDAO;
+import dao.DAOException;
+
 import dominio.ContactoIndividual;
 import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
@@ -42,8 +43,7 @@ public enum Controlador {
 
 	public boolean loginUsuario(String movil, String password) {
 		Usuario usuario = RepositorioUsuarios.getUnicaInstancia().getUsuario(movil);
-		if (usuario != null && usuario.getContraseña
-				().equals(password)) {
+		if (usuario != null && usuario.chekContraseña(password)) { 
 			this.usuarioActual = usuario;
 			return true;
 		}
@@ -51,7 +51,6 @@ public enum Controlador {
 	}
 	
 	//PARA EL REGISTRO
-	
 	public boolean esUsuarioRegistrado(String movil) {
 		return RepositorioUsuarios.getUnicaInstancia().getUsuario(movil) != null;
 	}
@@ -77,18 +76,32 @@ public enum Controlador {
 		//PANEL DERECHO
 			//SE NECESITARA ALGO QUE FIJADO UN CONACTO DEL USUARIO LE DE TODOS LOS MENSAJES
 			//FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
-		//appChat.enviarMensaje(c2, "", 2, TipoMensaje.ENVIADO);
-	public boolean enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, String emoticono ) {
+					
+	//Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes en tu lista, luego este ya es valido
+	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, String emoticono ) {
+		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
+		ContactoInDAO adaptadorContacto = factoria.getContactoIDAO();
+		UsuarioDAO adaptadorUsuario = factoria.getUsuarioDAO();
+		
+		//Creas el mensaje
 		Mensaje mensaje = new Mensaje(textoMensaje,LocalDateTime.now(),emoticono);
+		
+		//"Enviar" el mensaje para el usuario actual
 		mensaje.setTipo(TipoMensaje.SENT); 
+		adaptadorMensaje.registrarMensaje(mensaje);
 		
-		MensajeDAO AdaptadorMensaje = factoria.getMensajeDAO(); 
-		AdaptadorMensaje.registrarMensaje(mensaje);
+		contacto.addMensaje(mensaje);
+		adaptadorContacto.modificarContacto(contacto);
 		
-		usuarioActual.getContactos(); //buscar el contacto y enviarle el mensaje; mejor que lo haga el cliente
+		//"Recibir" el mensaje para el usuario al que corresponde el contaco
 		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contacto.getMovil());
-		mensaje.setTipo(TipoMensaje.RECEIVED); receptor.getContactos();
-		return false;
+		mensaje.setTipo(TipoMensaje.RECEIVED);
+		adaptadorMensaje.registrarMensaje(mensaje);
+		
+		receptor.recibirMensaje(usuarioActual.getMovil(),mensaje);
+		adaptadorUsuario.modificarUsuario(usuarioActual);
+		
+		//PERSISTENCIA?
 	}
 			//PARA UN GRUPO SE DEBE ACCEDER A EL DESDE ARRIBA; SI NO ES COMPLICADO MOSTRAR TODOS LOS ENVIDOS; CUANDO SE ENVIE
 			

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Grupo extends Contacto{
 	private ArrayList<ContactoIndividual> miembros;
 
-	public Grupo() {
-		super();
+	public Grupo(String nombre) {
+		super(nombre);
 		this.miembros = new ArrayList<ContactoIndividual>();
 	}
 
@@ -20,6 +20,10 @@ public class Grupo extends Contacto{
 	
 	public void addMiembro(ContactoIndividual miembro) {
 		this.miembros.add(miembro);
+	}
+	
+	public boolean corresponde(String movil) {
+		return false; //Los grupos no manejan moviles
 	}
 
 }

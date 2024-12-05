@@ -57,6 +57,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		eGrupo = new Entidad();
 		eGrupo.setNombre("Grupo");
 		eGrupo.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(
+				new Propiedad("nombre",grupo.getNombre()),
 				new Propiedad("miembros", obtenerCodigosMiembros(grupo.getMiembros())),
 				new Propiedad("listaMensajes", obtenerCodigosMensajes(grupo.getListaMensajes())))));
 
@@ -68,7 +69,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 	}
 
 	public void borrarGrupo(Grupo grupo) {
-		// No se comprueban restricciones de integridad con Mensaje //WARNING
+		// No se comprueban restricciones de integridad con Contacto y Mensaje //WARNING
 		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
 		servPersistencia.borrarEntidad(eGrupo);
 	}
@@ -86,6 +87,11 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 			} else if (prop.getNombre().equals("listaMensajes")) {
 				String mensajes = obtenerCodigosMensajes(grupo.getListaMensajes());
 				prop.setValor(mensajes);
+			} else if (prop.getNombre().equals("listaMensajes")) {
+				String mensajes = obtenerCodigosMensajes(grupo.getListaMensajes());
+				prop.setValor(mensajes);
+			} else if(prop.getNombre().equals("nombre")) {
+				prop.setValor(grupo.getNombre());
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -101,7 +107,8 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		if(eGrupo.getNombre() != "Grupo") return null; //En caso de que lo llamen para contactoIndividual
 
 		// recuperar propiedades que no son objetos
-		Grupo grupo = new Grupo();
+		String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, "nombre");
+		Grupo grupo = new Grupo(nombre);
 		grupo.setCodigo(codigo);
 
 

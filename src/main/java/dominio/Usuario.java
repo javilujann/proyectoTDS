@@ -3,6 +3,11 @@ package dominio;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import dao.ContactoInDAO;
+import dao.DAOException;
+import dao.FactoriaDAO;
 
 public class Usuario {
 	
@@ -17,6 +22,8 @@ public class Usuario {
 	private String biografia;
 	private Date fechaNacimiento;
 	
+	
+	//CONSTRUCTOR
 	
 	public Usuario(String nombre, String apellidos, String movil, String contraseña, String imagen,
 			String biografia,Date fechaNacimiento) {
@@ -34,7 +41,7 @@ public class Usuario {
 		
 	}
 
-
+	//GETTER AND SETTER
 		
 	public String getNombre() {
 		return nombre;
@@ -132,6 +139,34 @@ public class Usuario {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
+	//METHODS
+	
+	public boolean chekContraseña(String _contraseña) {
+		return contraseña.equals(_contraseña);
+	}
+	
+	public void recibirMensaje(String movil, Mensaje mensaje) {
+		ContactoInDAO adaptadorContacto;
+		
+		try {
+			adaptadorContacto = FactoriaDAO.getInstancia().getContactoIDAO();
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
+		ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
+		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil);
+		    nuevoContacto.setAgregado(false);
+		    adaptadorContacto.registrarContacto(nuevoContacto);
+		    contactos.add(nuevoContacto); 
+		    return nuevoContacto;
+		});
+		
+		contacto.addMensaje(mensaje);
+		adaptadorContacto.modificarContacto(contacto);
+	}
 
 	
 }

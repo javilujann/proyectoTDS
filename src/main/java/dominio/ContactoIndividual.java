@@ -2,22 +2,14 @@ package dominio;
 
 
 public class ContactoIndividual extends Contacto{
-	private String nombre;
+
 	private String movil;
 	private Boolean agregado;
 
 	public ContactoIndividual(String nombre, String movil) {
-		super();
-		this.nombre = nombre;
+		super(nombre);
 		this.movil = movil;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		this.agregado = false;
 	}
 
 	public String getMovil() {
@@ -34,6 +26,15 @@ public class ContactoIndividual extends Contacto{
 
 	public void setAgregado(Boolean agreagado) {
 		this.agregado = agreagado;
+	}
+	
+	public void enviarMensaje(Mensaje mensaje) {
+		
+	}
+
+	@Override
+	public boolean corresponde(String _movil) {
+		return this.movil.equals(_movil);
 	}
 
 }
