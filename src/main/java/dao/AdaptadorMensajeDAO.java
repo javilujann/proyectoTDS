@@ -1,10 +1,10 @@
 package dao;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -17,7 +17,6 @@ import dominio.TipoMensaje;
 public class AdaptadorMensajeDAO implements MensajeDAO{
 	
 	private static ServicioPersistencia servPersistencia;
-	private SimpleDateFormat dateFormat; // para formatear la hora en la base de datos
 	private static AdaptadorMensajeDAO unicaInstancia = null;
 
 	public static AdaptadorMensajeDAO getUnicaInstancia() { // patron singleton
@@ -29,7 +28,6 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 
 	private AdaptadorMensajeDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
-		dateFormat = new SimpleDateFormat("HH:mm:ss"); 
 	}
 
 	/* cuando se registra un mensaje se le asigna un identificador unico */
@@ -49,7 +47,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		eMensaje.setNombre("Mensaje");
 		eMensaje.setPropiedades(new ArrayList<Propiedad>(
 				Arrays.asList(new Propiedad("texto", mensaje.getTexto()), new Propiedad("emoticon", mensaje.getEmoticon()),
-						new Propiedad("tipo",mensaje.getTipo().toString()), new Propiedad("hora",dateFormat.format(mensaje.getHora())) )));
+						new Propiedad("tipo",mensaje.getTipo().toString()), new Propiedad("hora",mensaje.getHora().toString()))));
 
 		// registrar entidad Mensaje
 		eMensaje = servPersistencia.registrarEntidad(eMensaje);
@@ -73,7 +71,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 			} else if (prop.getNombre().equals("texto")) {
 			    prop.setValor(mensaje.getTexto());
 			} else if (prop.getNombre().equals("hora")) {
-			    prop.setValor(dateFormat.format(mensaje.getHora()));
+			    prop.setValor(mensaje.getHora().toString());
 			} else if (prop.getNombre().equals("emoticon")) {
 			    prop.setValor(mensaje.getEmoticon());
 			} else if (prop.getNombre().equals("tipo")) {
@@ -95,13 +93,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
 		String emoticon = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticon");
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo")) ;
-		Date hora = null;
-		try {
-			hora = dateFormat.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
+		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora")); 
 		Mensaje mensaje = new Mensaje(texto,hora,emoticon);
 		mensaje.setCodigo(codigo);
 		mensaje.setTipo(tipo);

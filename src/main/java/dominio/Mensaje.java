@@ -1,16 +1,17 @@
 package dominio;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 public class Mensaje {
 	private int codigo;
 	private String texto;
-	private Date hora;
+	private LocalDateTime hora;
 	private String emoticon;			//url de la imagen
 	private TipoMensaje tipo;
 	
 	
-	public Mensaje(String texto, Date hora, String emoticon) {
+	public Mensaje(String texto, LocalDateTime hora, String emoticon) {
 		super();
 		this.texto = texto;
 		this.hora = hora;
@@ -37,12 +38,12 @@ public class Mensaje {
 	}
 
 
-	public Date getHora() {
+	public LocalDateTime getHora() {
 		return hora;
 	}
 
 
-	public void setHora(Date hora) {
+	public void setHora(LocalDateTime hora) {
 		this.hora = hora;
 	}
 

@@ -54,7 +54,7 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 		eContacto = new Entidad();
 		eContacto.setNombre("Contacto");
 		eContacto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", contacto.getNombre()),
-				new Propiedad("movil", contacto.getMovil()),
+				new Propiedad("movil", contacto.getMovil()), new Propiedad("agregado",String.valueOf(contacto.isAgregado())),
 				new Propiedad("listaMensajes", obtenerCodigosMensajes(contacto.getListaMensajes())))));
 
 		// registrar entidad Contacto
@@ -81,6 +81,8 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 				prop.setValor(contacto.getNombre());
 			} else if (prop.getNombre().equals("movil")) {
 				prop.setValor(contacto.getMovil());
+			}  else if (prop.getNombre().equals("agregado")) {
+			    prop.setValor(String.valueOf(contacto.isAgregado())); // Convertir boolean a String
 			} else if (prop.getNombre().equals("listaMensajes")) {
 				String mensajes = obtenerCodigosMensajes(contacto.getListaMensajes());
 				prop.setValor(mensajes);
@@ -104,9 +106,11 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 		// recuperar propiedades que no son objetos
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
 		String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
+		Boolean agregado = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "agregado"));
 		ContactoIndividual contacto = new ContactoIndividual(nombre, movil);
 		contacto.setCodigo(codigo);
-
+		contacto.setAgregado(agregado);
+		
 		// IMPORTANTE:añadir el Contacto al pool antes de llamar a otros
 		// adaptadores
 		PoolDAO.getUnicaInstancia().addObjeto(codigo, contacto);
