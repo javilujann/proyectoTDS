@@ -1,5 +1,6 @@
 package dao;
 
+import dominio.Contacto;
 
 /**
  * Factoria abstracta DAO.
@@ -36,7 +37,6 @@ public abstract class FactoriaDAO {
 	
 	public abstract UsuarioDAO getUsuarioDAO();	
 	public abstract MensajeDAO getMensajeDAO();
-	public abstract GrupoDAO getGrupoDAO();
-	public abstract ContactoInDAO getContactoIDAO();
+	public abstract ContactoDAO getContactoDAO(Class<? extends Contacto> clase);
 	
 }

@@ -1,9 +1,21 @@
 package dao;
 
+import java.util.HashMap;
+
+import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Grupo;
 
 public class TDSFactoriaDAO extends FactoriaDAO {
 	
-	public TDSFactoriaDAO () {}
+	 private HashMap<Class<? extends Contacto>, ContactoDAO> mapaAdaptadores;
+	
+	public TDSFactoriaDAO () {
+		mapaAdaptadores = new HashMap<Class<? extends Contacto>, ContactoDAO>();
+        mapaAdaptadores.put(Grupo.class, AdaptadorGrupoDAO.getUnicaInstancia());
+        mapaAdaptadores.put(ContactoIndividual.class, AdaptadorContactoInDAO.getUnicaInstancia());
+		
+	}
 	
 	@Override
 	public UsuarioDAO getUsuarioDAO() {
@@ -16,16 +28,9 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 		return AdaptadorMensajeDAO.getUnicaInstancia();
 	}
 
-
 	@Override
-	public GrupoDAO getGrupoDAO() {
-		return AdaptadorGrupoDAO.getUnicaInstancia();
-	}
-
-
-	@Override
-	public ContactoInDAO getContactoIDAO() {
-		return AdaptadorContactoInDAO.getUnicaInstancia();
-	}
+    public ContactoDAO getContactoDAO(Class<? extends Contacto> clase) {
+    	return mapaAdaptadores.get(clase);
+    }
 
 }

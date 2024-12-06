@@ -22,21 +22,24 @@ import tds.driver.ServicioPersistencia;
 //Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
+	private FactoriaDAO factoria;
 	
 	private SimpleDateFormat dateFormat; // para formatear la fecha de nacimiento en la base de datos
-	
 	private static AdaptadorUsuarioDAO unicaInstancia = null;
 
 	public static AdaptadorUsuarioDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorUsuarioDAO();
-		else
-			return unicaInstancia;
+		if (unicaInstancia == null) unicaInstancia = new AdaptadorUsuarioDAO();
+		return unicaInstancia;
 	}
 
 	private AdaptadorUsuarioDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 		dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			factoria = FactoriaDAO.getInstancia();
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* cuando se registra un usuario se le asigna un identificador unico */
@@ -51,11 +54,8 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
 		// contactos= grupos + individuales)
-		AdaptadorGrupoDAO adaptadorG = AdaptadorGrupoDAO.getUnicaInstancia();
-		AdaptadorContactoInDAO adaptadorC = AdaptadorContactoInDAO.getUnicaInstancia();
 		for (Contacto c : usuario.getContactos()) {
-			if(c instanceof Grupo) adaptadorG.registrarGrupo((Grupo) c);
-			else adaptadorC.registrarContacto((ContactoIndividual) c);
+			factoria.getContactoDAO(c.getClass()).registrarContacto(c);
 		}
 			
 		
@@ -72,6 +72,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 
 		// registrar entidad Usuario
 		eUsuario = servPersistencia.registrarEntidad(eUsuario);
+		
 		// asignar identificador unico
 		// Se aprovecha el que genera el servicio de persistencia
 		usuario.setCodigo(eUsuario.getId());
@@ -185,9 +186,10 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		
 		while (strTok.hasMoreTokens()) {
 			int codigo = Integer.valueOf((String) strTok.nextElement());
-			Contacto contacto = adaptadorG.recuperarGrupo(codigo);	
-			if(contacto != null) listaContactos.add(contacto);
-			else  listaContactos.add(adaptadorC.recuperarContacto(codigo));
+			Contacto contacto = adaptadorG.recuperarContacto(codigo);
+			
+			if(contacto != null) listaContactos.add(contacto); //Era grupo
+			else  listaContactos.add(adaptadorC.recuperarContacto(codigo)); //Es Individual
 		}
 		
 		return listaContactos;

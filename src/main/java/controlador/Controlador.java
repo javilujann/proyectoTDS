@@ -3,9 +3,8 @@ package controlador;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import dao.ContactoInDAO;
+import dao.ContactoDAO;
 import dao.FactoriaDAO;
-import dao.GrupoDAO;
 import dao.MensajeDAO;
 import dao.UsuarioDAO;
 import dao.DAOException;
@@ -86,7 +85,7 @@ public enum Controlador {
 	//Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes en tu lista, luego este ya es valido
 	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, String emoticono ) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
-		ContactoInDAO adaptadorContacto = factoria.getContactoIDAO();
+		ContactoDAO adaptadorContacto = factoria.getContactoDAO(contacto.getClass());
 		UsuarioDAO adaptadorUsuario = factoria.getUsuarioDAO();
 		
 		//Creas el mensaje
@@ -117,7 +116,7 @@ public enum Controlador {
 	
 	public void enviarMensajeGrupo(Grupo grupo, String textoMensaje, String emoticono) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
-		GrupoDAO adaptadorGrupo = factoria.getGrupoDAO();
+		ContactoDAO adaptadorGrupo = factoria.getContactoDAO(grupo.getClass());
 
 		//Creas el mensaje
 		Mensaje mensaje = new Mensaje(textoMensaje,LocalDateTime.now(),emoticono);
@@ -127,7 +126,7 @@ public enum Controlador {
 		adaptadorMensaje.registrarMensaje(mensaje);
 				
 		grupo.addMensaje(mensaje);
-		adaptadorGrupo.modificarGrupo(grupo);
+		adaptadorGrupo.modificarContacto(grupo);
 		
 		//"Enviar y Recibir" el mensaje para cada usuario al que corresponde un miembro
 		for(ContactoIndividual contacto : grupo.getMiembros()) {

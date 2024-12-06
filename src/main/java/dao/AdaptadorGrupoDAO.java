@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import dominio.Contacto;
 import dominio.ContactoIndividual;
 import dominio.Grupo;
 import dominio.Mensaje;
@@ -14,32 +15,32 @@ import beans.Propiedad;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-public class AdaptadorGrupoDAO implements GrupoDAO {
+public class AdaptadorGrupoDAO implements ContactoDAO {
 	private static ServicioPersistencia servPersistencia;
 	private static AdaptadorGrupoDAO unicaInstancia = null;
 
 	public static AdaptadorGrupoDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorGrupoDAO();
-		else
-			return unicaInstancia;
+		if (unicaInstancia == null) unicaInstancia = new AdaptadorGrupoDAO();
+		return unicaInstancia;
 	}
 
 	private AdaptadorGrupoDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
 
-	/* cuando se registra un grupo se le asigna un identificador unico */
-	public void registrarGrupo(Grupo grupo) {
+	@Override
+	public void registrarContacto(Contacto _grupo) {
 		Entidad eGrupo = null;
 
 		// Si la entidad esta registrada no la registra de nuevo
 		try {
-			eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
+			eGrupo = servPersistencia.recuperarEntidad(_grupo.getCodigo());
 		} catch (NullPointerException e) {
 		}
 		if (eGrupo != null)
 			return;
+		
+		Grupo grupo = (Grupo) _grupo;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
 		// contactos individuales y la lista de los mensajes de difusion)
@@ -67,16 +68,20 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		// Se aprovecha el que genera el servicio de persistencia
 		grupo.setCodigo(eGrupo.getId());
 	}
-
-	public void borrarGrupo(Grupo grupo) {
+	
+	@Override
+	public void borrarContacto(Contacto grupo) {
 		// No se comprueban restricciones de integridad con Contacto y Mensaje //WARNING
 		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
 		servPersistencia.borrarEntidad(eGrupo);
 	}
 
-	public void modificarGrupo(Grupo grupo) {
+	@Override
+	public void modificarContacto(Contacto _grupo) {
 
-		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getCodigo());
+		Entidad eGrupo = servPersistencia.recuperarEntidad(_grupo.getCodigo());
+		
+		Grupo grupo = (Grupo) _grupo;
 
 		for (Propiedad prop : eGrupo.getPropiedades()) {
 			if (prop.getNombre().equals("codigo")) {
@@ -99,7 +104,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 
 	}
 
-	public Grupo recuperarGrupo(int codigo) {
+	public Contacto recuperarContacto(int codigo) {
 		
 		// recuperar entidad
 		Entidad eGrupo= servPersistencia.recuperarEntidad(codigo);
@@ -141,7 +146,7 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		StringTokenizer strTok = new StringTokenizer(miembros, " ");
 		AdaptadorContactoInDAO adaptadorC = AdaptadorContactoInDAO.getUnicaInstancia();
 		while (strTok.hasMoreTokens()) {
-			listaMiembros.add(adaptadorC.recuperarContacto(Integer.valueOf((String) strTok.nextElement())));
+			listaMiembros.add((ContactoIndividual) adaptadorC.recuperarContacto(Integer.valueOf((String) strTok.nextElement())));
 		}
 		return listaMiembros;
 	}
@@ -163,6 +168,5 @@ public class AdaptadorGrupoDAO implements GrupoDAO {
 		}
 		return listaMensajes;
 	}
-
 
 }

@@ -16,15 +16,13 @@ import beans.Propiedad;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-public class AdaptadorContactoInDAO implements ContactoInDAO {
+public class AdaptadorContactoInDAO implements ContactoDAO {
 	private static ServicioPersistencia servPersistencia;
 	private static AdaptadorContactoInDAO unicaInstancia = null;
 
 	public static AdaptadorContactoInDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorContactoInDAO();
-		else
-			return unicaInstancia;
+		if (unicaInstancia == null) unicaInstancia = new AdaptadorContactoInDAO();
+		return unicaInstancia;
 	}
 
 	private AdaptadorContactoInDAO() {
@@ -32,17 +30,20 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 	}
 
 	/* cuando se registra un contacto se le asigna un identificador unico */
-	public void registrarContacto(ContactoIndividual contacto) {
+	public void registrarContacto(Contacto _contacto) {
 		Entidad eContacto = null;
 
 		// Si la entidad esta registrada no la registra de nuevo
 		try {
-			eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+			eContacto = servPersistencia.recuperarEntidad(_contacto.getCodigo());
 		} catch (NullPointerException e) {
 		}
 		
 		if (eContacto != null)
 			return;
+		
+		//Casteamos a contactoIndividual no hay prueba se asume que la llamada es correcta
+		ContactoIndividual contacto = (ContactoIndividual) _contacto;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
 		// mensajes)
@@ -64,15 +65,17 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 		contacto.setCodigo(eContacto.getId());
 	}
 
-	public void borrarContacto(ContactoIndividual contacto) {
+	public void borrarContacto(Contacto contacto) {
 		// No se comprueban restricciones de integridad con Mensaje //WARNING
 		Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
 		servPersistencia.borrarEntidad(eContacto);
 	}
 
-	public void modificarContacto(ContactoIndividual contacto) {
+	public void modificarContacto(Contacto _contacto) {
 
-		Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+		Entidad eContacto = servPersistencia.recuperarEntidad(_contacto.getCodigo());
+		//Casteamos a contactoIndividual no hay prueba se asume que la llamada es correcta
+		ContactoIndividual contacto = (ContactoIndividual) _contacto;
 
 		for (Propiedad prop : eContacto.getPropiedades()) {
 			if (prop.getNombre().equals("codigo")) {
@@ -93,7 +96,7 @@ public class AdaptadorContactoInDAO implements ContactoInDAO {
 
 	}
 
-	public ContactoIndividual recuperarContacto(int codigo) {
+	public Contacto recuperarContacto(int codigo) {
 
 		// Si la entidad esta en el pool la devuelve directamente
 		if (PoolDAO.getUnicaInstancia().contiene(codigo))

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import dao.ContactoInDAO;
+import dao.ContactoDAO;
 import dao.DAOException;
 import dao.FactoriaDAO;
 
@@ -153,10 +153,10 @@ public class Usuario {
 	
 	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
 	public void recibirMensaje(String movil, Mensaje mensaje) {
-		ContactoInDAO adaptadorContacto;
+		ContactoDAO adaptadorContacto;
 		
 		try {
-			adaptadorContacto = FactoriaDAO.getInstancia().getContactoIDAO();
+			adaptadorContacto = FactoriaDAO.getInstancia().getContactoDAO(ContactoIndividual.class);
 		} catch (DAOException e) {
 			e.printStackTrace();
 			return;

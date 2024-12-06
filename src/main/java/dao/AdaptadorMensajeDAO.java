@@ -20,10 +20,8 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 	private static AdaptadorMensajeDAO unicaInstancia = null;
 
 	public static AdaptadorMensajeDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorMensajeDAO();
-		else
-			return unicaInstancia;
+		if (unicaInstancia == null) unicaInstancia = new AdaptadorMensajeDAO();
+		return unicaInstancia;
 	}
 
 	private AdaptadorMensajeDAO() {
