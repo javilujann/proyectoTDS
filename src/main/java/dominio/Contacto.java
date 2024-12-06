@@ -1,6 +1,7 @@
 package dominio;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public abstract class Contacto {
 	
@@ -47,5 +48,11 @@ public abstract class Contacto {
 	
 	//True si el movil pasado corresponde al contacto
 	public abstract boolean corresponde(String movil);
+	
+	public Optional<Mensaje> ultimoMensaje() {
+		if(listaMensajes.isEmpty()) return  Optional.empty(); 
+		Mensaje mensaje =  listaMensajes.get(listaMensajes.size() - 1); //accedemos al ultimo indice
+		return  Optional.of(mensaje);
+	}
 	
 }

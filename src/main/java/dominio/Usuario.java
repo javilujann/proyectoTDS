@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import dao.ContactoInDAO;
 import dao.DAOException;
@@ -139,12 +140,18 @@ public class Usuario {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	//METHODS
+	//METODOS
 	
 	public boolean chekContraseña(String _contraseña) {
 		return contraseña.equals(_contraseña);
 	}
 	
+	public List<Mensaje> ultimosMensajes(){
+		return contactos.stream().map(c -> c.ultimoMensaje()).filter(optional -> optional.isPresent()).
+				map(present -> present.get()).collect(Collectors.toList());
+	}	
+	
+	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
 	public void recibirMensaje(String movil, Mensaje mensaje) {
 		ContactoInDAO adaptadorContacto;
 		
@@ -167,6 +174,8 @@ public class Usuario {
 		contacto.addMensaje(mensaje);
 		adaptadorContacto.modificarContacto(contacto);
 	}
+	
+	
 
 	
 }
