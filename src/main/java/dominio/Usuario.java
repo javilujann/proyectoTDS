@@ -3,7 +3,6 @@ package dominio;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,16 +90,10 @@ public class Usuario {
 
 	public Image getImagen() {
 			URL url = null;
-			
-			try {
-				url = new URL(imagen);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-			
 			BufferedImage image = null;
 			
 			try {
+				url = new URL(imagen);
 				image = ImageIO.read(url);
 			} catch (IOException e) {
 				e.printStackTrace();

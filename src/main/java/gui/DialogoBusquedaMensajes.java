@@ -1,23 +1,34 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import dominio.Mensaje;
 
 @SuppressWarnings("serial")
 public class DialogoBusquedaMensajes extends JDialog {
 
 	public DialogoBusquedaMensajes(Frame owner) {
 		super(owner, "Buscar Mensajes", true);
+		setSize(400, 400);
+		setLocationRelativeTo(owner);
 
 		// Componentes de búsqueda
 		JLabel contactLabel = new JLabel("Contacto o Teléfono:");
@@ -31,10 +42,13 @@ public class DialogoBusquedaMensajes extends JDialog {
 		JComboBox<String> typeComboBox = new JComboBox<>(messageTypes);
 
 		JButton searchButton = new JButton("Buscar");
-		JTextArea resultsArea = new JTextArea(10, 30);
-		resultsArea.setEditable(false);
 
-		// Layout
+		// Componente para mostrar los resultados (usamos JList para mostrar objetos)
+		DefaultListModel<Mensaje> mensajeModel = new DefaultListModel<>();
+		JList<Mensaje> mensajeList = new JList<>(mensajeModel);
+		//mensajeList.setCellRenderer(new MensajeCellRenderer());
+
+		// Panel de entrada
 		JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
 		inputPanel.add(contactLabel);
 		inputPanel.add(contactField);
@@ -43,13 +57,17 @@ public class DialogoBusquedaMensajes extends JDialog {
 		inputPanel.add(typeLabel);
 		inputPanel.add(typeComboBox);
 
-		JPanel resultsPanel = new JPanel(new BorderLayout());
-		resultsPanel.add(new JScrollPane(resultsArea), BorderLayout.CENTER);
+		// Panel inferior con distribución vertical
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
+		bottomPanel.add(searchButton); // El botón estará justo encima de la lista
+		bottomPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Espaciador pequeño
+		bottomPanel.add(new JScrollPane(mensajeList)); // Lista con scroll
 
+		// Layout principal
 		setLayout(new BorderLayout(10, 10));
-		add(inputPanel, BorderLayout.NORTH);
-		add(searchButton, BorderLayout.CENTER);
-		add(resultsPanel, BorderLayout.SOUTH);
+		add(inputPanel, BorderLayout.NORTH); // Panel de entrada arriba
+		add(bottomPanel, BorderLayout.CENTER); // Botón y lista de resultados en el centro
 
 		// Listener para búsqueda
 		searchButton.addActionListener(e -> {
@@ -58,17 +76,23 @@ public class DialogoBusquedaMensajes extends JDialog {
 			String type = (String) typeComboBox.getSelectedItem();
 
 			// Simular búsqueda de mensajes
-			StringBuilder results = new StringBuilder("Resultados de búsqueda:\n");
-			results.append("(Simulación) Buscando mensajes de tipo '").append(type).append("' ").append("con texto '")
-					.append(text).append("' para contacto '").append(contact).append("'.\n");
+			List<Mensaje> mensajes = buscarMensajes(contact, text, type);
 
-			// Aquí se implementaría la lógica real de búsqueda
-
-			resultsArea.setText(results.toString());
+			// Actualizar la lista con los resultados
+			mensajeModel.clear();
+			for (Mensaje mensaje : mensajes) {
+				mensajeModel.addElement(mensaje);
+			}
 		});
-
-		// Configuración final del diálogo
-		setSize(400, 400);
-		setLocationRelativeTo(owner);
 	}
+
+	// Método para simular búsqueda de mensajes
+	private List<Mensaje> buscarMensajes(String contact, String text, String type) {
+		List<Mensaje> mensajes = new ArrayList<>();
+		mensajes.add(new Mensaje("Hola soy Javi", LocalDateTime.now(), null));
+		mensajes.add(new Mensaje("Y yo pepe", LocalDateTime.now(), null));
+		// Aquí se implementaría la lógica real de búsqueda
+		return mensajes;
+	}
+
 }
