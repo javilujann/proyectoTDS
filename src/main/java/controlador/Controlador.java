@@ -1,7 +1,9 @@
 package controlador;
 
+import java.awt.Image;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import dao.ContactoDAO;
 import dao.FactoriaDAO;
@@ -11,6 +13,7 @@ import dao.DAOException;
 
 import dominio.ContactoIndividual;
 import dominio.Grupo;
+import dominio.Contacto;
 import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
 import dominio.TipoMensaje;
@@ -38,6 +41,14 @@ public enum Controlador {
 		return usuarioActual;
 	}
 	
+	public List<Contacto> getContactos(){
+		return usuarioActual.getContactos();
+	}
+	
+	public Image getImage() {
+		return usuarioActual.getImagen();
+	}
+	
 	//METODOS
 
 	//PARA EL LOGIN
@@ -62,8 +73,7 @@ public enum Controlador {
 			return false;
 		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, bio, fechaNacimiento);
 
-		UsuarioDAO usuarioDAO = factoria
-				.getUsuarioDAO(); /* Adaptador DAO para almacenar el nuevo Usuario en la BD */
+		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO(); 
 		usuarioDAO.registrarUsuario(usuario);
 
 		RepositorioUsuarios.getUnicaInstancia().addUsuario(usuario);
@@ -73,6 +83,7 @@ public enum Controlador {
 	//PARA VENTANA PRINCIPAL
 		//PANEL IZQUIERDO ---------- ESPERAR A SABER SI ES DE MENSAJES O NO
 			//SE NECESITARA ALGO QUE PROPORCIONE LA LISTA DE ULTIMOS MENSJES DEL USUARIO ACTUAL -> usuario.ultimosMensajes()
+			
 			//SE NECESITARA UN METODO PARA AÑADIR CONTACTO, esta addContacto, quien lo crea y maneja persistencias? 
 			//EN ESTE CASO ES PASAR DE UN NO_AGREGADO A AGREGADO, EL METODO SERA SOLO MODIFICAR NOMBRE Y MANEJAR PERSISTENCIA
 	
@@ -114,6 +125,9 @@ public enum Controlador {
 	//las dos posibles especificaciones, son en Grupo llamar a cada miembro y en Individual hacer la logica
 	//Para evitar duplicidad de mensajes pasar ya el mensaje guardado
 	
+	//Para empezar puedo hacer dos funciones una que reciba ya el mensaje, y evitas toda la persistencia
+	//Y la general gestiona esta y llama luego a la otra
+	
 	public void enviarMensajeGrupo(Grupo grupo, String textoMensaje, String emoticono) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
 		ContactoDAO adaptadorGrupo = factoria.getContactoDAO(grupo.getClass());
@@ -123,8 +137,7 @@ public enum Controlador {
 		
 		//"Enviar" el mensaje para el grupo del usuario actual
 		mensaje.setTipo(TipoMensaje.SENT); 
-		adaptadorMensaje.registrarMensaje(mensaje);
-				
+		adaptadorMensaje.registrarMensaje(mensaje);		
 		grupo.addMensaje(mensaje);
 		adaptadorGrupo.modificarContacto(grupo);
 		
@@ -137,12 +150,12 @@ public enum Controlador {
 		
 		
 	}
-			
+		
 	
 	//VENTANA CONTACTOS
-		//PARA LAS LISTAS MOSTRAR LOS CONTACTOS DEL USUARIO Y LOS DE UN GRUPO
-		//FUNCIONES PARA AÑADIR UN CONTACTO Y UN GRUPO A UN USUARIO
-		//FUNCIONES PARA AÑADIR Y ELIMINAR CONTACTOS DE UN GRUPO
+		//PARA LAS LISTAS MOSTRAR LOS CONTACTOS DEL USUARIO Y LOS DE UN GRUPO -> getLista
+		//FUNCIONES PARA AÑADIR UN CONTACTO Y UN GRUPO A UN USUARIO -> Manejar persistencia + addContacto
+		//FUNCIONES PARA AÑADIR Y ELIMINAR CONTACTOS DE UN GRUPO -> addMiembro y actualizar en Persistencia
 	
-	
+	//He pensado en bajar toda la persistencia a dominio, no se si es posible, pero en su caso limpia mucho esta capa/clase
 }

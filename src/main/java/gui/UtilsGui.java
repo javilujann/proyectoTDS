@@ -1,8 +1,11 @@
 package gui;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import javax.swing.JComponent;
 
 public class UtilsGui {
 
@@ -29,4 +32,11 @@ public class UtilsGui {
        }
 		return target;
 	}
+	
+	public static void fixSize(JComponent c, int x, int y) {
+		c.setMinimumSize(new Dimension(x,y));
+		c.setMaximumSize(new Dimension(x,y));
+		c.setPreferredSize(new Dimension(x,y));
+	}
+	
 }
