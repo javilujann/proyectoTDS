@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -66,6 +67,7 @@ public class RegistroView extends JDialog {
 	private JButton btnRegistrar;
 	private JButton btnCancelar;
 	private JButton btnImagen;
+	private JButton btnURL;
 
 	private JLabel lblNombreError;
 	private JLabel lblApellidosError;
@@ -83,7 +85,7 @@ public class RegistroView extends JDialog {
 	//private JPanel panelCamposUsuario;
 	private JPanel panelCamposFechaNacimiento;
 	private JPanel panelCampoImg;
-	
+	private boolean errorImg;
 
 	public RegistroView(JFrame owner){
 		super(owner, "Registro Usuario", true);
@@ -272,14 +274,18 @@ public class RegistroView extends JDialog {
 		
 		lblImg = new JLabel("URL de imagen: ", JLabel.RIGHT);
 		panelCampoImg.add(lblImg);
-		fixedSize(lblImg, 75, 20);
+		fixedSize(lblImg, 200, 20);
 		txtImagen = new JTextField();
+		
+		btnURL = new JButton("Confirmar");
+		panelCampoImg.add(btnURL, BorderLayout.EAST);
+		this.crearManejadorBotonURL();
 		
 		panelCampoImg.add(txtImagen);
 		fixedSize(txtImagen, 100, 20);
 
 		lblImagenError = new JLabel("Error al introducir la imagen", JLabel.CENTER);
-		lineaImagen.add(lblPasswordError, BorderLayout.SOUTH);
+		lineaImagen.add(lblImagenError, BorderLayout.SOUTH);
 		lblImagenError.setForeground(Color.RED);
 		
 		//
@@ -311,6 +317,24 @@ public class RegistroView extends JDialog {
 		this.crearManejadorBotonRegistrar();
 		this.crearManejadorBotonCancelar();
 		this.crearManejadorBotonImg();
+	}
+	
+	private void crearManejadorBotonURL() {
+		btnURL.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                String urlText = txtImagen.getText();
+                if (isValidImageUrl(urlText)) {
+                    ImageIcon imageIcon = new ImageIcon(urlText);
+                    lblImg.setIcon(imageIcon);
+                } else {
+                    lblImg.setIcon(null); // Limpia cualquier imagen previa
+                    lblImagenError.setText("URL no válida o imagen no accesible.");
+                    errorImg = true;
+                }
+                lblImg.revalidate();
+                lblImg.repaint();
+            }
+		});
 	}
 
 	//Cambiar para que el registro guarde los campos de nuestro usuario correctamente
@@ -361,6 +385,7 @@ public class RegistroView extends JDialog {
 		btnImagen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PanelArrastraImagen emergente = new PanelArrastraImagen(owner);
+				emergente.setSize(400, 400);
 				if(!emergente.showDialog().isEmpty()) imagen =  emergente.showDialog().get(0);
 				else imagen = null;
 				if(imagen != null) {
@@ -450,6 +475,14 @@ public class RegistroView extends JDialog {
 			btnImagen.setForeground(Color.RED);
 			salida = false;
 		} 
+		if (errorImg) {
+			lblImagenError = new JLabel("No es una imagen válida");
+			lblImagenError.setVisible(true);
+			btnImagen.setForeground(Color.RED);
+			txtImagen.setBorder(BorderFactory.createLineBorder(Color.RED));
+			salida = false;
+			
+		}
 
 		this.revalidate();
 		this.pack();
@@ -512,5 +545,21 @@ public class RegistroView extends JDialog {
 	    panelCampoImg.repaint();
 	    
 	}
+	
+	private boolean isValidImageUrl(String urlText) {
+        try {
+            URL url = new URL(urlText);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            connection.setConnectTimeout(3000); // Tiempo de espera
+            connection.setReadTimeout(3000);
+            int responseCode = connection.getResponseCode();
+            String contentType = connection.getContentType();
+
+            return responseCode == HttpURLConnection.HTTP_OK && contentType.startsWith("image/");
+        } catch (Exception e) {
+            return false; // Si hay un error, no es válida
+        }
+    }
 	
 }
