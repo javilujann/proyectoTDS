@@ -4,14 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.net.HttpURLConnection;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -40,14 +40,12 @@ import javax.swing.SwingConstants;
 public class RegistroView extends JDialog {
 
 	//private JFrame frmRegistroView;
-	private JFrame owner;
 	private JLabel lblNombre;
 	private JLabel lblApellidos;
 	private JLabel lblFechaNacimiento;
 	private JLabel lblMovil;
 	private JLabel lblBio;
 	private JLabel lblImg;
-	private JLabel lblUsuario;
 	private JLabel lblPassword;
 	private JLabel lblPasswordChk;
 	private JTextField txtNombre;
@@ -56,17 +54,16 @@ public class RegistroView extends JDialog {
 	private JDateChooser txtFechaNacimiento;
 	private JTextField txtMovil;
 	private JTextArea txtBio;
-	private File imagen;
+	private BufferedImage imagen;
+	private URL url;
 	private JPasswordField txtPassword;
 	private JPasswordField txtPasswordChk;
 	private JButton btnRegistrar;
 	private JButton btnCancelar;
-	private JButton btnImagen;
 	private JButton btnURL;
 
 	private JLabel lblNombreError;
 	private JLabel lblApellidosError;
-	private JLabel lblFechaNacimientoError;
 	private JLabel lblMovilError;
 	private JLabel lblBioError;
 	private JLabel lblImagenError;
@@ -87,7 +84,6 @@ public class RegistroView extends JDialog {
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setResizable(true);
 		this.crearPanelRegistro();
-		this.owner = owner;
 	}
 
 	private void crearPanelRegistro() {
@@ -116,7 +112,7 @@ public class RegistroView extends JDialog {
 		this.revalidate();
 		this.pack();
 	}
-
+	
 	private JPanel creaLineaNombre() {
 		JPanel lineaNombre = new JPanel();
 		lineaNombre.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -267,25 +263,20 @@ public class RegistroView extends JDialog {
 		panelCampoImg = new JPanel();
 		lineaImagen.add(panelCampoImg, BorderLayout.CENTER);
 		
-		lblImg = new JLabel("URL de imagen: ", JLabel.RIGHT);
+		lblImg = new JLabel("Imagen: ", JLabel.RIGHT);
+		lblImg.setHorizontalTextPosition(SwingConstants.LEFT); // Texto a la izquierda
+        lblImg.setVerticalTextPosition(SwingConstants.TOP);
 		panelCampoImg.add(lblImg);
-		fixedSize(lblImg, 200, 20);
+		fixedSize(lblImg, 200, 40);
 		txtImagen = new JTextField();
 		
-		btnURL = new JButton("Confirmar");
+		btnURL = new JButton("Confirmar URL");
 		panelCampoImg.add(btnURL, BorderLayout.EAST);
 		this.crearManejadorBotonURL();
 		
 		panelCampoImg.add(txtImagen);
 		fixedSize(txtImagen, 100, 20);
-
-		lblImagenError = new JLabel("Error al introducir la imagen", JLabel.CENTER);
-		lineaImagen.add(lblImagenError, BorderLayout.SOUTH);
-		lblImagenError.setForeground(Color.RED);
 		
-		//
-		//lblImg = new JLabel("Icono de usuario:", JLabel.RIGHT);
-		//panelCampoImg.add(lblImg);
 		actualizarImagen();
 		fixedSize(lblImg, 100, 100);
 		
@@ -305,27 +296,25 @@ public class RegistroView extends JDialog {
 		
 		btnCancelar = new JButton("Cancelar");
 		lineaBotones.add(btnCancelar);
-
-		btnImagen = new JButton("Añadir imagen");
-		lineaBotones.add(btnImagen);
 		
 		this.crearManejadorBotonRegistrar();
 		this.crearManejadorBotonCancelar();
-		this.crearManejadorBotonImg();
 	}
 	
 	private void crearManejadorBotonURL() {
 		btnURL.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
                 String urlText = txtImagen.getText();
-                if (isValidImageUrl(urlText)) {
-                    ImageIcon imageIcon = new ImageIcon(urlText);
-                    lblImg.setIcon(imageIcon);
-                } else {
-                    lblImg.setIcon(null); // Limpia cualquier imagen previa
-                    lblImagenError.setText("URL no válida o imagen no accesible.");
-                    errorImg = true;
-                }
+                	try {
+						url = new URL(urlText);
+						imagen = ImageIO.read(url);
+						actualizarImagen();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						lblImg.setIcon(null); // Limpia cualquier imagen previa
+	                    lblImagenError.setText("URL no válida o imagen no accesible.");
+	                    errorImg = true;
+					}
                 lblImg.revalidate();
                 lblImg.repaint();
             }
@@ -345,7 +334,7 @@ public class RegistroView extends JDialog {
 							txtApellidos.getText(), 
 							txtMovil.getText(), 
 							new String(txtPassword.getPassword()), 
-							UtilsGui.getRutaResourceFromFile(imagen),
+							txtImagen.getText(),
 							txtBio.getText(),
 							(Date) txtFechaNacimiento.getDate()
 					);
@@ -372,31 +361,6 @@ public class RegistroView extends JDialog {
 				LoginView loginView = new LoginView();
 				loginView.mostrarVentana();
 				RegistroView.this.dispose();
-			}
-		});
-	}
-	
-	private void crearManejadorBotonImg() {
-		btnImagen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				PanelArrastraImagen emergente = new PanelArrastraImagen(owner);
-				emergente.setSize(400, 400);
-				if(!emergente.showDialog().isEmpty()) imagen =  emergente.showDialog().get(0);
-				else imagen = null;
-				if(imagen != null) {
-					JOptionPane.showMessageDialog(emergente, "Imagen aceptada correctamente.", "Añadir imagen",
-							JOptionPane.INFORMATION_MESSAGE);
-					
-					actualizarImagen();
-					/*LoginView loginView = new LoginView();
-					loginView.mostrarVentana();*/
-					emergente.dispose();
-				} else {
-					JOptionPane.showMessageDialog(RegistroView.this, "No se ha añadido la imagen.\n",
-							"Añadir imagen", JOptionPane.ERROR_MESSAGE);
-					//RegistroView.this.setTitle("Login Gestor Eventos");
-					emergente.dispose();
-				}
 			}
 		});
 	}
@@ -428,10 +392,6 @@ public class RegistroView extends JDialog {
 		}
 		String password = new String(txtPassword.getPassword());
 		String password2 = new String(txtPasswordChk.getPassword());
-		String imagenRuta;
-		if(imagen != null) {
-			imagenRuta = new String(UtilsGui.getRutaResourceFromFile(imagen));
-		}else {imagenRuta = "";}
 		
 		if (password.isEmpty()) {
 			lblPasswordError.setText("El password no puede estar vacio");
@@ -464,16 +424,9 @@ public class RegistroView extends JDialog {
 			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
-		if (imagenRuta == "") {
-			lblImagenError = new JLabel("Se ha de selecccionar una imagen");
-			lblImagenError.setVisible(true);
-			btnImagen.setForeground(Color.RED);
-			salida = false;
-		} 
 		if (errorImg) {
-			lblImagenError = new JLabel("No es una imagen válida");
+			lblImagenError = new JLabel("Introduzca imagen válida");
 			lblImagenError.setVisible(true);
-			btnImagen.setForeground(Color.RED);
 			txtImagen.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 			
@@ -527,12 +480,12 @@ public class RegistroView extends JDialog {
 	
 	private void actualizarImagen() {
 		if (imagen != null) {
-	        ImageIcon icono = new ImageIcon(UtilsGui.getRutaResourceFromFile(imagen));
-	        Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Ajusta el tamaño
+			imagen = UtilsGui.adjustAspectRatio(imagen, 1, 1, 100, 100);
+			//imagen.getScaledInstance(50,50,Image.SCALE_SMOOTH);
+			ImageIcon icono = new ImageIcon(imagen);
 	        lblImg.setOpaque(true);
-	        lblImg.setMinimumSize(new Dimension(240, 240));
-			lblImg.setMaximumSize(new Dimension(240, 240));
-	        lblImg.setIcon(new ImageIcon(imgEscalada));
+	        UtilsGui.fixSize(lblImg, 100, 100);
+			lblImg.setIcon(icono);
 	    } else {
 	        lblImg.setIcon(null); // Si no hay imagen, quita el ícono
 	    }
@@ -541,20 +494,5 @@ public class RegistroView extends JDialog {
 	    
 	}
 	
-	private boolean isValidImageUrl(String urlText) {
-        try {
-            URL url = new URL(urlText);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("HEAD");
-            connection.setConnectTimeout(3000); // Tiempo de espera
-            connection.setReadTimeout(3000);
-            int responseCode = connection.getResponseCode();
-            String contentType = connection.getContentType();
-
-            return responseCode == HttpURLConnection.HTTP_OK && contentType.startsWith("image/");
-        } catch (Exception e) {
-            return false; // Si hay un error, no es válida
-        }
-    }
 	
 }
