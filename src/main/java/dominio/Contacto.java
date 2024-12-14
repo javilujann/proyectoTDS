@@ -1,5 +1,6 @@
 package dominio;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -43,6 +44,8 @@ public abstract class Contacto {
 	public void addMensaje(Mensaje mensaje) {
 		this.listaMensajes.add(mensaje);
 	}
+	
+	public abstract Image getImage();
 	
 	//METODOS
 	

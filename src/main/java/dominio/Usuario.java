@@ -1,10 +1,17 @@
 package dominio;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import dao.ContactoDAO;
 import dao.DAOException;
@@ -17,7 +24,7 @@ public class Usuario {
 	private String apellidos;
 	private String movil;
 	private String contraseña;
-	private String imagen;				//url de la imagen usada//
+	private String imagen;				//url de la imagen usada
 	private Boolean premium;
 	private List<Contacto> contactos;
 	private String biografia;
@@ -82,7 +89,27 @@ public class Usuario {
 	}
 
 
-	public String getImagen() {
+	public Image getImagen() {
+			URL url = null;
+			
+			try {
+				url = new URL(imagen);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			
+			BufferedImage image = null;
+			
+			try {
+				image = ImageIO.read(url);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return image;
+	}
+	
+	public String getURL() {
 		return imagen;
 	}
 
@@ -164,7 +191,7 @@ public class Usuario {
 		
 		Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
 		ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
-		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil);
+		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil,null); //REPOSITORIO GETUSER
 		    nuevoContacto.setAgregado(false);
 		    adaptadorContacto.registrarContacto(nuevoContacto);
 		    contactos.add(nuevoContacto); 

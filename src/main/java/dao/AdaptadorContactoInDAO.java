@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import dominio.Contacto;
 import dominio.ContactoIndividual;
 import dominio.Mensaje;
-
+import dominio.Usuario;
 import beans.Entidad;
 import beans.Propiedad;
 
@@ -110,7 +110,8 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
 		String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
 		Boolean agregado = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "agregado"));
-		ContactoIndividual contacto = new ContactoIndividual(nombre, movil);
+		Usuario user = null; //Implementar la logica de la propiedad usuario en toda la clase
+		ContactoIndividual contacto = new ContactoIndividual(nombre, movil,user);
 		contacto.setCodigo(codigo);
 		contacto.setAgregado(agregado);
 		

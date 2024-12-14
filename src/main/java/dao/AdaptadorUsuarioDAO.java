@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import beans.Entidad;
 import beans.Propiedad;
 import dominio.Contacto;
-import dominio.ContactoIndividual;
-import dominio.Grupo;
 import dominio.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
@@ -66,7 +64,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		eUsuario.setPropiedades(new ArrayList<Propiedad>(
 				Arrays.asList(new Propiedad("nombre", usuario.getNombre()), new Propiedad("apellidos", usuario.getApellidos()),
 						new Propiedad("movil",usuario.getMovil()),new Propiedad("contraseña",usuario.getContraseña()),
-						new Propiedad("imagen",usuario.getImagen()),new Propiedad("Premium",String.valueOf(usuario.isPremium())),
+						new Propiedad("imagen",usuario.getURL()),new Propiedad("Premium",String.valueOf(usuario.isPremium())),
 						new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())), 
 						new Propiedad("biografia",usuario.getBiografia()), new Propiedad("fechaNacimiento",dateFormat.format(usuario.getFechaNacimiento())) )));
 
@@ -100,7 +98,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 			} else if (prop.getNombre().equals("contraseña")) {
 			    prop.setValor(usuario.getContraseña());
 			} else if (prop.getNombre().equals("imagen")) {
-			    prop.setValor(usuario.getImagen());
+			    prop.setValor(usuario.getURL());
 			} else if (prop.getNombre().equals("premium")) {
 			    prop.setValor(String.valueOf(usuario.isPremium())); // Convertir boolean a String
 			} else if (prop.getNombre().equals("contactos")) {
