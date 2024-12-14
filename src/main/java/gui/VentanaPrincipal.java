@@ -1,16 +1,11 @@
 package gui;
 
-
-
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 import controlador.Controlador;
 import dominio.Contacto;
-
-
 
 public class VentanaPrincipal {
 	private JFrame frame;
@@ -41,44 +36,48 @@ public class VentanaPrincipal {
 		frame.setVisible(true);
 	}
 
-    private static JPanel createTopPanel() {
+    private JPanel createTopPanel() {
     		//Creas el panel
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.CYAN);
         UtilsGui.fixSize(topPanel, 800, 60);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        
-        	// Placeholder para ActionListeners
-        ActionListener actionListener = e -> {
-            System.out.println("Botón presionado: " + e.getActionCommand());
-        };
-        
+          
         	// Boton de busquedad de mensajes
         JButton searchButton = new JButton("Buscar Mensajes");
-        searchButton.addActionListener(actionListener);
+        searchButton.addActionListener(e -> {
+        	DialogoBusquedaMensajes dialogo = new DialogoBusquedaMensajes(frame);
+        	dialogo.setVisible(true);
+        });
         topPanel.add(searchButton);
         
         	//Boton de seleccion de contacto
         JButton contactsButton = new JButton("Buscar Contactos");
-        contactsButton.addActionListener(actionListener);
+        contactsButton.addActionListener(e -> {
+        	DialogoBuscarContacto dialogo = new DialogoBuscarContacto(frame);
+        	dialogo.setVisible(true);
+        });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(contactsButton);
         
         	//Boton para añadir contactos
         JButton newContactsButton = new JButton("Añadir Contacto");
-        newContactsButton.addActionListener(actionListener);
+        newContactsButton.addActionListener(e -> {
+        	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame);
+        	dialogo.setVisible(true);
+        });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newContactsButton);
         
         	//Boton para gestionar grupos
         JButton newGroupsButton = new JButton("Gestionar Grupos");
-        newGroupsButton.addActionListener(actionListener);
+        newGroupsButton.addActionListener(e -> showMenu(newGroupsButton));
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newGroupsButton);
         
         	//Boton para gestionar premium
         JButton premiumButton = new JButton("Premium");
-        premiumButton.addActionListener(actionListener);
+        premiumButton.addActionListener(e -> System.out.println("Falta Premium"));
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(premiumButton);
 
@@ -104,7 +103,7 @@ public class VentanaPrincipal {
     }
 
 
-    private static JPanel createLeftPanel() {
+    private JPanel createLeftPanel() {
         JPanel leftPanel = new JPanel(new BorderLayout());
         UtilsGui.fixSize(leftPanel, 300, 540);
 
@@ -147,7 +146,7 @@ public class VentanaPrincipal {
         return leftPanel;
     }
 
-    private static JPanel createRightPanel() {
+    private JPanel createRightPanel() {
         // Panel principal
         JPanel rightPanel = new JPanel(new BorderLayout());
         UtilsGui.fixSize(rightPanel, 300, 540);
@@ -189,6 +188,54 @@ public class VentanaPrincipal {
 
         return rightPanel;
     }
+    
+    private void showMenu(JButton btn) {
+        // Crear el menú contextual
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        // Opción "Crear Grupo"
+        JMenuItem crearGrupoItem = new JMenuItem("Crear Grupo");
+        crearGrupoItem.addActionListener(e -> {
+            String nombreGrupo = JOptionPane.showInputDialog(frame, "Introduzca el nombre del grupo:");
+            if (nombreGrupo != null && !nombreGrupo.trim().isEmpty()) {
+                // Llamar a la ventana de gestión de miembros
+                openGestionarMiembros("Crear Grupo", nombreGrupo);
+            }
+        });
+        popupMenu.add(crearGrupoItem);
+
+        // Opción "Modificar Grupo"
+        JMenuItem modificarGrupoItem = new JMenuItem("Modificar Grupo");
+        modificarGrupoItem.addActionListener(e -> {
+            // Obtener la lista de grupos existentes (ejemplo)
+            String[] grupos = {"Grupo 1", "Grupo 2", "Grupo 3"}; // Esto debería ser dinámico en tu caso
+            String grupoSeleccionado = (String) JOptionPane.showInputDialog(frame, "Seleccione un grupo:",
+                    "Modificar Grupo", JOptionPane.QUESTION_MESSAGE, null, grupos, grupos[0]);
+
+            if (grupoSeleccionado != null) {
+                // Llamar a la ventana de gestión de miembros para modificar
+                openGestionarMiembros("Modificar Grupo", grupoSeleccionado);
+            }
+        });
+        popupMenu.add(modificarGrupoItem);
+
+        // Opción "Eliminar Grupo" (deshabilitada)
+        JMenuItem eliminarGrupoItem = new JMenuItem("Eliminar Grupo");
+        eliminarGrupoItem.setEnabled(false);  // Deshabilitada
+        popupMenu.add(eliminarGrupoItem);
+
+        // Mostrar el menú contextual
+        popupMenu.show(btn, 0, btn.getHeight());
+    }
+
+    // Método para abrir la ventana de gestión de miembros
+    private void openGestionarMiembros(String tipo, String grupo) {
+    	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame);
+        dialogo.setLocationRelativeTo(frame);
+        dialogo.setVisible(true);
+    }
+    
+ 
 
 }
 
