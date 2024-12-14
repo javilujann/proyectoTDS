@@ -1,14 +1,11 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.Color;
-import java.awt.Component;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 
 import java.awt.SystemColor;
@@ -45,6 +37,7 @@ public class PanelArrastraImagen extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	@SuppressWarnings("serial")
 	public PanelArrastraImagen(JFrame owner) {
 		super(owner, "Agregar fotos", true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -70,7 +63,8 @@ public class PanelArrastraImagen extends JDialog {
 			public synchronized void drop(DropTargetDropEvent evt) {
 		        try {
 		            evt.acceptDrop(DnDConstants.ACTION_COPY);
-		            List<File> droppedFiles = (List<File>) evt.getTransferable().
+		            @SuppressWarnings("unchecked")
+					List<File> droppedFiles = (List<File>) evt.getTransferable().
 		            		getTransferData(DataFlavor.javaFileListFlavor);
 		            
 		            if (!droppedFiles.isEmpty()) {
