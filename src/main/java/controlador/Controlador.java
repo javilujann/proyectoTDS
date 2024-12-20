@@ -150,6 +150,14 @@ public enum Controlador {
 		
 		
 	}
+	
+	public void bajaPremium() {
+		usuarioActual.bajaPremium();
+	}
+	
+	public void altaPremium() {
+		usuarioActual.altaPremium();
+	}
 		
 	
 	//VENTANA CONTACTOS

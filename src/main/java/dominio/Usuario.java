@@ -166,6 +166,16 @@ public class Usuario {
 		return contraseña.equals(_contraseña);
 	}
 	
+	public void bajaPremium() {
+		premium = false;
+		//Posible inlcusion de codigo necesario para la baja, como gestion de pagos
+	}
+	
+	public void altaPremium() {
+		premium = true;
+		//Posible inlcusion de codigo necesario para la alta, como gestion de pagos
+	}
+	
 	public List<Mensaje> ultimosMensajes(){
 		return contactos.stream().map(c -> c.ultimoMensaje()).filter(optional -> optional.isPresent()).
 				map(present -> present.get()).collect(Collectors.toList());
