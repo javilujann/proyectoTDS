@@ -77,7 +77,10 @@ public class VentanaPrincipal {
         
         	//Boton para gestionar premium
         JButton premiumButton = new JButton("Premium");
-        premiumButton.addActionListener(e -> System.out.println("Falta Premium"));
+        premiumButton.addActionListener(e -> {
+        	DialogoPremium dialogo = new DialogoPremium(frame,Controlador.INSTANCE.getUsuarioActual().isPremium());
+        	dialogo.setVisible(true);
+        });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(premiumButton);
 
