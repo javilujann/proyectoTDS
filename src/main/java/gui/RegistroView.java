@@ -89,6 +89,7 @@ public class RegistroView extends JDialog {
 
 	private void crearPanelRegistro() {
 		this.getContentPane().setLayout(new BorderLayout());
+		this.setPreferredSize(new Dimension(500,600));
 
 		JPanel datosPersonales = new JPanel();
 		this.getContentPane().add(datosPersonales);
@@ -318,14 +319,20 @@ public class RegistroView extends JDialog {
 						url = new URL(urlText);
 						imagen = ImageIO.read(url);
 						actualizarImagen();
+						lblImagenError.setVisible(false);
+						lblImg.setForeground(Color.BLACK);
+						txtImagen.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						lblImg.setIcon(null); // Limpia cualquier imagen previa
-	                    lblImagenError.setText("URL no válida o imagen no accesible.");
-	                    errorImg = true;
+						lblImagenError.setText("Ha de introducirse una imagen válida");
+						lblImagenError.setVisible(true);
+						lblImg.setForeground(Color.RED);
+						txtImagen.setBorder(BorderFactory.createLineBorder(Color.RED));
+						errorImg=true;
 					}
-                lblImg.revalidate();
-                lblImg.repaint();
+                revalidate();
+                repaint();
             }
 		});
 	}
