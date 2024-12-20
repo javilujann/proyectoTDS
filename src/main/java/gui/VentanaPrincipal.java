@@ -13,7 +13,7 @@ public class VentanaPrincipal {
     public VentanaPrincipal() {
         frame = new JFrame("AppChat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(900, 600);
 
         // Main layout
         frame.setLayout(new BorderLayout());
@@ -25,10 +25,24 @@ public class VentanaPrincipal {
         // Left panel with contacts and last messages
         JPanel leftPanel = createLeftPanel();
         frame.add(leftPanel, BorderLayout.WEST);
-
+        
         // Right panel with chat messages
         JPanel rightPanel = createRightPanel();
         frame.add(rightPanel, BorderLayout.CENTER);
+        
+        JSplitPane separador = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+        separador.setDividerLocation(350); // Posición inicial del divisor
+        //separador.setResizeWeight(0.5); // Relación inicial de distribución del espacio
+        //separador.setOneTouchExpandable(true); // Botones para contraer/expandir paneles
+        separador.setContinuousLayout(true); // Actualiza en tiempo real al mover el divisor
+
+        // Establecer tamaños mínimos para cada panel
+        leftPanel.setMinimumSize(new Dimension(200, 0));
+        rightPanel.setMinimumSize(new Dimension(250, 0));
+
+        // Agregar el JSplitPane al marco
+        frame.add(separador);
+
     }
     
     public void mostrarVentana() {
@@ -95,6 +109,8 @@ public class VentanaPrincipal {
         Image imagenEscalada = Controlador.INSTANCE.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
         lblimagen.setIcon(iconoEscalado);
+        lblimagen.setIconTextGap(10);
+        lblimagen.setPreferredSize(new Dimension(200,40));
         lblimagen.setHorizontalTextPosition(SwingConstants.LEFT);
         lblimagen.setHorizontalAlignment(SwingConstants.RIGHT);
 
