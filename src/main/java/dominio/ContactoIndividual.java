@@ -42,6 +42,12 @@ public class ContactoIndividual extends Contacto{
 		return this.movil.equals(_movil);
 	}
 	
+	@Override 
+	public boolean comparar(String contact) {
+		return super.comparar(contact) || contact.equals(movil);
+		
+	}
+	
 	public Image getImage() {
 		return usuarioAsociado.getImagen();
 	}

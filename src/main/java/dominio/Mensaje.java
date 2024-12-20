@@ -9,13 +9,15 @@ public class Mensaje {
 	private LocalDateTime hora;
 	private String emoticon;			//url de la imagen
 	private TipoMensaje tipo;
+	private Contacto contacto;
 	
 	
-	public Mensaje(String texto, LocalDateTime hora, String emoticon) {
+	public Mensaje(String texto, LocalDateTime hora, String emoticon,Contacto contacto) {
 		super();
 		this.texto = texto;
 		this.hora = hora;
 		this.emoticon = emoticon;
+		this.contacto = contacto;
 	}
 	
 	public int getCodigo() {
@@ -66,6 +68,22 @@ public class Mensaje {
 	public void setTipo(TipoMensaje tipo) {
 		this.tipo = tipo;
 	}
+	
+	public Contacto getContacto() {
+		return contacto;
+	}
+
+	public void setContacto(Contacto contacto) {
+		this.contacto = contacto;
+	}
+	
+	//Como posible expansion aplicar los filtros mediante el patron estrategia
+	public boolean filtro(String text, TipoMensaje type) {
+		return (text.equals("") || texto.contains(text)) && 
+				(type.equals(TipoMensaje.BOTH) || tipo.equals(type));
+	}
+
+	
 	
 
 }

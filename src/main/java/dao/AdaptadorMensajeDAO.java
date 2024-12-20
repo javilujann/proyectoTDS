@@ -92,7 +92,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		String emoticon = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticon");
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo")) ;
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora")); 
-		Mensaje mensaje = new Mensaje(texto,hora,emoticon);
+		Mensaje mensaje = new Mensaje(texto,hora,emoticon,null); //CAMBIAR
 		mensaje.setCodigo(codigo);
 		mensaje.setTipo(tipo);
 		

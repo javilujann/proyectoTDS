@@ -179,7 +179,12 @@ public class Usuario {
 	public List<Mensaje> ultimosMensajes(){
 		return contactos.stream().map(c -> c.ultimoMensaje()).filter(optional -> optional.isPresent()).
 				map(present -> present.get()).collect(Collectors.toList());
-	}	
+	}
+	
+	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
+		return contactos.stream().filter(c -> contact.equals("") || c.comparar(contact))
+				.flatMap(c -> c.buscarMensajes(text,type).stream()).collect(Collectors.toList());
+	}
 	
 	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
 	public void recibirMensaje(String movil, Mensaje mensaje) {
