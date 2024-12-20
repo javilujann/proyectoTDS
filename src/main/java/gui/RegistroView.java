@@ -67,6 +67,7 @@ public class RegistroView extends JDialog {
 	private JLabel lblMovilError;
 	private JLabel lblBioError;
 	private JLabel lblImagenError;
+	private JLabel lblFechaNacimientoError;
 	//private JLabel lblUsuarioError;
 	private JLabel lblPasswordError;
 	private JPanel panelCampoNombre;
@@ -199,8 +200,8 @@ public class RegistroView extends JDialog {
 		
 		panelCampoBio.add(txtBio);
 		fixedSize(txtBio, 300, 100);
+		
 		lblBioError = new JLabel("La biografía no puede quedar vacía", SwingConstants.CENTER);
-		fixedSize(lblBioError, 150, 15);
 		lblBioError.setForeground(Color.RED);
 		lineaBio.add(lblBioError, BorderLayout.SOUTH);
 		
@@ -251,6 +252,10 @@ public class RegistroView extends JDialog {
 		panelCamposFechaNacimiento.add(txtFechaNacimiento);
 		fixedSize(txtFechaNacimiento, 215, 20);
 		
+		lblFechaNacimientoError = new JLabel("La fecha de nacimiento es obligatoria", JLabel.CENTER);
+		lineaFechaNacimiento.add(lblFechaNacimientoError, BorderLayout.SOUTH);
+		lblFechaNacimientoError.setForeground(Color.RED);
+		
 		return lineaFechaNacimiento;
 	}
 	
@@ -281,6 +286,10 @@ public class RegistroView extends JDialog {
 		fixedSize(lblImg, 100, 100);
 		
 		if(imagen != null) actualizarImagen();
+		
+		lblImagenError = new JLabel("Error al introducir la imagen", JLabel.CENTER);
+		lineaImagen.add(lblImagenError, BorderLayout.SOUTH);
+		lblImagenError.setForeground(Color.RED);
 		return lineaImagen;
 
 	}
@@ -424,13 +433,28 @@ public class RegistroView extends JDialog {
 			txtMovil.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
-		if (errorImg) {
-			lblImagenError = new JLabel("Introduzca imagen válida");
+		if (errorImg || imagen==null) {
+			lblImagenError.setText("Ha de introducirse una imagen válida");
 			lblImagenError.setVisible(true);
+			lblImg.setForeground(Color.RED);
 			txtImagen.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 			
 		}
+		if(txtFechaNacimiento.getDate() == null) {
+			lblFechaNacimientoError.setText("Ha de seleccionar una fecha de nacimiento");
+			lblFechaNacimientoError.setVisible(true);
+			lblFechaNacimiento.setForeground(Color.RED);
+			txtFechaNacimiento.setBorder(BorderFactory.createLineBorder(Color.RED));
+			salida = false;
+		}
+		if(txtBio.getText().trim().isEmpty()) {
+			lblBioError.setVisible(true);
+			lblBio.setForeground(Color.RED);
+			txtBio.setBorder(BorderFactory.createLineBorder(Color.RED));
+			salida = false;
+		}
+		
 
 		this.revalidate();
 		this.pack();
@@ -447,6 +471,8 @@ public class RegistroView extends JDialog {
 		lblMovilError.setVisible(false);
 		lblBioError.setVisible(false);
 		lblPasswordError.setVisible(false);
+		lblFechaNacimientoError.setVisible(false);
+		lblImagenError.setVisible(false);
 		
 		Border border = new JTextField().getBorder();
 		txtNombre.setBorder(border);
@@ -458,6 +484,7 @@ public class RegistroView extends JDialog {
 		txtPassword.setBorder(border);
 		txtPasswordChk.setBorder(border);
 		txtFechaNacimiento.setBorder(border);
+		txtImagen.setBorder(border);
 		
 		lblNombre.setForeground(Color.BLACK);
 		lblApellidos.setForeground(Color.BLACK);
@@ -466,6 +493,7 @@ public class RegistroView extends JDialog {
 		lblBio.setForeground(Color.BLACK);
 		lblPasswordChk.setForeground(Color.BLACK);
 		lblFechaNacimiento.setForeground(Color.BLACK);
+		lblImg.setForeground(Color.BLACK);
 	}
 
 	/**
