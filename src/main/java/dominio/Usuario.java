@@ -210,6 +210,18 @@ public class Usuario {
 		adaptadorContacto.modificarContacto(contacto);
 	}
 	
+	public int nuevoContactoIn(String nombre, String telefono, Usuario asociado) {
+		for(Contacto c : contactos) {
+			if(c.corresponde(telefono)) return -2;
+		}
+		
+		ContactoIndividual nuevoContacto = new ContactoIndividual(nombre,telefono,asociado);
+		nuevoContacto.setAgregado(true);
+		contactos.add(nuevoContacto);
+		return 0;
+		//Se esta creando pero no guardando el contacto ni actualizando al usuario
+	}
+	
 	
 
 	
