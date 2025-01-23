@@ -126,6 +126,10 @@ public class Usuario {
 	public List<Contacto> getContactos() {
 		return contactos;
 	}
+	
+	public List<Grupo> getGrupos(){
+		return contactos.stream().filter(c -> c.isGroup()).map(c -> (Grupo) c).toList();
+	}
 
 
 	public void addContacto(Contacto contacto) {
@@ -167,13 +171,11 @@ public class Usuario {
 	}
 	
 	public void bajaPremium() {
-		premium = false;
-		//Posible inlcusion de codigo necesario para la baja, como gestion de pagos
+		premium = false; //Posible inlcusion de codigo necesario para la baja, como gestion de pagos		
 	}
 	
 	public void altaPremium() {
-		premium = true;
-		//Posible inlcusion de codigo necesario para la alta, como gestion de pagos
+		premium = true; //Posible inlcusion de codigo necesario para la alta, como gestion de pagos
 	}
 	
 	public List<Mensaje> ultimosMensajes(){
@@ -212,7 +214,7 @@ public class Usuario {
 	
 	public int nuevoContactoIn(String nombre, String telefono, Usuario asociado) {
 		for(Contacto c : contactos) {
-			if(c.corresponde(telefono)) return -2;
+			if(c.corresponde(telefono)) return -2; //Puede que de problema con los noAgregados, solucionarlo alli
 		}
 		
 		ContactoIndividual nuevoContacto = new ContactoIndividual(nombre,telefono,asociado);
@@ -220,6 +222,16 @@ public class Usuario {
 		contactos.add(nuevoContacto);
 		return 0;
 		//Se esta creando pero no guardando el contacto ni actualizando al usuario
+	}
+
+	public Grupo nuevoGrupo(String nombre) {
+		for(Contacto c : contactos) {
+			if(c.getNombre().equals(nombre)) return null;
+		}
+		
+		Grupo nuevoGrupo = new Grupo(nombre);
+		contactos.add(nuevoGrupo);
+		return nuevoGrupo;
 	}
 	
 	

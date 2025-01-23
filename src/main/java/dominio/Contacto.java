@@ -47,6 +47,10 @@ public abstract class Contacto {
 		this.listaMensajes.add(mensaje);
 	}
 	
+	public boolean isGroup() {
+		return false;
+	}
+	
 	
     public abstract String[] obtenerDetalles();
 	
