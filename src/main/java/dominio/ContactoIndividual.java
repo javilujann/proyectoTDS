@@ -31,6 +31,11 @@ public class ContactoIndividual extends Contacto{
 		this.agregado = agreagado;
 	}
 	
+	@Override
+    public String[] obtenerDetalles() {
+        return new String[]{getNombre(), movil, usuarioAsociado.getBiografia()};
+    }
+	
 	//GETER Y SETER DE USUARIO
 	
 	public void enviarMensaje(Mensaje mensaje) {

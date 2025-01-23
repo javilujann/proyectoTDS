@@ -47,6 +47,9 @@ public abstract class Contacto {
 		this.listaMensajes.add(mensaje);
 	}
 	
+	
+    public abstract String[] obtenerDetalles();
+	
 	public abstract Image getImage();
 	
 	//METODOS

@@ -34,6 +34,11 @@ public class Grupo extends Contacto{
 		return false; //Los grupos no manejan moviles
 	}
 	
+	@Override
+    public String[] obtenerDetalles() {
+        return new String[]{getNombre(), "", ""};
+    }
+	
 	public Image getImage() {
 		URL url = null;
 		
