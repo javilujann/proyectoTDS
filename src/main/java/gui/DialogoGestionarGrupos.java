@@ -90,6 +90,10 @@ public class DialogoGestionarGrupos extends JDialog {
 		JList<ContactoIndividual> contactsList = new JList<>(contactsModel);
 		JList<ContactoIndividual> addedContactsList = new JList<>(addedContactsModel);
 
+		// Renderizador para mostrar los nombres de los contactos en lugar de los objetos
+	    contactsList.setCellRenderer(new ContactoCellRenderer());
+	    addedContactsList.setCellRenderer(new ContactoCellRenderer());
+	    
 		// Encabezados
 		JPanel contactsPanel = new JPanel(new BorderLayout());
 		contactsPanel.add(new JLabel("Contactos"), BorderLayout.NORTH);
@@ -172,6 +176,17 @@ public class DialogoGestionarGrupos extends JDialog {
 			sourceModel.removeElement(item);
 			targetModel.addElement(item);
 		}
+	}
+	
+	// Clase personalizada para mostrar los nombres de los contactos en las listas
+	private static class ContactoCellRenderer extends DefaultListCellRenderer {
+	    @Override
+	    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	        if (value instanceof Contacto) {
+	            value = ((Contacto) value).getNombre(); // Mostrar el nombre del contacto
+	        }
+	        return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+	    }
 	}
 
 }

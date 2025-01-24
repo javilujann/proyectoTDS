@@ -45,6 +45,10 @@ public enum Controlador {
 	public List<Contacto> getContactos() {
 		return usuarioActual.getContactos();
 	}
+	
+	public List<Grupo> getGrupos(){
+		return usuarioActual.getGrupos();
+	}
 
 	public Image getImage() {
 		return usuarioActual.getImagen();
@@ -89,6 +93,10 @@ public enum Controlador {
 		if(asociado == null) return -1;
 		
 		return usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
+	}
+	
+	public Grupo añadirGrupo(String nombre) {
+		return usuarioActual.nuevoGrupo(nombre);
 	}
 	
 	
@@ -184,37 +192,7 @@ public enum Controlador {
 	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
 		return usuarioActual.buscarMensajes(contact,text,type);
 	}
-
-	public void prueba() {
-		
-		for(Usuario u : RepositorioUsuarios.getUnicaInstancia().getUsuarios()) {
-			System.out.println(u.getNombre() + u.getMovil());
-		}
-
-		usuarioActual.addContacto(new ContactoIndividual("Yo", "679", usuarioActual));
-		usuarioActual.addContacto(new ContactoIndividual("Pep", "6798", usuarioActual));
-		usuarioActual.addContacto(new ContactoIndividual("Mar", "6792", usuarioActual));
-		usuarioActual.addContacto(new ContactoIndividual("Gro", "6791", usuarioActual));
-		usuarioActual.addContacto(new ContactoIndividual("Fe", "6793", usuarioActual));
-
-		Contacto contacto1 = new ContactoIndividual("Super", "6796", usuarioActual);
-		Contacto contacto2 = new ContactoIndividual("Cur", "6794", usuarioActual);
-		Mensaje mensaje = new Mensaje("Hola me llamo Javi soy un pesado y seguramnete necesites truncar",LocalDateTime.now(), null,contacto1);
-		mensaje.setTipo(TipoMensaje.SENT);
-		contacto1.addMensaje(mensaje);
-		
-		mensaje = new Mensaje("corta y al pie",LocalDateTime.now(), null,contacto2);
-		mensaje.setTipo(TipoMensaje.SENT);
-		contacto2.addMensaje(mensaje);
-		
-		Grupo grupo = new Grupo("Hermanos");
-		grupo.addMiembro((ContactoIndividual) contacto1);
-		grupo.addMiembro((ContactoIndividual) contacto2);
-		usuarioActual.addContacto(contacto1);
-		usuarioActual.addContacto(contacto2);
-		usuarioActual.addContacto(grupo);
-	}
-
+	
 	// VENTANA CONTACTOS
 	
 	// PARA LAS LISTAS MOSTRAR LOS CONTACTOS DEL USUARIO Y LOS DE UN GRUPO ->
