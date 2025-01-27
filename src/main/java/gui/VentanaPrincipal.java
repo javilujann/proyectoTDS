@@ -195,7 +195,7 @@ public class VentanaPrincipal {
         sendButton.addActionListener(e -> {
             String message = messageInput.getText().trim();
             if (!message.isEmpty()) {
-                messageArea.append("Yo: " + message + "\n");
+                enviarMensaje(messageArea, message);
                 messageInput.setText("");
             }
         });
