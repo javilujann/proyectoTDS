@@ -28,6 +28,7 @@ public class Usuario {
 	private List<Contacto> contactos;
 	private String biografia;
 	private Date fechaNacimiento;
+	private Descuento descuento;
 	
 	
 	//CONSTRUCTOR
@@ -45,6 +46,7 @@ public class Usuario {
 		this.contactos = new ArrayList<Contacto>();
 		this.biografia =  biografia;
 		this.fechaNacimiento = fechaNacimiento;
+		this.descuento = null; //POSIBLE QUE SEA OBLIGATORIO
 		
 	}
 
@@ -158,10 +160,16 @@ public class Usuario {
 		return fechaNacimiento;
 	}
 
-
-
 	public void setFechaNacimiento(Date fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
+	}
+	
+	public Optional<Descuento> getDescuento(){
+		return Optional.ofNullable(descuento);
+	}
+	
+	public void setDescuento(Descuento descuento) {
+		this.descuento = descuento;
 	}
 
 	//METODOS

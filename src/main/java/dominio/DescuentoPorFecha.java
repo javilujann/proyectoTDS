@@ -21,7 +21,7 @@ public class DescuentoPorFecha implements Descuento{
 	public float aplicarDescuento(float precioBase, float porcentaje) {
 		if(fechaRegistro.isAfter(fechaFin)) return precioBase;
 		if(fechaRegistro.isBefore(fechaInicio)) return precioBase;
-		return precioBase*(porcentaje/100);
+		return precioBase*(1-porcentaje/100);
 	}	
 
 }

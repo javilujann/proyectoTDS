@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 
 import dao.ContactoDAO;
 import dao.FactoriaDAO;
@@ -12,6 +13,7 @@ import dao.UsuarioDAO;
 import dao.DAOException;
 
 import dominio.ContactoIndividual;
+import dominio.Descuento;
 import dominio.Grupo;
 import dominio.Contacto;
 import dominio.Mensaje;
@@ -21,6 +23,9 @@ import dominio.Usuario;
 
 public enum Controlador {
 	INSTANCE;
+
+	private static final float PRECIO_BASE = 250;
+	private static final float PORCENTAJE_DESCUENTO = 20;
 
 	private Usuario usuarioActual;
 	private FactoriaDAO factoria;
@@ -45,13 +50,23 @@ public enum Controlador {
 	public List<Contacto> getContactos() {
 		return usuarioActual.getContactos();
 	}
-	
-	public List<Grupo> getGrupos(){
+
+	public List<Grupo> getGrupos() {
 		return usuarioActual.getGrupos();
 	}
 
 	public Image getImage() {
 		return usuarioActual.getImagen();
+	}
+
+	public float getPrecioPremium() {
+		return usuarioActual.getDescuento().map(d -> d.aplicarDescuento(PRECIO_BASE, PORCENTAJE_DESCUENTO))
+				.orElse(PRECIO_BASE);
+	}
+	
+		//Hipoteticamente se llamaria desde alguna ventana por parte de administradores
+	public void setDescuento(Supplier<Descuento> supplier) {
+		usuarioActual.setDescuento(supplier.get());
 	}
 
 	// METODOS
@@ -87,46 +102,44 @@ public enum Controlador {
 	}
 
 	// PARA VENTANA PRINCIPAL
-		//PANEL SUPERIOR
+	// PANEL SUPERIOR
 	public int añadirContacto(String nombre, String telefono) {
 		Usuario asociado = RepositorioUsuarios.getUnicaInstancia().getUsuario(telefono);
-		if(asociado == null) return -1;
-		
+		if (asociado == null)
+			return -1;
+
 		return usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
 	}
-	
+
 	public Grupo añadirGrupo(String nombre) {
 		return usuarioActual.nuevoGrupo(nombre);
 	}
-	
-	
-		// PANEL IZQUIERDO ---------- ESPERAR A SABER SI ES DE MENSAJES O NO
-			// SE NECESITARA ALGO QUE PROPORCIONE LA LISTA DE ULTIMOS MENSJES DEL USUARIO
-			// ACTUAL -> usuario.ultimosMensajes()
 
-			// SE NECESITARA UN METODO PARA AÑADIR CONTACTO, esta addContacto, quien lo crea
-			// y maneja persistencias?
-	
-			// EN ESTE CASO ES PASAR DE UN NO_AGREGADO A AGREGADO, EL METODO SERA SOLO
-			// MODIFICAR NOMBRE Y MANEJAR PERSISTENCIA
+	// PANEL IZQUIERDO ---------- ESPERAR A SABER SI ES DE MENSAJES O NO
 
-		// PANEL DERECHO
-			// SE NECESITARA ALGO QUE FIJADO UN CONACTO DEL USUARIO LE DE TODOS LOS
-			// MENSAJES,
-			// REALMENTE SI TIENES EL CONTACTO YA TIENES LOS MENSAJES
-			// ESPERAR A VER QUE ES LO QUE LLEGA REALMENTE
+	// SE NECESITARA UN METODO PARA AÑADIR CONTACTO, esta addContacto, quien lo crea
+	// y maneja persistencias?
 
-			// FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
-			// Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes
-			// en tu lista, luego este ya es valido
-	
+	// EN ESTE CASO ES PASAR DE UN NO_AGREGADO A AGREGADO, EL METODO SERA SOLO
+	// MODIFICAR NOMBRE Y MANEJAR PERSISTENCIA
+
+	// PANEL DERECHO
+	// SE NECESITARA ALGO QUE FIJADO UN CONACTO DEL USUARIO LE DE TODOS LOS
+	// MENSAJES,
+	// REALMENTE SI TIENES EL CONTACTO YA TIENES LOS MENSAJES
+	// ESPERAR A VER QUE ES LO QUE LLEGA REALMENTE
+
+	// FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
+	// Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes
+	// en tu lista, luego este ya es valido
+
 	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, String emoticono) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
 		ContactoDAO adaptadorContacto = factoria.getContactoDAO(contacto.getClass());
 		UsuarioDAO adaptadorUsuario = factoria.getUsuarioDAO();
 
 		// Creas el mensaje
-		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono,contacto);
+		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono, contacto);
 
 		// "Enviar" el mensaje para el contacto del usuario actual
 		mensaje.setTipo(TipoMensaje.SENT);
@@ -164,7 +177,7 @@ public enum Controlador {
 		ContactoDAO adaptadorGrupo = factoria.getContactoDAO(grupo.getClass());
 
 		// Creas el mensaje
-		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono,grupo);
+		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono, grupo);
 
 		// "Enviar" el mensaje para el grupo del usuario actual
 		mensaje.setTipo(TipoMensaje.SENT);
@@ -190,19 +203,10 @@ public enum Controlador {
 	}
 
 	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
-		return usuarioActual.buscarMensajes(contact,text,type);
+		return usuarioActual.buscarMensajes(contact, text, type);
 	}
 	
-	// VENTANA CONTACTOS
 	
-	// PARA LAS LISTAS MOSTRAR LOS CONTACTOS DEL USUARIO Y LOS DE UN GRUPO ->
-	// getLista
-	
-	// FUNCIONES PARA AÑADIR UN CONTACTO Y UN GRUPO A UN USUARIO -> Manejar
-	// persistencia + addContacto
-	
-	// FUNCIONES PARA AÑADIR Y ELIMINAR CONTACTOS DE UN GRUPO -> addMiembro y
-	// actualizar en Persistencia
 
 	// He pensado en bajar toda la persistencia a dominio, no se si es posible, pero
 	// en su caso limpia mucho esta capa/clase
