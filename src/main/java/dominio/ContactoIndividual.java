@@ -31,6 +31,11 @@ public class ContactoIndividual extends Contacto{
 		this.agregado = agreagado;
 	}
 	
+	@Override
+    public String[] obtenerDetalles() {
+        return new String[]{getNombre(), movil, usuarioAsociado.getBiografia()};
+    }
+	
 	//GETER Y SETER DE USUARIO
 	
 	public void enviarMensaje(Mensaje mensaje) {
@@ -40,6 +45,12 @@ public class ContactoIndividual extends Contacto{
 	@Override
 	public boolean corresponde(String _movil) {
 		return this.movil.equals(_movil);
+	}
+	
+	@Override 
+	public boolean comparar(String contact) {
+		return super.comparar(contact) || contact.equals(movil);
+		
 	}
 	
 	public Image getImage() {

@@ -9,6 +9,7 @@ import dominio.Contacto;
 
 public class VentanaPrincipal {
 	private JFrame frame;
+	DefaultListModel<Elemento> model = new DefaultListModel<>(); //Global para permitir actualizacion
     
     public VentanaPrincipal() {
         frame = new JFrame("AppChat");
@@ -79,13 +80,14 @@ public class VentanaPrincipal {
         newContactsButton.addActionListener(e -> {
         	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame);
         	dialogo.setVisible(true);
+        	actualizarListaContactos(); //Por ahora lo hace siempre, estaria mejor algun tipo de listener
         });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newContactsButton);
         
         	//Boton para gestionar grupos
         JButton newGroupsButton = new JButton("Gestionar Grupos");
-        newGroupsButton.addActionListener(e -> showMenu(newGroupsButton));
+        newGroupsButton.addActionListener(e -> showGroupMenu(newGroupsButton));
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newGroupsButton);
         
@@ -137,14 +139,11 @@ public class VentanaPrincipal {
 
         // Lista 
         JList<Elemento> lista = new JList<>();
+        actualizarListaContactos();
         
-        DefaultListModel<Elemento> model = new DefaultListModel<>();
-        for (Contacto c : Controlador.INSTANCE.getContactos()) {
-            model.addElement(new Elemento(c));
-        }
         lista.setModel(model);
         lista.setCellRenderer(new ElementoListRenderer());
-
+        
         	// Listener para selección
         lista.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -208,33 +207,26 @@ public class VentanaPrincipal {
         return rightPanel;
     }
     
-    private void showMenu(JButton btn) {
+    	//Metodo para crear el menu contextual de la gestion de grupos
+    private void showGroupMenu(JButton btn) {
         // Crear el menú contextual
         JPopupMenu popupMenu = new JPopupMenu();
 
         // Opción "Crear Grupo"
         JMenuItem crearGrupoItem = new JMenuItem("Crear Grupo");
         crearGrupoItem.addActionListener(e -> {
-            String nombreGrupo = JOptionPane.showInputDialog(frame, "Introduzca el nombre del grupo:");
-            if (nombreGrupo != null && !nombreGrupo.trim().isEmpty()) {
-                // Llamar a la ventana de gestión de miembros
-                openGestionarMiembros("Crear Grupo", nombreGrupo);
-            }
+        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame,true);
+            dialogo.setLocationRelativeTo(frame);
+            dialogo.setVisible(true);
+            actualizarListaContactos();
         });
         popupMenu.add(crearGrupoItem);
 
         // Opción "Modificar Grupo"
         JMenuItem modificarGrupoItem = new JMenuItem("Modificar Grupo");
         modificarGrupoItem.addActionListener(e -> {
-            // Obtener la lista de grupos existentes (ejemplo)
-            String[] grupos = {"Grupo 1", "Grupo 2", "Grupo 3"}; // Esto debería ser dinámico en tu caso
-            String grupoSeleccionado = (String) JOptionPane.showInputDialog(frame, "Seleccione un grupo:",
-                    "Modificar Grupo", JOptionPane.QUESTION_MESSAGE, null, grupos, grupos[0]);
-
-            if (grupoSeleccionado != null) {
-                // Llamar a la ventana de gestión de miembros para modificar
-                openGestionarMiembros("Modificar Grupo", grupoSeleccionado);
-            }
+        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame,false);
+            dialogo.setVisible(true);
         });
         popupMenu.add(modificarGrupoItem);
 
@@ -246,12 +238,13 @@ public class VentanaPrincipal {
         // Mostrar el menú contextual
         popupMenu.show(btn, 0, btn.getHeight());
     }
-
-    // Método para abrir la ventana de gestión de miembros
-    private void openGestionarMiembros(String tipo, String grupo) {
-    	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame);
-        dialogo.setLocationRelativeTo(frame);
-        dialogo.setVisible(true);
+    
+    	//Metodo para actualizar la lista del panel izquierdo
+    public void actualizarListaContactos() {
+        model.clear(); 
+        for (Contacto c : Controlador.INSTANCE.getContactos()) {
+            model.addElement(new Elemento(c)); 
+        }
     }
     
  

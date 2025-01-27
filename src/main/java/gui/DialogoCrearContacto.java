@@ -1,6 +1,9 @@
 package gui;
 
 import javax.swing.*;
+
+import controlador.Controlador;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,9 +30,20 @@ public class DialogoCrearContacto extends JDialog {
 				String nombre = txtNombre.getText();
 				String telefono = txtTelefono.getText();
 				if (!nombre.isEmpty() && !telefono.isEmpty()) {
-					// Aquí guardarías el contacto (en una lista, base de datos, etc.)
-					JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Contacto creado correctamente.");
-					dispose(); // Cerrar el diálogo
+					int error = Controlador.INSTANCE.añadirContacto(nombre, telefono);
+					switch(error) {
+						case 0:
+							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Contacto creado correctamente.");
+							dispose(); // Cerrar el diálogo
+							break;
+						case -1:
+							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "No hay ningun Usuario asociado a dicho número.");				
+							break;
+						case -2:
+							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Ya hay un contacto agregado con dicho número.");
+							break;
+					}
+					
 				} else {
 					JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Debe rellenar todos los campos.");
 				}

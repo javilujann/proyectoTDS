@@ -1,5 +1,5 @@
 package dominio;
 
 public enum TipoMensaje {
-	SENT, RECEIVED;
+	SENT, RECEIVED, BOTH;
 }

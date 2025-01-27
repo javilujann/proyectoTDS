@@ -1,27 +1,99 @@
 package gui;
 
 import javax.swing.*;
+
+import controlador.Controlador;
+import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Grupo;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class DialogoGestionarGrupos extends JDialog {
 
-	private DefaultListModel<String> contactsModel;
-	private DefaultListModel<String> addedContactsModel;
+	private DefaultListModel<ContactoIndividual> contactsModel;
+	private DefaultListModel<ContactoIndividual> addedContactsModel;
+	private Grupo grupoModificar = null;
 
-	public DialogoGestionarGrupos(Frame owner) {
+	public DialogoGestionarGrupos(JFrame owner, boolean isNew) {
 		super(owner, "Seleccionar Contactos", true);
+		setSize(400, 300);
+		setLocationRelativeTo(owner);
+
+		if (isNew)
+			initializeGroupCreator();
+		else
+			initializeGroupSelector();
+
+		SwingUtilities.invokeLater(() -> {
+			if (grupoModificar != null) {
+				initializeGroupManager();
+				revalidate();
+				repaint();
+			} else {
+				dispose();
+			}
+		});
+	}
+
+	private void initializeGroupCreator() {
+		String nombreGrupo = JOptionPane.showInputDialog(this, "Introduzca el nombre del grupo:");
+		if (nombreGrupo == null)
+			return;
+
+		if (nombreGrupo.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(DialogoGestionarGrupos.this, "El nombre no puede ser vacio.");
+			return;
+		}
+
+		grupoModificar = Controlador.INSTANCE.añadirGrupo(nombreGrupo);
+		if (grupoModificar == null) {
+			JOptionPane.showMessageDialog(DialogoGestionarGrupos.this, "Ya hay un contacto con dicho nombre.");
+			return;
+		}
+
+		JOptionPane.showMessageDialog(DialogoGestionarGrupos.this, "Grupo creado con exito.");
+
+	}
+
+	private void initializeGroupSelector() {
+		List<Grupo> listaGrupos = Controlador.INSTANCE.getGrupos();
+		if (listaGrupos.isEmpty()) {
+			JOptionPane.showMessageDialog(DialogoGestionarGrupos.this, "No tienes ningun grupo.");
+			return;
+		}
+
+		Map<String, Grupo> mapaGrupos = listaGrupos.stream()
+				.collect(Collectors.toMap(Grupo::getNombre, grupo -> grupo));
+		String[] nombresGrupos = mapaGrupos.keySet().toArray(new String[0]);
+
+		// Mostrar diálogo para seleccionar un grupo
+		String grupoSeleccionadoNombre = (String) JOptionPane.showInputDialog(this, "Seleccione un grupo:",
+				"Modificar Grupo", JOptionPane.QUESTION_MESSAGE, null, nombresGrupos, nombresGrupos[0]);
+
+		// Obetner el objeto Grupo desde el mapa
+		grupoModificar = mapaGrupos.get(grupoSeleccionadoNombre);
+	}
+
+	private void initializeGroupManager() {
 
 		// Modelos para las listas
-		contactsModel = new DefaultListModel<>();
-		addedContactsModel = new DefaultListModel<>();
+		contactsModel = new DefaultListModel<ContactoIndividual>();
+		addedContactsModel = new DefaultListModel<ContactoIndividual>();
 
 		// Listas
-		JList<String> contactsList = new JList<>(contactsModel);
-		JList<String> addedContactsList = new JList<>(addedContactsModel);
+		JList<ContactoIndividual> contactsList = new JList<>(contactsModel);
+		JList<ContactoIndividual> addedContactsList = new JList<>(addedContactsModel);
 
+		// Renderizador para mostrar los nombres de los contactos en lugar de los objetos
+	    contactsList.setCellRenderer(new ContactoCellRenderer());
+	    addedContactsList.setCellRenderer(new ContactoCellRenderer());
+	    
 		// Encabezados
 		JPanel contactsPanel = new JPanel(new BorderLayout());
 		contactsPanel.add(new JLabel("Contactos"), BorderLayout.NORTH);
@@ -61,42 +133,60 @@ public class DialogoGestionarGrupos extends JDialog {
 		add(listsPanel, BorderLayout.CENTER);
 		add(actionsPanel, BorderLayout.SOUTH);
 
-		// Listeners
+		// Listeners para mover elementos
 		addButton.addActionListener(e -> moveSelectedItems(contactsList, contactsModel, addedContactsModel));
 		removeButton.addActionListener(e -> moveSelectedItems(addedContactsList, addedContactsModel, contactsModel));
 
+		// Listeners
 		acceptButton.addActionListener(e -> {
-			List<String> selectedContacts = new ArrayList<>();
+			// Actualizar miembros del grupo solo al aceptar
+			List<ContactoIndividual> nuevosMiembros = new ArrayList<>();
 			for (int i = 0; i < addedContactsModel.getSize(); i++) {
-				selectedContacts.add(addedContactsModel.getElementAt(i));
+				nuevosMiembros.add((ContactoIndividual) addedContactsModel.getElementAt(i));
 			}
-			JOptionPane.showMessageDialog(this, "Contactos seleccionados: " + selectedContacts);
+
+			grupoModificar.setMiembros(nuevosMiembros); // Actualizar miembros del grupo
+			JOptionPane.showMessageDialog(this, "Cambios guardados con éxito.");
 			dispose();
 		});
 
 		cancelButton.addActionListener(e -> dispose());
 
-		// Configuración final del diálogo
-		setSize(400, 300);
-		setLocationRelativeTo(owner);
 	}
 
 	private void initializeContacts() {
-		// Agregar contactos iniciales
-		String[] initialContacts = { "Irene master", "Diego Sevilla", "Javier candel", "Ahmed-Shadia", "Jose Hoyos",
-				"Paco seguros", "Jean Cleve", "Javier Bermudez", "Futbol sabados", "modelum" };
-		for (String contact : initialContacts) {
-			contactsModel.addElement(contact);
-		}
+
+		List<Contacto> todosLosContactos = Controlador.INSTANCE.getContactos();
+		List<ContactoIndividual> miembrosGrupo = grupoModificar.getMiembros();
+
+		// Filtrar contactos que no están en el grupo y añadirlos al modelo de contactos
+		todosLosContactos.stream().filter(c -> !c.isGroup()).map(c -> (ContactoIndividual) c)
+				.filter(contacto -> !miembrosGrupo.contains(contacto)) // Filtrar contactos ya añadidos
+				.forEach(contactsModel::addElement);
+
+		// Añadir al modelo de contactos añadidos los miembros actuales del grupo
+		miembrosGrupo.forEach(addedContactsModel::addElement);
 	}
 
-	private void moveSelectedItems(JList<String> sourceList, DefaultListModel<String> sourceModel,
-			DefaultListModel<String> targetModel) {
-		List<String> selectedItems = sourceList.getSelectedValuesList();
-		for (String item : selectedItems) {
+	// Método para mover elementos entre listas
+	private void moveSelectedItems(JList<ContactoIndividual> sourceList,
+			DefaultListModel<ContactoIndividual> sourceModel, DefaultListModel<ContactoIndividual> targetModel) {
+		List<ContactoIndividual> selectedItems = sourceList.getSelectedValuesList();
+		for (ContactoIndividual item : selectedItems) {
 			sourceModel.removeElement(item);
 			targetModel.addElement(item);
 		}
+	}
+	
+	// Clase personalizada para mostrar los nombres de los contactos en las listas
+	private static class ContactoCellRenderer extends DefaultListCellRenderer {
+	    @Override
+	    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	        if (value instanceof Contacto) {
+	            value = ((Contacto) value).getNombre(); // Mostrar el nombre del contacto
+	        }
+	        return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+	    }
 	}
 
 }

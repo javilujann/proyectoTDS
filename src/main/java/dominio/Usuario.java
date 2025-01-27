@@ -126,6 +126,10 @@ public class Usuario {
 	public List<Contacto> getContactos() {
 		return contactos;
 	}
+	
+	public List<Grupo> getGrupos(){
+		return contactos.stream().filter(c -> c.isGroup()).map(c -> (Grupo) c).toList();
+	}
 
 
 	public void addContacto(Contacto contacto) {
@@ -167,19 +171,22 @@ public class Usuario {
 	}
 	
 	public void bajaPremium() {
-		premium = false;
-		//Posible inlcusion de codigo necesario para la baja, como gestion de pagos
+		premium = false; //Posible inlcusion de codigo necesario para la baja, como gestion de pagos		
 	}
 	
 	public void altaPremium() {
-		premium = true;
-		//Posible inlcusion de codigo necesario para la alta, como gestion de pagos
+		premium = true; //Posible inlcusion de codigo necesario para la alta, como gestion de pagos
 	}
 	
 	public List<Mensaje> ultimosMensajes(){
 		return contactos.stream().map(c -> c.ultimoMensaje()).filter(optional -> optional.isPresent()).
 				map(present -> present.get()).collect(Collectors.toList());
-	}	
+	}
+	
+	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
+		return contactos.stream().filter(c -> contact.equals("") || c.comparar(contact))
+				.flatMap(c -> c.buscarMensajes(text,type).stream()).collect(Collectors.toList());
+	}
 	
 	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
 	public void recibirMensaje(String movil, Mensaje mensaje) {
@@ -203,6 +210,28 @@ public class Usuario {
 		
 		contacto.addMensaje(mensaje);
 		adaptadorContacto.modificarContacto(contacto);
+	}
+	
+	public int nuevoContactoIn(String nombre, String telefono, Usuario asociado) {
+		for(Contacto c : contactos) {
+			if(c.corresponde(telefono)) return -2; //Puede que de problema con los noAgregados, solucionarlo alli
+		}
+		
+		ContactoIndividual nuevoContacto = new ContactoIndividual(nombre,telefono,asociado);
+		nuevoContacto.setAgregado(true);
+		contactos.add(nuevoContacto);
+		return 0;
+		//Se esta creando pero no guardando el contacto ni actualizando al usuario
+	}
+
+	public Grupo nuevoGrupo(String nombre) {
+		for(Contacto c : contactos) {
+			if(c.getNombre().equals(nombre)) return null;
+		}
+		
+		Grupo nuevoGrupo = new Grupo(nombre);
+		contactos.add(nuevoGrupo);
+		return nuevoGrupo;
 	}
 	
 	

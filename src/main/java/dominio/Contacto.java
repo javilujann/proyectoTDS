@@ -2,7 +2,9 @@ package dominio;
 
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class Contacto {
 	
@@ -45,6 +47,13 @@ public abstract class Contacto {
 		this.listaMensajes.add(mensaje);
 	}
 	
+	public boolean isGroup() {
+		return false;
+	}
+	
+	
+    public abstract String[] obtenerDetalles();
+	
 	public abstract Image getImage();
 	
 	//METODOS
@@ -56,6 +65,14 @@ public abstract class Contacto {
 		if(listaMensajes.isEmpty()) return  Optional.empty(); 
 		Mensaje mensaje =  listaMensajes.get(listaMensajes.size() - 1); //accedemos al ultimo indice
 		return  Optional.of(mensaje);
+	}
+	
+	public boolean comparar(String contact) {
+		return contact.equals(nombre);
+	}
+	
+	public List<Mensaje> buscarMensajes(String text, TipoMensaje type){
+		return listaMensajes.stream().filter(m -> m.filtro(text,type)).collect(Collectors.toList());
 	}
 	
 }

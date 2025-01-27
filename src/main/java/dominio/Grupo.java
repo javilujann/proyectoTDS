@@ -6,23 +6,24 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 public class Grupo extends Contacto{
 	private static final String URLGrupo = "https://media.traveler.es/photos/64822b893d22fe2978e8fe36/16:9/w_1920,c_limit/manyminions.0.jpg";
-	private ArrayList<ContactoIndividual> miembros;
+	private List<ContactoIndividual> miembros;
 
 	public Grupo(String nombre) {
 		super(nombre);
 		this.miembros = new ArrayList<ContactoIndividual>();
 	}
 
-	public ArrayList<ContactoIndividual> getMiembros() {
+	public List<ContactoIndividual> getMiembros() {
 		return miembros;
 	}
 
-	public void setMiembros(ArrayList<ContactoIndividual> miembros) {
+	public void setMiembros(List<ContactoIndividual> miembros) {
 		this.miembros = miembros;
 	}
 	
@@ -33,6 +34,16 @@ public class Grupo extends Contacto{
 	public boolean corresponde(String movil) {
 		return false; //Los grupos no manejan moviles
 	}
+	
+	@Override
+	public boolean isGroup() {
+		return true;
+	}
+	
+	@Override
+    public String[] obtenerDetalles() {
+        return new String[]{getNombre(), "", ""};
+    }
 	
 	public Image getImage() {
 		URL url = null;
