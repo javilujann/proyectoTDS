@@ -16,17 +16,17 @@ import dominio.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-
 //Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
 	private FactoriaDAO factoria;
-	
+
 	private SimpleDateFormat dateFormat; // para formatear la fecha de nacimiento en la base de datos
 	private static AdaptadorUsuarioDAO unicaInstancia = null;
 
 	public static AdaptadorUsuarioDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null) unicaInstancia = new AdaptadorUsuarioDAO();
+		if (unicaInstancia == null)
+			unicaInstancia = new AdaptadorUsuarioDAO();
 		return unicaInstancia;
 	}
 
@@ -47,37 +47,38 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		// Si la entidad esta registrada no la registra de nuevo
 		try {
 			eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
-		} catch (NullPointerException e) {}
-		if (eUsuario != null) return;
+		} catch (NullPointerException e) {
+		}
+		if (eUsuario != null)
+			return;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
 		// contactos= grupos + individuales)
 		for (Contacto c : usuario.getContactos()) {
 			factoria.getContactoDAO(c.getClass()).registrarContacto(c);
 		}
-			
-		
-		
+
 		// crear entidad Usuario
 		eUsuario = new Entidad();
 		eUsuario.setNombre("Usuario");
-		eUsuario.setPropiedades(new ArrayList<Propiedad>(
-				Arrays.asList(new Propiedad("nombre", usuario.getNombre()), new Propiedad("apellidos", usuario.getApellidos()),
-						new Propiedad("movil",usuario.getMovil()),new Propiedad("contraseña",usuario.getContraseña()),
-						new Propiedad("imagen",usuario.getURL()),new Propiedad("Premium",String.valueOf(usuario.isPremium())),
-						new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())), 
-						new Propiedad("biografia",usuario.getBiografia()), new Propiedad("fechaNacimiento",dateFormat.format(usuario.getFechaNacimiento())) )));
+		eUsuario.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", usuario.getNombre()),
+				new Propiedad("apellidos", usuario.getApellidos()), new Propiedad("movil", usuario.getMovil()),
+				new Propiedad("contraseña", usuario.getContraseña()), new Propiedad("imagen", usuario.getURL()),
+				new Propiedad("Premium", String.valueOf(usuario.isPremium())),
+				new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())),
+				new Propiedad("biografia", usuario.getBiografia()),
+				new Propiedad("fechaNacimiento", dateFormat.format(usuario.getFechaNacimiento())))));
 
 		// registrar entidad Usuario
 		eUsuario = servPersistencia.registrarEntidad(eUsuario);
-		
+
 		// asignar identificador unico
 		// Se aprovecha el que genera el servicio de persistencia
 		usuario.setCodigo(eUsuario.getId());
 	}
 
 	public void borrarUsuario(Usuario usuario) {
-		// No se comprueban restricciones de integridad con Contacto //WARNING
+		// No se comprueban restricciones de integridad con Contacto 
 		Entidad eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
 		servPersistencia.borrarEntidad(eUsuario);
 	}
@@ -88,26 +89,26 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 
 		for (Propiedad prop : eUsuario.getPropiedades()) {
 			if (prop.getNombre().equals("codigo")) {
-			    prop.setValor(String.valueOf(usuario.getCodigo()));
+				prop.setValor(String.valueOf(usuario.getCodigo()));
 			} else if (prop.getNombre().equals("nombre")) {
-			    prop.setValor(usuario.getNombre());
+				prop.setValor(usuario.getNombre());
 			} else if (prop.getNombre().equals("apellidos")) {
-			    prop.setValor(usuario.getApellidos());
+				prop.setValor(usuario.getApellidos());
 			} else if (prop.getNombre().equals("movil")) {
-			    prop.setValor(usuario.getMovil());
+				prop.setValor(usuario.getMovil());
 			} else if (prop.getNombre().equals("contraseña")) {
-			    prop.setValor(usuario.getContraseña());
+				prop.setValor(usuario.getContraseña());
 			} else if (prop.getNombre().equals("imagen")) {
-			    prop.setValor(usuario.getURL());
+				prop.setValor(usuario.getURL());
 			} else if (prop.getNombre().equals("premium")) {
-			    prop.setValor(String.valueOf(usuario.isPremium())); // Convertir boolean a String
+				prop.setValor(String.valueOf(usuario.isPremium())); // Convertir boolean a String
 			} else if (prop.getNombre().equals("contactos")) {
-			    String contactos = obtenerCodigosContactos(usuario.getContactos());
-			    prop.setValor(contactos);
+				String contactos = obtenerCodigosContactos(usuario.getContactos());
+				prop.setValor(contactos);
 			} else if (prop.getNombre().equals("biografia")) {
-			    prop.setValor(usuario.getBiografia());
+				prop.setValor(usuario.getBiografia());
 			} else if (prop.getNombre().equals("fechaNacimiento")) {
-			    prop.setValor(dateFormat.format(usuario.getFechaNacimiento()));
+				prop.setValor(dateFormat.format(usuario.getFechaNacimiento()));
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -141,10 +142,9 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 			e.printStackTrace();
 		}
 
-		Usuario usuario = new Usuario(nombre,apellidos,movil,contraseña,imagen,biografia,fechaNacimiento);
+		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, biografia, fechaNacimiento);
 		usuario.setCodigo(codigo);
 		usuario.setPremium(premium);
-		
 
 		// IMPORTANTE:añadir el Usuario al pool antes de llamar a otros
 		// adaptadores
@@ -154,16 +154,16 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		// contactos
 		List<Contacto> contactos = new ArrayList<Contacto>();
 		contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos"));
-		for (Contacto c : contactos) usuario.addContacto(c);  //PUEDE SER MEJOR QUE LO HAGA EL PROPIO USUARIO
-				
+		for (Contacto c : contactos)
+			usuario.addContacto(c); 
+
 		return usuario;
 	}
 
 	public List<Usuario> recuperarTodosUsuarios() {
-		 return servPersistencia.recuperarEntidades("Usuario").stream()
-				 .map(entidad -> recuperarUsuario(entidad.getId()))
-				 .collect(Collectors.toList());
-				 
+		return servPersistencia.recuperarEntidades("Usuario").stream().map(entidad -> recuperarUsuario(entidad.getId()))
+				.collect(Collectors.toList());
+
 	}
 
 	// -------------------Funciones auxiliares-----------------------------
@@ -176,23 +176,25 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	}
 
 	private List<Contacto> obtenerContactosDesdeCodigos(String contactos) {
-		
+
 		List<Contacto> listaContactos = new ArrayList<Contacto>();
 		StringTokenizer strTok = new StringTokenizer(contactos, " ");
 		AdaptadorContactoInDAO adaptadorC = AdaptadorContactoInDAO.getUnicaInstancia();
 		AdaptadorGrupoDAO adaptadorG = AdaptadorGrupoDAO.getUnicaInstancia();
-		
+
 		while (strTok.hasMoreTokens()) {
 			int codigo = Integer.valueOf((String) strTok.nextElement());
-			Contacto contacto = adaptadorG.recuperarContacto(codigo);
-			
-			if(contacto != null) listaContactos.add(contacto); //Era grupo
-			else  listaContactos.add(adaptadorC.recuperarContacto(codigo)); //Es Individual
+			if (codigo != 0) {
+				Contacto contacto = adaptadorG.recuperarContacto(codigo);
+
+				if (contacto != null)
+					listaContactos.add(contacto); // Era grupo
+				else
+					listaContactos.add(adaptadorC.recuperarContacto(codigo)); // Es Individual
+			}
 		}
-		
+
 		return listaContactos;
 	}
-	
-		
-}
 
+}

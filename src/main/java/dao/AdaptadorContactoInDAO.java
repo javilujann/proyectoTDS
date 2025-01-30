@@ -21,7 +21,8 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 	private static AdaptadorContactoInDAO unicaInstancia = null;
 
 	public static AdaptadorContactoInDAO getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null) unicaInstancia = new AdaptadorContactoInDAO();
+		if (unicaInstancia == null)
+			unicaInstancia = new AdaptadorContactoInDAO();
 		return unicaInstancia;
 	}
 
@@ -38,25 +39,25 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 			eContacto = servPersistencia.recuperarEntidad(_contacto.getCodigo());
 		} catch (NullPointerException e) {
 		}
-		
+
 		if (eContacto != null)
 			return;
-		
-		//Casteamos a contactoIndividual no hay prueba se asume que la llamada es correcta
+
+		// Casteamos a contactoIndividual, Se asume que la llamada es correcta
 		ContactoIndividual contacto = (ContactoIndividual) _contacto;
 
-		// registrar primero los atributos que son objetos(En este caso es la lista de
-		// mensajes)
-		AdaptadorMensajeDAO adaptadorMensaje = AdaptadorMensajeDAO.getUnicaInstancia();
-		for (Mensaje m : contacto.getListaMensajes())
-			adaptadorMensaje.registrarMensaje(m);
+		// registrar primero los atributos que son objetos(la lista de mensajes(Vacia) +
+		// usuarioAsociado)
+		AdaptadorUsuarioDAO.getUnicaInstancia().registrarUsuario(contacto.getUsuario());
 
 		// crear entidad Contacto
 		eContacto = new Entidad();
 		eContacto.setNombre("Contacto");
 		eContacto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", contacto.getNombre()),
-				new Propiedad("movil", contacto.getMovil()), new Propiedad("agregado",String.valueOf(contacto.isAgregado())),
-				new Propiedad("listaMensajes", obtenerCodigosMensajes(contacto.getListaMensajes())))));
+				new Propiedad("movil", contacto.getMovil()),
+				new Propiedad("agregado", String.valueOf(contacto.isAgregado())),
+				new Propiedad("listaMensajes", obtenerCodigosMensajes(contacto.getListaMensajes())),
+				new Propiedad("usuario", Integer.toString(contacto.getUsuario().getCodigo())))));
 
 		// registrar entidad Contacto
 		eContacto = servPersistencia.registrarEntidad(eContacto);
@@ -66,7 +67,7 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 	}
 
 	public void borrarContacto(Contacto contacto) {
-		// No se comprueban restricciones de integridad con Mensaje //WARNING
+		// No se comprueban restricciones de integridad con Mensaje ni Usuario
 		Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
 		servPersistencia.borrarEntidad(eContacto);
 	}
@@ -74,7 +75,7 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 	public void modificarContacto(Contacto _contacto) {
 
 		Entidad eContacto = servPersistencia.recuperarEntidad(_contacto.getCodigo());
-		//Casteamos a contactoIndividual no hay prueba se asume que la llamada es correcta
+		// Casteamos a contactoIndividual, Se asume que la llamada es correcta
 		ContactoIndividual contacto = (ContactoIndividual) _contacto;
 
 		for (Propiedad prop : eContacto.getPropiedades()) {
@@ -84,11 +85,13 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 				prop.setValor(contacto.getNombre());
 			} else if (prop.getNombre().equals("movil")) {
 				prop.setValor(contacto.getMovil());
-			}  else if (prop.getNombre().equals("agregado")) {
-			    prop.setValor(String.valueOf(contacto.isAgregado())); // Convertir boolean a String
+			} else if (prop.getNombre().equals("agregado")) {
+				prop.setValor(String.valueOf(contacto.isAgregado())); // Convertir boolean a String
 			} else if (prop.getNombre().equals("listaMensajes")) {
 				String mensajes = obtenerCodigosMensajes(contacto.getListaMensajes());
 				prop.setValor(mensajes);
+			} else if (prop.getNombre().equals("usuario")) {
+				prop.setValor(Integer.toString(contacto.getUsuario().getCodigo()));
 			}
 
 			servPersistencia.modificarPropiedad(prop);
@@ -102,19 +105,20 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 		if (PoolDAO.getUnicaInstancia().contiene(codigo))
 			return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
-		// si no, la recupera de la base de datos
-		// recuperar entidad
+		// si no, la recupera de la base de datos recuperar entidad
 		Entidad eContacto = servPersistencia.recuperarEntidad(codigo);
 
 		// recuperar propiedades que no son objetos
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
 		String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
 		Boolean agregado = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "agregado"));
-		Usuario user = null; //Implementar la logica de la propiedad usuario en toda la clase
-		ContactoIndividual contacto = new ContactoIndividual(nombre, movil,user);
+		int codigoUser = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "usuario"));
+		Usuario user = AdaptadorUsuarioDAO.getUnicaInstancia().recuperarUsuario(codigoUser); //Bidireccion?
+		
+		ContactoIndividual contacto = new ContactoIndividual(nombre, movil, user);
 		contacto.setCodigo(codigo);
 		contacto.setAgregado(agregado);
-		
+
 		// IMPORTANTE:añadir el Contacto al pool antes de llamar a otros
 		// adaptadores
 		PoolDAO.getUnicaInstancia().addObjeto(codigo, contacto);
@@ -124,7 +128,7 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 		List<Mensaje> mensajes = new ArrayList<Mensaje>();
 		mensajes = obtenerMensajesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eContacto, "listaMensajes"));
 		for (Mensaje m : mensajes)
-			contacto.addMensaje(m); // PUEDE SER MEJOR QUE LO HAGA EL PROPIO USUARIO
+			contacto.addMensaje(m);
 
 		return contacto;
 	}
