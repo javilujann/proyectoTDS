@@ -14,7 +14,7 @@ public class DescuentoPorMensaje implements Descuento{
 	@Override
 	public float aplicarDescuento(float precioBase, float porcentaje) {
 		if(numeroMensajes < threshold) return precioBase; 
-		return precioBase*(porcentaje/100);
+		return precioBase*(1 - (porcentaje/100));
 	}
 
 

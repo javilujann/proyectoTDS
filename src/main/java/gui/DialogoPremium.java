@@ -29,8 +29,7 @@ public class DialogoPremium extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(10, 10));
 
-		int precio = Controlador.INSTANCE.getUsuarioActual().getCodigo(); // Cambiar a getPrecio, donde se aplica el
-		// Descuento
+		float precio = Controlador.INSTANCE.getPrecioPremium(); 
 		JLabel label = new JLabel("Accede a Premium por solo " + precio + " al mes", JLabel.CENTER);
 		panel.add(label, BorderLayout.CENTER);
 
