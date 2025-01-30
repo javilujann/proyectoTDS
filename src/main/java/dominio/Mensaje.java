@@ -59,6 +59,10 @@ public class Mensaje {
 	public void setEmoticon(int emoticon) {
 		this.emoticon = emoticon;
 	}
+	
+	public boolean isEmoticon() {
+		return emoticon != -1;
+	}
 
 
 	public TipoMensaje getTipo() {

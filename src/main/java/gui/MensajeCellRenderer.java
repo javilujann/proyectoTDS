@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JList;
@@ -15,6 +14,7 @@ import javax.swing.ListCellRenderer;
 
 
 import dominio.Mensaje;
+import tds.BubbleText;
 
 @SuppressWarnings("serial")
 public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mensaje> {
@@ -69,20 +69,16 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
         // Configurar nombre del contacto
         if (mensaje.getContacto().getNombre() != null) {
             contactoLabel.setText(mensaje.getContacto().getNombre());
-        } else {
-            contactoLabel.setText("Sin contacto");
         }
 
         // Configurar contenido (texto o emoticón)
-        //DADA LA NUEVA DEFINCIION DE LOS EMOTES CON ENTEROS, VER COMO ADAPTAR PARA QUE APAREZCA COMO ULTIMO MENSAJE
-        
-        /*if (mensaje.getEmoticon() >= null && !mensaje.getEmoticon().isEmpty()) {
-            contenidoLabel.setIcon(new ImageIcon(mensaje.getEmoticon()));
-            contenidoLabel.setText("");
-        } else {
-            contenidoLabel.setIcon(null);
-            contenidoLabel.setText(mensaje.getTexto());
-        }*/
+     		if (mensaje.isEmoticon()) {
+     			contenidoLabel.setIcon(BubbleText.getEmoji(mensaje.getEmoticon()));
+     			contenidoLabel.setText("");
+     		} else {
+     			contenidoLabel.setIcon(null);
+     			contenidoLabel.setText(mensaje.getTexto());
+     		}
 
         // Formatear fecha y hora
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
