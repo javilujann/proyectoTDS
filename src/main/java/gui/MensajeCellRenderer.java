@@ -74,13 +74,15 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
         }
 
         // Configurar contenido (texto o emoticón)
-        if (mensaje.getEmoticon() != null && !mensaje.getEmoticon().isEmpty()) {
+        //DADA LA NUEVA DEFINCIION DE LOS EMOTES CON ENTEROS, VER COMO ADAPTAR PARA QUE APAREZCA COMO ULTIMO MENSAJE
+        
+        /*if (mensaje.getEmoticon() >= null && !mensaje.getEmoticon().isEmpty()) {
             contenidoLabel.setIcon(new ImageIcon(mensaje.getEmoticon()));
             contenidoLabel.setText("");
         } else {
             contenidoLabel.setIcon(null);
             contenidoLabel.setText(mensaje.getTexto());
-        }
+        }*/
 
         // Formatear fecha y hora
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");

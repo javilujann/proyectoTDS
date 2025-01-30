@@ -7,18 +7,19 @@ public class Mensaje {
 	private int codigo;
 	private String texto;
 	private LocalDateTime hora;
-	private String emoticon;			//url de la imagen
+	private int emoticon;			//url de la imagen
 	private TipoMensaje tipo;
 	private Contacto contacto;
 	
 	
-	public Mensaje(String texto, LocalDateTime hora, String emoticon,Contacto contacto) {
+	public Mensaje(String texto, LocalDateTime hora, int emoticono, Contacto contacto) {
 		super();
 		this.texto = texto;
 		this.hora = hora;
-		this.emoticon = emoticon;
+		this.emoticon = emoticono;
 		this.contacto = contacto;
 	}
+	
 	
 	public int getCodigo() {
 		return codigo;
@@ -50,12 +51,12 @@ public class Mensaje {
 	}
 
 
-	public String getEmoticon() {
+	public int getEmoticon() {
 		return emoticon;
 	}
 
 
-	public void setEmoticon(String emoticon) {
+	public void setEmoticon(int emoticon) {
 		this.emoticon = emoticon;
 	}
 

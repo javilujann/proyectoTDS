@@ -43,9 +43,10 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		// crear entidad Mensaje
 		eMensaje = new Entidad();
 		eMensaje.setNombre("Mensaje");
-		eMensaje.setPropiedades(new ArrayList<Propiedad>(
+		//COMENTADO POR ERRORES EN LA DEFINICION DEL EMOTE
+		/*eMensaje.setPropiedades(new ArrayList<Propiedad>(
 				Arrays.asList(new Propiedad("texto", mensaje.getTexto()), new Propiedad("emoticon", mensaje.getEmoticon()),
-						new Propiedad("tipo",mensaje.getTipo().toString()), new Propiedad("hora",mensaje.getHora().toString()))));
+						new Propiedad("tipo",mensaje.getTipo().toString()), new Propiedad("hora",mensaje.getHora().toString()))));*/
 
 		// registrar entidad Mensaje
 		eMensaje = servPersistencia.registrarEntidad(eMensaje);
@@ -70,9 +71,9 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 			    prop.setValor(mensaje.getTexto());
 			} else if (prop.getNombre().equals("hora")) {
 			    prop.setValor(mensaje.getHora().toString());
-			} else if (prop.getNombre().equals("emoticon")) {
+			} /*else if (prop.getNombre().equals("emoticon")) {			//COMENTADO POR ERRORES CON EMOJI
 			    prop.setValor(mensaje.getEmoticon());
-			} else if (prop.getNombre().equals("tipo")) {
+			} */else if (prop.getNombre().equals("tipo")) {
 			    prop.setValor(mensaje.getTipo().toString());
 			}
 
@@ -92,7 +93,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		String emoticon = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticon");
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo")) ;
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora")); 
-		Mensaje mensaje = new Mensaje(texto,hora,emoticon,null); //CAMBIAR
+		Mensaje mensaje = new Mensaje(texto,hora,0,null); //CAMBIAR, SE PONE 0 POR CONFLICTOS CON LA DEFINCIION DEL EMOJI
 		mensaje.setCodigo(codigo);
 		mensaje.setTipo(tipo);
 		

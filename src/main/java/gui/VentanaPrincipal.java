@@ -3,13 +3,20 @@ package gui;
 import javax.swing.*;
 
 import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import controlador.Controlador;
 import dominio.Contacto;
+import dominio.TipoMensaje;
+import tds.BubbleText;
 
 public class VentanaPrincipal {
 	private JFrame frame;
 	DefaultListModel<Elemento> model = new DefaultListModel<>(); //Global para permitir actualizacion
+	private boolean mensajesExceden = false;
+    private int alturaAcumulada = 0;
+    private Contacto seleccionado;
+    
     
     public VentanaPrincipal() {
         frame = new JFrame("AppChat");
@@ -31,18 +38,26 @@ public class VentanaPrincipal {
         JPanel rightPanel = createRightPanel();
         frame.add(rightPanel, BorderLayout.CENTER);
         
-        JSplitPane separador = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-        separador.setDividerLocation(350); // Posición inicial del divisor
+        //JSplitPane separador = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+        // separador.setDividerLocation(350); // Posición inicial del divisor
         //separador.setResizeWeight(0.5); // Relación inicial de distribución del espacio
         //separador.setOneTouchExpandable(true); // Botones para contraer/expandir paneles
-        separador.setContinuousLayout(true); // Actualiza en tiempo real al mover el divisor
+        //separador.setContinuousLayout(true); // Actualiza en tiempo real al mover el divisor
 
         // Establecer tamaños mínimos para cada panel
-        leftPanel.setMinimumSize(new Dimension(200, 0));
-        rightPanel.setMinimumSize(new Dimension(250, 0));
+        leftPanel.setMinimumSize(new Dimension(300, 540));
+        leftPanel.setMaximumSize(new Dimension(300, 540));
+        leftPanel.setPreferredSize(new Dimension(300, 540));
+        leftPanel.setSize(new Dimension(300, 540));
 
+        rightPanel.setMinimumSize(new Dimension(600, 540));
+        rightPanel.setMaximumSize(new Dimension(600, 540));
+        rightPanel.setPreferredSize(new Dimension(600, 540));
+        rightPanel.setSize(new Dimension(600, 540));
+
+        frame.setResizable(false);
         // Agregar el JSplitPane al marco
-        frame.add(separador);
+        //frame.add(separador);
 
     }
     
@@ -80,7 +95,6 @@ public class VentanaPrincipal {
         newContactsButton.addActionListener(e -> {
         	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame);
         	dialogo.setVisible(true);
-        	actualizarListaContactos(); //Por ahora lo hace siempre, estaria mejor algun tipo de listener
         });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newContactsButton);
@@ -167,17 +181,19 @@ public class VentanaPrincipal {
     private JPanel createRightPanel() {
         // Panel principal
         JPanel rightPanel = new JPanel(new BorderLayout());
-        UtilsGui.fixSize(rightPanel, 300, 540);
+        UtilsGui.fixSize(rightPanel, 600, 540);
 
         // Área de mensajes (no editable)
-        JTextArea messageArea = new JTextArea();
-        messageArea.setEditable(false);
-        messageArea.setLineWrap(true);
-        messageArea.setWrapStyleWord(true);
+        JPanel messageArea = new JPanel();
+        messageArea.setLayout(new BoxLayout(messageArea,BoxLayout.Y_AXIS));
+        messageArea.setPreferredSize(new Dimension(550, 400));
         messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane messageScroll = new JScrollPane(messageArea);
+        //messageScroll.setLayout(new BoxLayout(messageArea, BoxLayout.Y_AXIS));
+        messageScroll.setLayout(new ScrollPaneLayout());
         messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        messageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         messageScroll.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         rightPanel.add(messageScroll, BorderLayout.CENTER);
 
@@ -196,18 +212,33 @@ public class VentanaPrincipal {
             if (!message.isEmpty()) {
                 enviarMensaje(messageArea, message);
                 messageInput.setText("");
+                SwingUtilities.invokeLater(() -> {
+                    JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
+                    verticalBar.setValue(verticalBar.getMaximum());
+                });
             }
+        });
+        
+        JButton emoteButton = new JButton(":)");
+        emoteButton.addActionListener(e->{
+        	int emote = ThreadLocalRandom.current().nextInt(0, BubbleText.MAXICONO+1);
+        	enviarEmoticono(messageArea, emote, 18);
+        	SwingUtilities.invokeLater(() -> {
+                JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
+                verticalBar.setValue(verticalBar.getMaximum());
+            });
         });
 
         // Agregar componentes al panel de entrada
         inputPanel.add(messageInput, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
+        inputPanel.add(emoteButton, BorderLayout.WEST);
         rightPanel.add(inputPanel, BorderLayout.SOUTH);
 
         return rightPanel;
     }
     
-    	//Metodo para crear el menu contextual de la gestion de grupos
+  //Metodo para crear el menu contextual de la gestion de grupos
     private void showGroupMenu(JButton btn) {
         // Crear el menú contextual
         JPopupMenu popupMenu = new JPopupMenu();
@@ -247,7 +278,54 @@ public class VentanaPrincipal {
         }
     }
     
+    private void enviarMensaje(JPanel panelChat, String cuerpo) {
+    	BubbleText m = new BubbleText(panelChat, cuerpo, Color.CYAN, "Yo", BubbleText.SENT);
+    	m.setAlignmentX(Component.RIGHT_ALIGNMENT);
+    	panelChat.add(m, BorderLayout.EAST);
+    	panelChat.revalidate();
+    	System.out.println(panelChat.getPreferredSize());
+    	System.out.println(m.getHeight());
+    	if(alturaAcumulada >= 400) {
+    		panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+m.getHeight()));
+    	}else {
+    		alturaAcumulada+=m.getHeight();
+    		if(alturaAcumulada >= 400) {
+    			panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+alturaAcumulada-400));
+    		}
+    	}
+    	m.setVisible(true);
+    	panelChat.repaint();
+    };
+    
+    private void enviarEmoticono(JPanel panelChat, int emote, int tamaño) {
+    	BubbleText m = new BubbleText(panelChat, emote, Color.CYAN, "Yo", BubbleText.SENT, tamaño);
+    	m.setAlignmentX(Component.RIGHT_ALIGNMENT);
+    	panelChat.add(m, BorderLayout.EAST);
+    	panelChat.revalidate();
+    	System.out.println(panelChat.getPreferredSize());
+    	System.out.println(m.getHeight());
+    	if(alturaAcumulada >= 400) {
+    		panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+m.getHeight()));
+    	}else {
+    		alturaAcumulada+=m.getHeight();
+    		if(alturaAcumulada >= 400) {
+    			panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+alturaAcumulada-400));
+    		}
+    	}
+    	m.setVisible(true);
+    	panelChat.repaint();
+    	
+    }
+    
+    
+    /*TO DO
+     * ARREGLAR MessaegCellrenderer con la nueva definicion por enteros de los emotes
+     * Ampliar los action listener de envío de mensajes para que también actualicen las listas de mensajes del emisor y el receptor
+     * Funcion para cargar los mensajes del usuiario al entrar al chat y transformarlos en mensajes gráficos
+     */
+    
+    
+    
  
 
 }
-

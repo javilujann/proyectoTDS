@@ -120,7 +120,7 @@ public enum Controlador {
 			// Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes
 			// en tu lista, luego este ya es valido
 	
-	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, String emoticono) {
+	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, int emoticono) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
 		ContactoDAO adaptadorContacto = factoria.getContactoDAO(contacto.getClass());
 		UsuarioDAO adaptadorUsuario = factoria.getUsuarioDAO();
@@ -159,12 +159,12 @@ public enum Controlador {
 	// toda la persistencia
 	// Y la general gestiona esta y llama luego a la otra
 
-	public void enviarMensajeGrupo(Grupo grupo, String textoMensaje, String emoticono) {
+	public void enviarMensajeGrupo(Grupo grupo, String textoMensaje, int emoticono) {
 		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
 		ContactoDAO adaptadorGrupo = factoria.getContactoDAO(grupo.getClass());
 
 		// Creas el mensaje
-		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono,grupo);
+		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono, grupo);
 
 		// "Enviar" el mensaje para el grupo del usuario actual
 		mensaje.setTipo(TipoMensaje.SENT);
