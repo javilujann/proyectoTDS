@@ -29,7 +29,7 @@ public class DialogoPremium extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(10, 10));
 
-		float precio = Controlador.INSTANCE.getPrecioPremium(); 
+		float precio = Controlador.INSTANCE.getPrecioPremium();
 		JLabel label = new JLabel("Accede a Premium por solo " + precio + " al mes", JLabel.CENTER);
 		panel.add(label, BorderLayout.CENTER);
 
@@ -89,18 +89,11 @@ public class DialogoPremium extends JDialog {
 				if (selectedContactName != null) {
 					Contacto selectedContact = contactosMap.get(selectedContactName);
 
-					// Obtener los mensajes del contacto seleccionado
-					List<String> mensajes = selectedContact.getListaMensajes().stream().map(m -> m.getTexto()).toList();
-
-					// Aquí se podrían procesar los mensajes para crear el PDF
-					JOptionPane.showMessageDialog(DialogoPremium.this,
-							"Creando PDF para: " + selectedContactName + "\nMensajes: " + mensajes, "Información",
-							JOptionPane.INFORMATION_MESSAGE);
-
+					JOptionPane.showMessageDialog(DialogoPremium.this, "Creando PDF para: " + selectedContactName,
+							"Información", JOptionPane.INFORMATION_MESSAGE);
+					Controlador.INSTANCE.crearPDF(selectedContact);
 					dispose();
 
-					// Llamada al controlador para generar el PDF
-					// Controlador.INSTANCE.generarPdf(selectedContact);
 				} else {
 					JOptionPane.showMessageDialog(DialogoPremium.this,
 							"Por favor, selecciona un contacto antes de continuar.", "Error",
@@ -122,7 +115,6 @@ public class DialogoPremium extends JDialog {
 
 			}
 		});
-		
 
 		buttonPanel.add(createPdfButton);
 		buttonPanel.add(unsubscribeButton);
