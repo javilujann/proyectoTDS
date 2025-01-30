@@ -15,6 +15,8 @@ import dao.DAOException;
 import dominio.ContactoIndividual;
 import dominio.Descuento;
 import dominio.Grupo;
+import dominio.IAdaptadorPDF;
+import dominio.ItextAdapter;
 import dominio.Contacto;
 import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
@@ -47,16 +49,16 @@ public enum Controlador {
 		return usuarioActual;
 	}
 
-	public List<Contacto> getContactos() {
-		return usuarioActual.getContactos();
-	}
-
 	public List<Grupo> getGrupos() {
 		return usuarioActual.getGrupos();
 	}
 
 	public Image getImage() {
 		return usuarioActual.getImagen();
+	}
+	
+	public List<Contacto> getContactos() {
+		return usuarioActual.getContactos();
 	}
 
 	public float getPrecioPremium() {
@@ -102,115 +104,107 @@ public enum Controlador {
 	}
 
 	// PARA VENTANA PRINCIPAL
-	// PANEL SUPERIOR
+		// PANEL SUPERIOR
+	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
+		return usuarioActual.buscarMensajes(contact, text, type);
+	}
+	
 	public int añadirContacto(String nombre, String telefono) {
 		Usuario asociado = RepositorioUsuarios.getUnicaInstancia().getUsuario(telefono);
 		if (asociado == null)
 			return -1;
 
-		return usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
+		Contacto nuevo = usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
+		if(nuevo == null) return -1;
+		
+		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
+		ContactoDAO contactoDAO = factoria.getContactoDAO(nuevo.getClass());
+		
+		contactoDAO.registrarContacto(nuevo);
+		usuarioDAO.modificarUsuario(usuarioActual);
+		
+		return 0;
 	}
 
 	public Grupo añadirGrupo(String nombre) {
-		return usuarioActual.nuevoGrupo(nombre);
+		Grupo nuevo = usuarioActual.nuevoGrupo(nombre);
+		if(nuevo == null) return null;
+		
+		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
+		ContactoDAO contactoDAO = factoria.getContactoDAO(nuevo.getClass());
+		
+		contactoDAO.registrarContacto(nuevo);
+		usuarioDAO.modificarUsuario(usuarioActual);
+		
+		return nuevo;
+	}
+	
+	public void modificarGrupo(Grupo grupoModificar,List<ContactoIndividual> nuevosMiembros){
+		grupoModificar.setMiembros(nuevosMiembros);
+		
+		ContactoDAO contactoDAO = factoria.getContactoDAO(grupoModificar.getClass());
+		contactoDAO.modificarContacto(grupoModificar);
+	}
+	
+	public void altaPremium() {
+		usuarioActual.altaPremium();
+	}
+	
+	public void bajaPremium() {
+		usuarioActual.bajaPremium();
+	}
+	
+	public void crearPDF(Contacto contacto) {
+		 IAdaptadorPDF exportador = new ItextAdapter(); //Usar factoria para crearlo
+		 try {
+	            exportador.exportarMensajes(usuarioActual, contacto);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.out.println("Error al exportar el PDF.");
+	        }
 	}
 
-	// PANEL IZQUIERDO ---------- ESPERAR A SABER SI ES DE MENSAJES O NO
-
-	// SE NECESITARA UN METODO PARA AÑADIR CONTACTO, esta addContacto, quien lo crea
-	// y maneja persistencias?
-
-			// FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
-			// Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes
-			// en tu lista, luego este ya es valido
-	// EN ESTE CASO ES PASAR DE UN NO_AGREGADO A AGREGADO, EL METODO SERA SOLO
-	// MODIFICAR NOMBRE Y MANEJAR PERSISTENCIA
+	// PANEL IZQUIERDO 
+	public void agregarContacto(ContactoIndividual contacto, String nombre) {
+		contacto.setNombre(nombre);
+		contacto.setAgregado(true); //Hacer metodo en el contacto
+		
+		ContactoDAO contactoDAO = factoria.getContactoDAO(contacto.getClass());
+		contactoDAO.modificarContacto(contacto);
+	}
 
 	// PANEL DERECHO
-	// SE NECESITARA ALGO QUE FIJADO UN CONACTO DEL USUARIO LE DE TODOS LOS
-	// MENSAJES,
-	// REALMENTE SI TIENES EL CONTACTO YA TIENES LOS MENSAJES
-	// ESPERAR A VER QUE ES LO QUE LLEGA REALMENTE
-
-	// FUNCION PARA ENVIAR MENSAJE A UN CONTACTO
-	// Voy a usar que esta funcion se llama desde la GUI para un contacto que tienes
-	// en tu lista, luego este ya es valido
-
-	public void enviarMensajeIndividual(ContactoIndividual contacto, String textoMensaje, int emoticono) {
-		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
-		ContactoDAO adaptadorContacto = factoria.getContactoDAO(contacto.getClass());
-		UsuarioDAO adaptadorUsuario = factoria.getUsuarioDAO();
-
-		// Creas el mensaje
-		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono, contacto);
-
-		// "Enviar" el mensaje para el contacto del usuario actual
-		mensaje.setTipo(TipoMensaje.SENT);
-		adaptadorMensaje.registrarMensaje(mensaje);
-		contacto.addMensaje(mensaje);
-		adaptadorContacto.modificarContacto(contacto);
-
-		// "Recibir" el mensaje para el usuario al que corresponde el contaco
+	public void enviarYrecibirMensaje(Contacto contacto, String texto, int emoticono) {
+		enviarMensaje(contacto,texto,emoticono);
+		//recibirMensaje(contacto,texto,emoticono);
+	}
+	
+	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
+		Mensaje mensaje = contacto.enviarMensaje(texto,emoticono,contacto);
+		
+		MensajeDAO mensajeDAO = factoria.getMensajeDAO();
+		mensajeDAO.registrarMensaje(mensaje);
+		
+		ContactoDAO contactoDAO = factoria.getContactoDAO(contacto.getClass());
+		contactoDAO.modificarContacto(contacto);
+		
+		if(contacto.isGroup()) {
+			for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
+				enviarMensaje(c,texto,emoticono);
+			}
+		}
+	}
+	
+	/*
+	private void recibirMensaje(Contacto contacto, String texto, int emoticono) {
 		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contacto.getMovil());
 		mensaje.setTipo(TipoMensaje.RECEIVED);
 		adaptadorMensaje.registrarMensaje(mensaje);
 
 		receptor.recibirMensaje(usuarioActual.getMovil(), mensaje);
-		adaptadorUsuario.modificarUsuario(usuarioActual);
+		adaptadorUsuario.modificarUsuario(usuarioActual);	
 	}
-
-	// POSIBLE REFACTORING HACER ContactoDAO como interfaz unica, y que ambos
-	// adaptadores hereden de hay
-	// Menos problema de tipos aun asi hay dos adaptadores eso todavia no se como
-	// resolverlo
-	// posible solucion que contactoDAO reciba un String tipo que sea la clase
-
-	// EL refactoring la parte primera la hace igual, la segunda he pensado en meter
-	// el metodo en contacto
-	// las dos posibles especificaciones, son en Grupo llamar a cada miembro y en
-	// Individual hacer la logica
-	// Para evitar duplicidad de mensajes pasar ya el mensaje guardado
-
-	// Para empezar puedo hacer dos funciones una que reciba ya el mensaje, y evitas
-	// toda la persistencia
-	// Y la general gestiona esta y llama luego a la otra
-
-	public void enviarMensajeGrupo(Grupo grupo, String textoMensaje, int emoticono) {
-		MensajeDAO adaptadorMensaje = factoria.getMensajeDAO();
-		ContactoDAO adaptadorGrupo = factoria.getContactoDAO(grupo.getClass());
-
-		// Creas el mensaje
-		Mensaje mensaje = new Mensaje(textoMensaje, LocalDateTime.now(), emoticono, grupo);
-
-		// "Enviar" el mensaje para el grupo del usuario actual
-		mensaje.setTipo(TipoMensaje.SENT);
-		adaptadorMensaje.registrarMensaje(mensaje);
-		grupo.addMensaje(mensaje);
-		adaptadorGrupo.modificarContacto(grupo);
-
-		// "Enviar y Recibir" el mensaje para cada usuario al que corresponde un miembro
-		for (ContactoIndividual contacto : grupo.getMiembros()) {
-			enviarMensajeIndividual(contacto, textoMensaje, emoticono);
-			// ESTO ESTA CREANDO UNA COPIA DE MENSAJE ENVIADO Y RECIVIDO PARA CADA MIEMBRO
-			// VAMOS QUE ESTA FATAL
-		}
-
-	}
-
-	public void bajaPremium() {
-		usuarioActual.bajaPremium();
-	}
-
-	public void altaPremium() {
-		usuarioActual.altaPremium();
-	}
-
-	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
-		return usuarioActual.buscarMensajes(contact, text, type);
-	}
-	
+	*/
 	
 
-	// He pensado en bajar toda la persistencia a dominio, no se si es posible, pero
-	// en su caso limpia mucho esta capa/clase
 }
