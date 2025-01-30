@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import dao.ContactoDAO;
-import dao.DAOException;
-import dao.FactoriaDAO;
-
 public class Usuario {
 	
 	private int codigo;
@@ -196,28 +192,18 @@ public class Usuario {
 				.flatMap(c -> c.buscarMensajes(text,type).stream()).collect(Collectors.toList());
 	}
 	
-	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
-	public void recibirMensaje(String movil, Mensaje mensaje) {
-		ContactoDAO adaptadorContacto;
-		
-		try {
-			adaptadorContacto = FactoriaDAO.getInstancia().getContactoDAO(ContactoIndividual.class);
-		} catch (DAOException e) {
-			e.printStackTrace();
-			return;
-		}
-		
+	public ContactoIndividual recibirMensaje(Usuario usuario) {
+		String movil = usuario.getMovil();
 		Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
+		
 		ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
-		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil,null); //REPOSITORIO GETUSER
+		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil, usuario);
 		    nuevoContacto.setAgregado(false);
-		    adaptadorContacto.registrarContacto(nuevoContacto);
 		    contactos.add(nuevoContacto); 
 		    return nuevoContacto;
 		});
 		
-		contacto.addMensaje(mensaje);
-		adaptadorContacto.modificarContacto(contacto);
+		return contacto;
 	}
 	
 	public Contacto nuevoContactoIn(String nombre, String telefono, Usuario asociado) {

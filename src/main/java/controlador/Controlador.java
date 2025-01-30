@@ -1,7 +1,6 @@
 package controlador;
 
 import java.awt.Image;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
@@ -176,7 +175,7 @@ public enum Controlador {
 	// PANEL DERECHO
 	public void enviarYrecibirMensaje(Contacto contacto, String texto, int emoticono) {
 		enviarMensaje(contacto,texto,emoticono);
-		//recibirMensaje(contacto,texto,emoticono);
+		recibirMensaje(contacto,texto,emoticono);
 	}
 	
 	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
@@ -195,16 +194,31 @@ public enum Controlador {
 		}
 	}
 	
-	/*
 	private void recibirMensaje(Contacto contacto, String texto, int emoticono) {
-		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contacto.getMovil());
-		mensaje.setTipo(TipoMensaje.RECEIVED);
-		adaptadorMensaje.registrarMensaje(mensaje);
-
-		receptor.recibirMensaje(usuarioActual.getMovil(), mensaje);
-		adaptadorUsuario.modificarUsuario(usuarioActual);	
+		
+		if(contacto.isGroup()) {
+			for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
+				recibirMensaje(c,texto,emoticono);
+			}
+			return; //Grupos no reciben mensajes
+		}
+		
+		ContactoIndividual contactoIn = (ContactoIndividual) contacto;
+		
+		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contactoIn.getMovil());
+		ContactoIndividual asociado = receptor.recibirMensaje(usuarioActual);
+		
+		if(asociado.getCodigo() == 0) {
+			factoria.getContactoDAO(asociado.getClass()).registrarContacto(asociado);
+			factoria.getUsuarioDAO().modificarUsuario(receptor);
+		}
+		
+		Mensaje mensaje = asociado.recibirMensaje(texto,emoticono,contacto);
+		
+		MensajeDAO mensajeDAO = factoria.getMensajeDAO();
+		mensajeDAO.registrarMensaje(mensaje);
+		
+		ContactoDAO contactoDAO = factoria.getContactoDAO(asociado.getClass());
+		contactoDAO.modificarContacto(asociado);
 	}
-	*/
-	
-
 }
