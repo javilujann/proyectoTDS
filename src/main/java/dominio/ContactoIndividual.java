@@ -11,7 +11,7 @@ public class ContactoIndividual extends Contacto{
 	public ContactoIndividual(String nombre, String movil, Usuario user) {
 		super(nombre);
 		this.movil = movil;
-		this.agregado = false;
+		this.agregado = true;
 		this.usuarioAsociado = user;
 	}
 
@@ -31,12 +31,19 @@ public class ContactoIndividual extends Contacto{
 		this.agregado = agreagado;
 	}
 	
+	public Usuario getUsuario() {
+		return usuarioAsociado;
+	}
+	
+	public void setUsuario(Usuario user) {
+		usuarioAsociado = user;
+	}
+	
 	@Override
     public String[] obtenerDetalles() {
         return new String[]{getNombre(), movil, usuarioAsociado.getBiografia()};
     }
-	
-	//GETER Y SETER DE USUARIO
+
 	
 	public void enviarMensaje(Mensaje mensaje) {
 		//VACIO
