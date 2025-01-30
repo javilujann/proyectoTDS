@@ -220,16 +220,15 @@ public class Usuario {
 		adaptadorContacto.modificarContacto(contacto);
 	}
 	
-	public int nuevoContactoIn(String nombre, String telefono, Usuario asociado) {
+	public Contacto nuevoContactoIn(String nombre, String telefono, Usuario asociado) {
 		for(Contacto c : contactos) {
-			if(c.corresponde(telefono)) return -2; //Puede que de problema con los noAgregados, solucionarlo alli
+			if(c.corresponde(telefono)) return null; //Puede que de problema con los noAgregados, solucionarlo alli
 		}
 		
 		ContactoIndividual nuevoContacto = new ContactoIndividual(nombre,telefono,asociado);
 		nuevoContacto.setAgregado(true);
 		contactos.add(nuevoContacto);
-		return 0;
-		//Se esta creando pero no guardando el contacto ni actualizando al usuario
+		return nuevoContacto;
 	}
 
 	public Grupo nuevoGrupo(String nombre) {

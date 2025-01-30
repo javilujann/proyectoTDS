@@ -144,8 +144,8 @@ public class DialogoGestionarGrupos extends JDialog {
 			for (int i = 0; i < addedContactsModel.getSize(); i++) {
 				nuevosMiembros.add((ContactoIndividual) addedContactsModel.getElementAt(i));
 			}
-
-			grupoModificar.setMiembros(nuevosMiembros); // Actualizar miembros del grupo
+			
+			Controlador.INSTANCE.modificarGrupo(grupoModificar,nuevosMiembros); // Actualizar miembros del grupo
 			JOptionPane.showMessageDialog(this, "Cambios guardados con éxito.");
 			dispose();
 		});
