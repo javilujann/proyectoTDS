@@ -17,7 +17,7 @@ public class ElementoListRenderer extends DefaultListCellRenderer{
 		if (value!=null && value instanceof Elemento) {
 			Elemento ele=(Elemento) value;
 			if (isSelected) {
-				ele.setBackground(Color.PINK);
+				ele.setBackground(Color.CYAN);
 			} else ele.setBackground(Color.LIGHT_GRAY); //list.getBackground()
 			
 			return ele;
