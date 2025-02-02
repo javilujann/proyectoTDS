@@ -3,6 +3,7 @@ package dao;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -100,7 +101,13 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 
 		// recuperar propiedades que no son objetos
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
-		int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticon"));
+		//int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticon"));
+		String preEmote = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticon");
+		int emoticon = Optional.ofNullable(preEmote)
+		                       .filter(v -> !v.isEmpty())
+		                       .map(Integer::parseInt)
+		                       .orElse(-1);
+		
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo"));
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
 		int codigoContacto = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "contacto"));
