@@ -7,7 +7,7 @@ public class Mensaje {
 	private int codigo;
 	private String texto;
 	private LocalDateTime hora;
-	private int emoticon;			//url de la imagen
+	private int emoticon;			//entero de la biblioteca bubbletext
 	private TipoMensaje tipo;
 	private Contacto contacto;
 	
