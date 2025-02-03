@@ -179,6 +179,11 @@ public enum Controlador {
 	}
 	
 	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
+		 if (contacto == null) {
+		        System.err.println("Error: El contacto es null. No se puede enviar el mensaje.");
+		        return;
+		    }
+		 
 		Mensaje mensaje = contacto.enviarMensaje(texto,emoticono,contacto);
 		
 		MensajeDAO mensajeDAO = factoria.getMensajeDAO();
@@ -187,7 +192,7 @@ public enum Controlador {
 		ContactoDAO contactoDAO = factoria.getContactoDAO(contacto.getClass());
 		contactoDAO.modificarContacto(contacto);
 		
-		if(contacto.isGroup()) {
+		if(contacto.isGroup() && contacto instanceof Grupo) {
 			for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
 				enviarMensaje(c,texto,emoticono);
 			}
