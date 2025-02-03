@@ -2,7 +2,6 @@ package dao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -79,7 +78,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	}
 
 	public void borrarUsuario(Usuario usuario) {
-		// No se comprueban restricciones de integridad con Contacto 
+		// No se comprueban restricciones de integridad con Contacto
 		Entidad eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
 		servPersistencia.borrarEntidad(eUsuario);
 	}
@@ -136,21 +135,11 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
 		String biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
 		Date fechaNacimiento = null;
-		/*try {
+		try {
 			String fecha = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento");
 			fechaNacimiento = dateFormat.parse(fecha);
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}*/
-		String fecha = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento");
-		if(fecha != null)
-			try {
-				fechaNacimiento = dateFormat.parse(fecha);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-		else {
-			fechaNacimiento = new Date();
 		}
 		Usuario usuario = new Usuario(nombre, apellidos, movil, contraseña, imagen, biografia, fechaNacimiento);
 		usuario.setCodigo(codigo);
@@ -163,12 +152,9 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		// recuperar propiedades que son objetos llamando a adaptadores
 		// contactos
 		List<Contacto> contactos = new ArrayList<Contacto>();
-		String conts = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos");
-		if(conts!=null) {
-			contactos = obtenerContactosDesdeCodigos(conts);
-			for (Contacto c : contactos)
-				usuario.addContacto(c); 
-		}
+		contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos"));
+		for (Contacto c : contactos)
+			usuario.addContacto(c);
 
 		return usuario;
 	}
