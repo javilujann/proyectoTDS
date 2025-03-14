@@ -1,6 +1,7 @@
 package dominio;
 
 import java.awt.Image;
+import java.time.LocalDateTime;
 
 public class ContactoIndividual extends Contacto{
 
@@ -44,10 +45,6 @@ public class ContactoIndividual extends Contacto{
         return new String[]{getNombre(), movil, usuarioAsociado.getBiografia()};
     }
 
-	
-	public void enviarMensaje(Mensaje mensaje) {
-		//VACIO
-	}
 
 	@Override
 	public boolean corresponde(String _movil) {
@@ -63,5 +60,12 @@ public class ContactoIndividual extends Contacto{
 	public Image getImage() {
 		return usuarioAsociado.getImagen();
 	}
+	
+	public Mensaje recibirMensaje(String texto, int emoticono, Contacto contacto) {
+        Mensaje mensaje = new Mensaje(texto,LocalDateTime.now(),emoticono,contacto);
+        mensaje.setTipo(TipoMensaje.RECEIVED);
+        super.addMensaje(mensaje);
+        return mensaje;
+    }
 
 }

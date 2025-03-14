@@ -197,27 +197,18 @@ public class Usuario {
 	}
 	
 	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
-	public void recibirMensaje(String movil, Mensaje mensaje) {
-		ContactoDAO adaptadorContacto;
-		
-		try {
-			adaptadorContacto = FactoriaDAO.getInstancia().getContactoDAO(ContactoIndividual.class);
-		} catch (DAOException e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
-		ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
-		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil,null); //REPOSITORIO GETUSER
-		    nuevoContacto.setAgregado(false);
-		    adaptadorContacto.registrarContacto(nuevoContacto);
-		    contactos.add(nuevoContacto); 
-		    return nuevoContacto;
-		});
-		
-		contacto.addMensaje(mensaje);
-		adaptadorContacto.modificarContacto(contacto);
+	public ContactoIndividual recibirMensaje(Usuario usuario) {
+		String movil = usuario.getMovil();
+        Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
+
+        ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
+            ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil, usuario);
+            nuevoContacto.setAgregado(false);
+            contactos.add(nuevoContacto); 
+            return nuevoContacto;
+        });
+
+        return contacto;
 	}
 	
 	public Contacto nuevoContactoIn(String nombre, String telefono, Usuario asociado) {

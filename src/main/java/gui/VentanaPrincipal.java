@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import controlador.Controlador;
@@ -16,9 +17,11 @@ public class VentanaPrincipal {
 	private JFrame frame;
 	DefaultListModel<Elemento> model = new DefaultListModel<>(); //Global para permitir actualizacion
     private int alturaAcumulada = 0;
+    private static int alturaPredeterminada = 400;
     private Contacto seleccionado;
     private JPanel leftPanel, rightPanel, messageArea;
-    
+    private JScrollPane messageScroll;
+    private JList<Elemento> lista;
     
     public VentanaPrincipal() {
         frame = new JFrame("AppChat");
@@ -90,6 +93,10 @@ public class VentanaPrincipal {
         newContactsButton.addActionListener(e -> {
         	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame);
         	dialogo.setVisible(true);
+        	SwingUtilities.invokeLater(() -> {
+    			leftPanel.revalidate();
+    			leftPanel.repaint();
+    		});
         });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newContactsButton);
@@ -147,20 +154,22 @@ public class VentanaPrincipal {
         leftPanel.add(encabezado, BorderLayout.NORTH);
 
         // Lista 
-        JList<Elemento> lista = new JList<>();
+        lista = new JList<>();
         actualizarListaContactos();
         
         lista.setModel(model);
         lista.setCellRenderer(new ElementoListRenderer());
-        //lista.setSelectedIndex(0);             								//Seleccionamos el primer chat por defecto. Da problemas si no hay chats
-        //this.seleccionado = lista.getSelectedValue().getContacto();
         
         	// Listener para selección
         lista.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 Elemento seleccionado = lista.getSelectedValue();
                 if (seleccionado != null) {
-                	seleccionarContacto(seleccionado.getContacto(), messageArea);		//No basta con crear right panel cada vez, va a haber que llamar desde arriba
+                	seleccionarContacto(seleccionado.getContacto());
+                	SwingUtilities.invokeLater(() -> {
+            			JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
+            			verticalBar.setValue(verticalBar.getMaximum());
+            		});//No basta con crear right panel cada vez, va a haber que llamar desde arriba
                 }
             }
         });
@@ -182,11 +191,9 @@ public class VentanaPrincipal {
 
         // Área de mensajes (no editable)
         messageArea = new JPanel();
-        messageArea.setLayout(new BoxLayout(messageArea,BoxLayout.Y_AXIS));
-        messageArea.setPreferredSize(new Dimension(550, 400));
-        messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        configurarAreaMensajes(messageArea);
 
-        JScrollPane messageScroll = new JScrollPane(messageArea);
+        messageScroll = new JScrollPane(messageArea);
         messageScroll.setLayout(new ScrollPaneLayout());
         messageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         messageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -205,8 +212,8 @@ public class VentanaPrincipal {
         JButton sendButton = new JButton("Enviar");
         sendButton.addActionListener(e -> {
             String message = messageInput.getText().trim();
-            if (!message.isEmpty()) {
-                enviarMensaje(messageArea, message, -1, -1);									//Se envía el mensaje al chat de forma gráfica	
+            if (!message.isEmpty() && seleccionado!=null) {
+                enviarYRecibirMensaje(messageArea, message, -1, -1, BubbleText.SENT);									//Se envía el mensaje al chat de forma gráfica	
                 messageInput.setText("");
                 SwingUtilities.invokeLater(() -> {
                     JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
@@ -219,12 +226,14 @@ public class VentanaPrincipal {
         JButton emoteButton = new JButton(":)");
         emoteButton.addActionListener(e->{
         	int emote = ThreadLocalRandom.current().nextInt(0, BubbleText.MAXICONO+1);
-        	enviarMensaje(messageArea, "", emote, 18);
-        	SwingUtilities.invokeLater(() -> {
-                JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
-                verticalBar.setValue(verticalBar.getMaximum());
-            });
+        	if (seleccionado!=null) {
+        		enviarYRecibirMensaje(messageArea, "", emote, 18, BubbleText.SENT);
+        		SwingUtilities.invokeLater(() -> {
+        			JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
+        			verticalBar.setValue(verticalBar.getMaximum());
+        		});
         	Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, "", emote);
+        	}
         });
 
         // Agregar componentes al panel de entrada
@@ -276,53 +285,58 @@ public class VentanaPrincipal {
         }
     }
     
-    private void enviarMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño) {
+    private void enviarYRecibirMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño, int tipo) {
     	BubbleText m;
     	Optional<String> textoMensaje = Optional.of(cuerpo);
     	
     	if(emote>=0) {
-    		m = new BubbleText(panelChat, emote, Color.CYAN, "Yo", BubbleText.SENT, tamaño);
+    		m = new BubbleText(panelChat, emote, Color.CYAN, "Yo",tipo, tamaño);
     		
     	} else {
-    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, "Yo", BubbleText.SENT);
+    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, "Yo", tipo);
     	}
     	
-    	m.setAlignmentX(Component.RIGHT_ALIGNMENT);
-    	panelChat.add(m, BorderLayout.EAST);
-    	panelChat.revalidate();
-    	if(alturaAcumulada >= 400) {
-    		panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+m.getHeight()));
-    	}else {
-    		alturaAcumulada+=m.getHeight();
-    		if(alturaAcumulada >= 400) {
-    			panelChat.setPreferredSize(new Dimension(550, panelChat.getHeight()+alturaAcumulada-400));
-    		}
-    	}
+    	alturaAcumulada += m.getHeight();
+    	UtilsGui.fixSize(panelChat, 550, Math.max(alturaAcumulada, alturaPredeterminada) + 10);
+    	panelChat.add(m /*, BorderLayout.EAST */);
     	m.setVisible(true);
+
+    	panelChat.revalidate();
     	panelChat.repaint();
     };
     
     //Función para seleccionar un nuevo contacto, activando las consecuentes acciones en el panel de la derecha
-    private void seleccionarContacto(Contacto contacto, JPanel panelChat) {
+    private void seleccionarContacto(Contacto contacto) {
+    	
     	seleccionado = contacto;
-    	panelChat.removeAll();
+    	
+    	messageArea = new JPanel();
+    	configurarAreaMensajes(messageArea);
+    	
+    	messageScroll.setViewportView(messageArea);
+    	messageScroll.revalidate();
+    	messageScroll.repaint();
+    	
+    	alturaAcumulada = 0;
+    	
     	for (Mensaje m:contacto.getListaMensajes()) {
     		if((m.getTexto()!=null && !m.getTexto().isEmpty()) ^ m.getEmoticon()>=0) {
-    			enviarMensaje(panelChat, m.getTexto(), m.getEmoticon(), 18);
+    			int tipo = m.getTipo().equals(TipoMensaje.SENT) ? BubbleText.SENT : BubbleText.RECEIVED;
+    			enviarYRecibirMensaje(messageArea, m.getTexto(), m.getEmoticon(), 18, tipo);
+    			messageArea.revalidate();messageArea.repaint();
     		}
     	}
+
+    	return;
     }
     
-    /*TO DO
-     * Ampliar los action listener de envío de mensajes para que también actualicen las listas de mensajes del emisor y el receptor
-     * Funcion para cargar los mensajes del usuiario al entrar al chat y transformarlos en mensajes gráficos
-     * 
-     * Dado un contacto seleccionado, ya sea con busqueda o con la lista de la izquierda, que se carge el chat individual correspondiente a la derecha
-     * 
-     */
+    private void configurarAreaMensajes(JPanel messageArea) {
+    	messageArea.setLayout(new BoxLayout(messageArea,BoxLayout.Y_AXIS));
+    	UtilsGui.fixSize(messageArea, 550, Math.max(alturaAcumulada, alturaPredeterminada));
+    	messageArea.setSize(new Dimension(550, Math.max(alturaAcumulada, 400)));
+        messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    	
+    }
     
-    
-    
- 
 
 }

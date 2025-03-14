@@ -102,7 +102,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 		// recuperar propiedades que no son objetos
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
 		//int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticon"));
-		String preEmote = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticon");
+		String preEmote = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticono");
 		int emoticon = Optional.ofNullable(preEmote)
 		                       .filter(v -> !v.isEmpty())
 		                       .map(Integer::parseInt)

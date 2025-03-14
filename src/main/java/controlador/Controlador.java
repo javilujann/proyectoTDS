@@ -115,7 +115,7 @@ public enum Controlador {
 			return -1;
 
 		Contacto nuevo = usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
-		if(nuevo == null) return -1;
+		if(nuevo == null) return -2;
 		
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
 		ContactoDAO contactoDAO = factoria.getContactoDAO(nuevo.getClass());
@@ -175,15 +175,15 @@ public enum Controlador {
 
 	// PANEL DERECHO
 	public void enviarYrecibirMensaje(Contacto contacto, String texto, int emoticono) {
-		enviarMensaje(contacto,texto,emoticono);
-		//recibirMensaje(contacto,texto,emoticono);
-	}
-	
-	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
 		 if (contacto == null) {
 		        System.err.println("Error: El contacto es null. No se puede enviar el mensaje.");
 		        return;
 		    }
+		enviarMensaje(contacto,texto,emoticono);
+		recibirMensaje(contacto,texto,emoticono);
+	}
+	
+	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
 		 
 		Mensaje mensaje = contacto.enviarMensaje(texto,emoticono,contacto);
 		
@@ -193,23 +193,41 @@ public enum Controlador {
 		ContactoDAO contactoDAO = factoria.getContactoDAO(contacto.getClass());
 		contactoDAO.modificarContacto(contacto);
 		
-		if(contacto.isGroup() && contacto instanceof Grupo) {
+		if(contacto.isGroup()) {
 			for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
 				enviarMensaje(c,texto,emoticono);
 			}
 		}
 	}
 	
-	/*
+	
 	private void recibirMensaje(Contacto contacto, String texto, int emoticono) {
-		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contacto.getMovil());
-		mensaje.setTipo(TipoMensaje.RECEIVED);
-		adaptadorMensaje.registrarMensaje(mensaje);
+		  if(contacto.isGroup()) {
+	            for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
+	                recibirMensaje(c,texto,emoticono);
+	            }
+	            return; //Grupos no reciben mensajes
+	        }
 
-		receptor.recibirMensaje(usuarioActual.getMovil(), mensaje);
-		adaptadorUsuario.modificarUsuario(usuarioActual);	
+	        ContactoIndividual contactoIn = (ContactoIndividual) contacto;
+
+	        Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contactoIn.getMovil());
+	        ContactoIndividual asociado = receptor.recibirMensaje(usuarioActual);
+
+	        if(asociado.getCodigo() == 0) {
+	            factoria.getContactoDAO(asociado.getClass()).registrarContacto(asociado);
+	            factoria.getUsuarioDAO().modificarUsuario(receptor);
+	        }
+
+	        Mensaje mensaje = asociado.recibirMensaje(texto,emoticono,contacto);
+
+	        MensajeDAO mensajeDAO = factoria.getMensajeDAO();
+	        mensajeDAO.registrarMensaje(mensaje);
+
+	        ContactoDAO contactoDAO = factoria.getContactoDAO(asociado.getClass());
+	        contactoDAO.modificarContacto(asociado);	
 	}
-	*/
+	
 	
 
 }

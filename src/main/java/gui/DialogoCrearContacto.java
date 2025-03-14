@@ -3,10 +3,12 @@ package gui;
 import javax.swing.*;
 
 import controlador.Controlador;
+import dominio.Contacto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Optional;
 
 @SuppressWarnings("serial")
 public class DialogoCrearContacto extends JDialog {
@@ -61,5 +63,7 @@ public class DialogoCrearContacto extends JDialog {
 		add(btnCancelar);
 
 		setLocationRelativeTo(parent); // Centrar respecto al JFrame principal
+		
 	}
+	
 }
