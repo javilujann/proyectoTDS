@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import dao.ContactoDAO;
-import dao.DAOException;
-import dao.FactoriaDAO;
-
 public class Usuario {
 	
 	private int codigo;
@@ -196,6 +192,7 @@ public class Usuario {
 				.flatMap(c -> c.buscarMensajes(text,type).stream()).collect(Collectors.toList());
 	}
 	
+/*<<<<<<< HEAD
 	//MUY GRANDE VER SI SE PUEDE HACER MAS SENCILLO
 	public ContactoIndividual recibirMensaje(Usuario usuario) {
 		String movil = usuario.getMovil();
@@ -209,6 +206,20 @@ public class Usuario {
         });
 
         return contacto;
+=======*/
+	public ContactoIndividual recibirMensaje(Usuario usuario) {
+		String movil = usuario.getMovil();
+		Optional<Contacto> optionalContacto = contactos.stream().filter(c -> c.corresponde(movil)).findFirst();
+		
+		ContactoIndividual contacto = (ContactoIndividual) optionalContacto.orElseGet(() -> {
+		    ContactoIndividual nuevoContacto = new ContactoIndividual(movil, movil, usuario);
+		    nuevoContacto.setAgregado(false);
+		    contactos.add(nuevoContacto); 
+		    return nuevoContacto;
+		});
+		
+		return contacto;
+//>>>>>>> branch 'main' of https://gitlab.com/tds1341744/appchat_tds.git
 	}
 	
 	public Contacto nuevoContactoIn(String nombre, String telefono, Usuario asociado) {

@@ -68,4 +68,5 @@ public class ContactoIndividual extends Contacto{
         return mensaje;
     }
 
+
 }

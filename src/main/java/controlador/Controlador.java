@@ -1,7 +1,6 @@
 package controlador;
 
 import java.awt.Image;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
@@ -175,13 +174,21 @@ public enum Controlador {
 
 	// PANEL DERECHO
 	public void enviarYrecibirMensaje(Contacto contacto, String texto, int emoticono) {
+/*<<<<<<< HEAD
+=======*/
+		enviarMensaje(contacto,texto,emoticono);
+		recibirMensaje(contacto,texto,emoticono);
+	}
+	
+	/*private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
+//>>>>>>> branch 'main' of https://gitlab.com/tds1341744/appchat_tds.git
 		 if (contacto == null) {
 		        System.err.println("Error: El contacto es null. No se puede enviar el mensaje.");
 		        return;
 		    }
 		enviarMensaje(contacto,texto,emoticono);
 		recibirMensaje(contacto,texto,emoticono);
-	}
+	}*/
 	
 	private void enviarMensaje(Contacto contacto, String texto, int emoticono) {
 		 
@@ -200,8 +207,8 @@ public enum Controlador {
 		}
 	}
 	
-	
 	private void recibirMensaje(Contacto contacto, String texto, int emoticono) {
+/*<<<<<<< HEAD
 		  if(contacto.isGroup()) {
 	            for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
 	                recibirMensaje(c,texto,emoticono);
@@ -226,8 +233,33 @@ public enum Controlador {
 
 	        ContactoDAO contactoDAO = factoria.getContactoDAO(asociado.getClass());
 	        contactoDAO.modificarContacto(asociado);	
+=======*/
+		
+		if(contacto.isGroup()) {
+			for(ContactoIndividual c : ((Grupo)contacto).getMiembros()) {
+				recibirMensaje(c,texto,emoticono);
+			}
+			return; //Grupos no reciben mensajes
+		}
+		
+		ContactoIndividual contactoIn = (ContactoIndividual) contacto;
+		
+		Usuario receptor = RepositorioUsuarios.getUnicaInstancia().getUsuario(contactoIn.getMovil());
+		ContactoIndividual asociado = receptor.recibirMensaje(usuarioActual);
+		
+		if(asociado.getCodigo() == 0) {
+			factoria.getContactoDAO(asociado.getClass()).registrarContacto(asociado);
+			factoria.getUsuarioDAO().modificarUsuario(receptor);
+		}
+		
+		Mensaje mensaje = asociado.recibirMensaje(texto,emoticono,contacto);
+		
+		MensajeDAO mensajeDAO = factoria.getMensajeDAO();
+		mensajeDAO.registrarMensaje(mensaje);
+		
+		ContactoDAO contactoDAO = factoria.getContactoDAO(asociado.getClass());
+		contactoDAO.modificarContacto(asociado);
+//>>>>>>> branch 'main' of https://gitlab.com/tds1341744/appchat_tds.git
 	}
-	
-	
 
 }

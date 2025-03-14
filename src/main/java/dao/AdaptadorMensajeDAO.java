@@ -3,8 +3,6 @@ package dao;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
-
 import beans.Entidad;
 import beans.Propiedad;
 import tds.driver.FactoriaServicioPersistencia;
@@ -101,6 +99,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 
 		// recuperar propiedades que no son objetos
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
+/*<<<<<<< HEAD
 		//int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticon"));
 		String preEmote = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticono");
 		int emoticon = Optional.ofNullable(preEmote)
@@ -108,6 +107,9 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 		                       .map(Integer::parseInt)
 		                       .orElse(-1);
 		
+=======*/
+		int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticono")); 
+//>>>>>>> branch 'main' of https://gitlab.com/tds1341744/appchat_tds.git
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo"));
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
 		int codigoContacto = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "contacto"));

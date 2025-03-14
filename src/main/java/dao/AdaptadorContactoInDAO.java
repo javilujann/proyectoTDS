@@ -3,7 +3,6 @@ package dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
@@ -113,12 +112,7 @@ public class AdaptadorContactoInDAO implements ContactoDAO {
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
 		String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
 		Boolean agregado = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "agregado"));
-		String preCodUser = servPersistencia.recuperarPropiedadEntidad(eContacto, "usuario");
-		int codigoUser = Optional.ofNullable(preCodUser)
-		                       .filter(v -> !v.isEmpty())
-		                       .map(Integer::parseInt)
-		                       .orElse(-1);															//Habría que tratar el caso de -1, es decir, de que no existan usuarios con ese código o no haya código que recuperar
-		//int codigoUser = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "usuario"));
+		int codigoUser = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "usuario"));
 		Usuario user = AdaptadorUsuarioDAO.getUnicaInstancia().recuperarUsuario(codigoUser); //Bidireccion?
 		
 		ContactoIndividual contacto = new ContactoIndividual(nombre, movil, user);
