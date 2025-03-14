@@ -99,21 +99,15 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 
 		// recuperar propiedades que no son objetos
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
-/*<<<<<<< HEAD
-		//int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticon"));
-		String preEmote = servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticono");
-		int emoticon = Optional.ofNullable(preEmote)
-		                       .filter(v -> !v.isEmpty())
-		                       .map(Integer::parseInt)
-		                       .orElse(-1);
-		
-=======*/
 		int emoticon = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje,"emoticono")); 
-//>>>>>>> branch 'main' of https://gitlab.com/tds1341744/appchat_tds.git
 		TipoMensaje tipo = TipoMensaje.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo"));
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
 		int codigoContacto = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "contacto"));
-		Contacto contacto = AdaptadorContactoInDAO.getUnicaInstancia().recuperarContacto(codigoContacto); //Bidireccion?
+		
+		Contacto contacto = AdaptadorGrupoDAO.getUnicaInstancia().recuperarContacto(codigoContacto); // Bidireccion?
+		contacto = contacto != null ? contacto
+				: AdaptadorContactoInDAO.getUnicaInstancia().recuperarContacto(codigoContacto);
+		
 		Mensaje mensaje = new Mensaje(texto, hora,emoticon,contacto); 
 		mensaje.setCodigo(codigo);
 		mensaje.setTipo(tipo);

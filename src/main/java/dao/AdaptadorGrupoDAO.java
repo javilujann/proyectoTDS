@@ -118,6 +118,9 @@ public class AdaptadorGrupoDAO implements ContactoDAO {
 		Grupo grupo = new Grupo(nombre);
 		grupo.setCodigo(codigo);
 
+		// IMPORTANTE:añadir el Grupo al pool antes de llamar a otros adaptadores
+		PoolDAO.getUnicaInstancia().addObjeto(codigo, grupo);
+
 		// recuperar propiedades que son objetos llamando a adaptadores
 		List<ContactoIndividual> miembros = new ArrayList<ContactoIndividual>();
 		miembros = obtenerMiembrosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGrupo, "miembros"));

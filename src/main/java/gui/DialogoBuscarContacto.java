@@ -58,7 +58,7 @@ public class DialogoBuscarContacto extends JDialog {
             if (selectedRow != -1) {
                 // Obtener el objeto Contacto correspondiente
                 Contacto selectedContact = contactos.get(selectedRow);
-                JOptionPane.showMessageDialog(this, "Seleccionaste: " + selectedContact);
+                JOptionPane.showMessageDialog(this, "Seleccionaste: " + selectedContact.getNombre());
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Por favor, selecciona un contacto.");
