@@ -165,8 +165,7 @@ public enum Controlador {
 
 	// PANEL IZQUIERDO 
 	public void agregarContacto(ContactoIndividual contacto, String nombre) {
-		contacto.setNombre(nombre);
-		contacto.setAgregado(true); //Hacer metodo en el contacto
+		contacto.agregar(nombre);
 		
 		ContactoDAO contactoDAO = factoria.getContactoDAO(contacto.getClass());
 		contactoDAO.modificarContacto(contacto);

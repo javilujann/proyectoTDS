@@ -67,6 +67,11 @@ public class ContactoIndividual extends Contacto{
         super.addMensaje(mensaje);
         return mensaje;
     }
+	
+	public void agregar(String nombre) {
+		this.setNombre(nombre);
+		agregado = true;
+	}
 
 
 }

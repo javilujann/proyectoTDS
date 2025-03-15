@@ -3,18 +3,17 @@ package gui;
 import javax.swing.*;
 
 import controlador.Controlador;
-import dominio.Contacto;
+import dominio.ContactoIndividual;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Optional;
 
 @SuppressWarnings("serial")
 public class DialogoCrearContacto extends JDialog {
 	private JTextField txtNombre, txtTelefono;
 
-	public DialogoCrearContacto(JFrame parent) {
+	public DialogoCrearContacto(JFrame parent, ContactoIndividual contacto) {
 		super(parent, "Crear Contacto", true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setSize(300, 150);
@@ -24,6 +23,12 @@ public class DialogoCrearContacto extends JDialog {
 		txtNombre = new JTextField();
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		txtTelefono = new JTextField();
+		
+		 // Verificamos si el contacto es nuevo o no agregado
+        if (contacto != null) { 
+            txtTelefono.setText(contacto.getMovil()); 
+            txtTelefono.setEditable(false); 
+        }
 
 		JButton btnGuardar = new JButton("Guardar");
 		btnGuardar.addActionListener(new ActionListener() {
@@ -32,7 +37,9 @@ public class DialogoCrearContacto extends JDialog {
 				String nombre = txtNombre.getText();
 				String telefono = txtTelefono.getText();
 				if (!nombre.isEmpty() && !telefono.isEmpty()) {
-					int error = Controlador.INSTANCE.añadirContacto(nombre, telefono);
+					int error = 0;
+					if(contacto == null) error = Controlador.INSTANCE.añadirContacto(nombre, telefono);
+					else Controlador.INSTANCE.agregarContacto(contacto, nombre);
 					switch(error) {
 						case 0:
 							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Contacto creado correctamente.");
