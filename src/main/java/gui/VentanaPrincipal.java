@@ -3,12 +3,14 @@ package gui;
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import controlador.Controlador;
 import dominio.Contacto;
+import dominio.ContactoIndividual;
 import dominio.Mensaje;
 import dominio.TipoMensaje;
 import tds.BubbleText;
@@ -91,7 +93,7 @@ public class VentanaPrincipal {
         	//Boton para añadir contactos
         JButton newContactsButton = new JButton("Añadir Contacto");
         newContactsButton.addActionListener(e -> {
-        	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame);
+        	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame,null);
         	dialogo.setVisible(true);
         	SwingUtilities.invokeLater(() -> {
     			leftPanel.revalidate();
@@ -160,7 +162,7 @@ public class VentanaPrincipal {
         lista.setModel(model);
         lista.setCellRenderer(new ElementoListRenderer());
         
-        	// Listener para selección
+        	// Listener para selección del chat
         lista.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 Elemento seleccionado = lista.getSelectedValue();
@@ -173,6 +175,23 @@ public class VentanaPrincipal {
                 }
             }
         });
+        
+        	// Listener para los no agregados
+        lista.addMouseListener(new MouseAdapter() {
+     		@Override
+     		public void mouseClicked(MouseEvent e) {
+     			if (e.getClickCount() == 2) {
+     				Elemento seleccionado = lista.getSelectedValue();
+     				if(seleccionado != null) {
+     					Contacto contacto = seleccionado.getContacto();
+     					if (!contacto.isGroup() && ! ((ContactoIndividual) contacto).isAgregado() ) {
+     						DialogoCrearContacto dialogo = new DialogoCrearContacto(frame, (ContactoIndividual) contacto);
+     						dialogo.setVisible(true);
+     					}	
+     				}
+     			}
+     		}
+     	});
 
         // Scroll 
         JScrollPane scroll = new JScrollPane(lista);
@@ -284,6 +303,29 @@ public class VentanaPrincipal {
             model.addElement(new Elemento(c)); 
         }
     }
+    
+    /*
+    public void actualizarContacto(Contacto c) {
+    	for (int i = 0; i < model.getSize(); i++) {
+        	Elemento elemento = model.getElementAt(i);
+        	if (elemento.getContacto().equals(c)) {
+            	elemento.repaint(); // Redibuja solo este elemento
+            	return;
+        	}
+    	}
+	}
+	
+	Posible mejora, tambien una para agreagar y llmar a la otra cargar por ejemplo
+	
+	 public void agregarContacto(Contacto nuevoContacto) {
+    	for (int i = 0; i < model.getSize(); i++) {
+        	if (model.getElementAt(i).getContacto().equals(nuevoContacto)) {
+            	return; // El contacto ya está en la lista, no lo añadimos
+        	}
+    	}
+    	model.addElement(new Elemento(nuevoContacto));
+	}
+    */
     
     private void enviarYRecibirMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño, int tipo) {
     	BubbleText m;
