@@ -147,10 +147,16 @@ public enum Controlador {
 	
 	public void altaPremium() {
 		usuarioActual.altaPremium();
+		
+		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
+		usuarioDAO.modificarUsuario(usuarioActual);
 	}
 	
 	public void bajaPremium() {
 		usuarioActual.bajaPremium();
+		
+		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
+		usuarioDAO.modificarUsuario(usuarioActual);
 	}
 	
 	public void crearPDF(Contacto contacto) {

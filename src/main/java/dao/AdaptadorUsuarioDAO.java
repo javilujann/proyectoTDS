@@ -100,7 +100,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 				prop.setValor(usuario.getContraseña());
 			} else if (prop.getNombre().equals("imagen")) {
 				prop.setValor(usuario.getURL());
-			} else if (prop.getNombre().equals("premium")) {
+			} else if (prop.getNombre().equals("Premium")) {
 				prop.setValor(String.valueOf(usuario.isPremium())); // Convertir boolean a String
 			} else if (prop.getNombre().equals("contactos")) {
 				String contactos = obtenerCodigosContactos(usuario.getContactos());
@@ -132,7 +132,7 @@ public class AdaptadorUsuarioDAO implements UsuarioDAO {
 		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, "movil");
 		String contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
 		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
-		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
+		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "Premium"));
 		String biografia = servPersistencia.recuperarPropiedadEntidad(eUsuario, "biografia");
 		Date fechaNacimiento = null;
 		try {
