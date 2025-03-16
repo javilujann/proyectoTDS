@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -18,10 +17,10 @@ import dominio.Contacto;
 @SuppressWarnings("serial")
 public class DialogoBuscarContacto extends JDialog {
 
-    public DialogoBuscarContacto(Frame owner) {
-        super(owner, "Tabla de Contactos", true);
+    public DialogoBuscarContacto(VentanaPrincipal owner) {
+        super(owner.getFrame(), "Tabla de Contactos", true);
        // setSize(400, 400);
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(owner.getFrame());
 
         // Columnas de la tabla
         String[] columnNames = { "Nombre", "Teléfono", "Saludo" };
@@ -59,6 +58,7 @@ public class DialogoBuscarContacto extends JDialog {
                 // Obtener el objeto Contacto correspondiente
                 Contacto selectedContact = contactos.get(selectedRow);
                 JOptionPane.showMessageDialog(this, "Seleccionaste: " + selectedContact.getNombre());
+                owner.setIndex(selectedRow);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Por favor, selecciona un contacto.");
@@ -70,6 +70,6 @@ public class DialogoBuscarContacto extends JDialog {
         add(new JScrollPane(contactTable), BorderLayout.CENTER);
         add(selectButton, BorderLayout.SOUTH);
         setSize(500, 300);
-        setLocationRelativeTo(owner);
+        setLocationRelativeTo(owner.getFrame());
     }
 }

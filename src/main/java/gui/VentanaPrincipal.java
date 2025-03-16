@@ -84,7 +84,7 @@ public class VentanaPrincipal {
         	//Boton de seleccion de contacto
         JButton contactsButton = new JButton("Buscar Contactos");
         contactsButton.addActionListener(e -> {
-        	DialogoBuscarContacto dialogo = new DialogoBuscarContacto(frame);
+        	DialogoBuscarContacto dialogo = new DialogoBuscarContacto(this);
         	dialogo.setVisible(true);
         });
         topPanel.add(Box.createHorizontalStrut(10));
@@ -254,6 +254,7 @@ public class VentanaPrincipal {
         	Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, "", emote);
         	}
         });
+        
 
         // Agregar componentes al panel de entrada
         inputPanel.add(messageInput, BorderLayout.CENTER);
@@ -378,6 +379,14 @@ public class VentanaPrincipal {
     	messageArea.setSize(new Dimension(550, Math.max(alturaAcumulada, 400)));
         messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     	
+    }
+    
+    public JFrame getFrame() {
+        return frame;
+    }
+    
+    public void setIndex(int index) {
+    	lista.setSelectedIndex(index);
     }
     
 
