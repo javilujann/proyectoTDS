@@ -15,14 +15,14 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class DialogoPremium extends JDialog {
 
-	public DialogoPremium(JFrame owner, boolean isPremium) {
-		super(owner, "Premium", true);
+	public DialogoPremium(VentanaPrincipal owner, boolean isPremium) {
+		super(owner.getFrame(), "Premium", true);
 		if (!isPremium)
 			initializePayWindow();
 		else
 			initializePremiumFuncionality();
 		setSize(400, 300);
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(owner.getFrame());
 	}
 
 	private void initializePayWindow() {

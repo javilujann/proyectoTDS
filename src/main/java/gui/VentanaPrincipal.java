@@ -76,7 +76,7 @@ public class VentanaPrincipal {
         	// Boton de busquedas de mensajes
         JButton searchButton = new JButton("Buscar Mensajes");
         searchButton.addActionListener(e -> {
-        	DialogoBusquedaMensajes dialogo = new DialogoBusquedaMensajes(frame);
+        	DialogoBusquedaMensajes dialogo = new DialogoBusquedaMensajes(this);
         	dialogo.setVisible(true);
         });
         topPanel.add(searchButton);
@@ -93,7 +93,7 @@ public class VentanaPrincipal {
         	//Boton para añadir contactos
         JButton newContactsButton = new JButton("Añadir Contacto");
         newContactsButton.addActionListener(e -> {
-        	DialogoCrearContacto dialogo = new DialogoCrearContacto(frame,null);
+        	DialogoCrearContacto dialogo = new DialogoCrearContacto(this,null);
         	dialogo.setVisible(true);
         	SwingUtilities.invokeLater(() -> {
     			leftPanel.revalidate();
@@ -112,7 +112,7 @@ public class VentanaPrincipal {
         	//Boton para gestionar premium
         JButton premiumButton = new JButton("Premium");
         premiumButton.addActionListener(e -> {
-        	DialogoPremium dialogo = new DialogoPremium(frame,Controlador.INSTANCE.getUsuarioActual().isPremium());
+        	DialogoPremium dialogo = new DialogoPremium(this,Controlador.INSTANCE.getUsuarioActual().isPremium());
         	dialogo.setVisible(true);
         });
         topPanel.add(Box.createHorizontalStrut(10));
@@ -157,7 +157,7 @@ public class VentanaPrincipal {
 
         // Lista 
         lista = new JList<>();
-        actualizarListaContactos();
+        cargarListaContactos();
         
         lista.setModel(model);
         lista.setCellRenderer(new ElementoListRenderer());
@@ -185,7 +185,7 @@ public class VentanaPrincipal {
      				if(seleccionado != null) {
      					Contacto contacto = seleccionado.getContacto();
      					if (!contacto.isGroup() && ! ((ContactoIndividual) contacto).isAgregado() ) {
-     						DialogoCrearContacto dialogo = new DialogoCrearContacto(frame, (ContactoIndividual) contacto);
+     						DialogoCrearContacto dialogo = new DialogoCrearContacto(VentanaPrincipal.this , (ContactoIndividual) contacto);
      						dialogo.setVisible(true);
      					}	
      				}
@@ -239,6 +239,7 @@ public class VentanaPrincipal {
                     verticalBar.setValue(verticalBar.getMaximum());
                 });
                 Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, message, -1);			//Se envía el mensaje de forma real al contacto seleccionado
+                actualizarListaContactos(seleccionado);
             }
         });
         
@@ -252,6 +253,7 @@ public class VentanaPrincipal {
         			verticalBar.setValue(verticalBar.getMaximum());
         		});
         	Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, "", emote);
+        	actualizarListaContactos(seleccionado);
         	}
         });
         
@@ -273,17 +275,16 @@ public class VentanaPrincipal {
         // Opción "Crear Grupo"
         JMenuItem crearGrupoItem = new JMenuItem("Crear Grupo");
         crearGrupoItem.addActionListener(e -> {
-        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame,true);
+        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(this,true);
             dialogo.setLocationRelativeTo(frame);
             dialogo.setVisible(true);
-            actualizarListaContactos();
         });
         popupMenu.add(crearGrupoItem);
 
         // Opción "Modificar Grupo"
         JMenuItem modificarGrupoItem = new JMenuItem("Modificar Grupo");
         modificarGrupoItem.addActionListener(e -> {
-        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(frame,false);
+        	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(this,false);
             dialogo.setVisible(true);
         });
         popupMenu.add(modificarGrupoItem);
@@ -298,45 +299,45 @@ public class VentanaPrincipal {
     }
     
     	//Metodo para actualizar la lista del panel izquierdo
-    public void actualizarListaContactos() {
+   public void cargarListaContactos() {
         model.clear(); 
         for (Contacto c : Controlador.INSTANCE.getContactos()) {
             model.addElement(new Elemento(c)); 
         }
     }
     
-    /*
-    public void actualizarContacto(Contacto c) {
+   public void actualizarListaContactos(Contacto c) {
     	for (int i = 0; i < model.getSize(); i++) {
         	Elemento elemento = model.getElementAt(i);
         	if (elemento.getContacto().equals(c)) {
-            	elemento.repaint(); // Redibuja solo este elemento
+        		model.set(i, new Elemento(c)); 
             	return;
         	}
     	}
 	}
-	
-	Posible mejora, tambien una para agreagar y llmar a la otra cargar por ejemplo
-	
-	 public void agregarContacto(Contacto nuevoContacto) {
-    	for (int i = 0; i < model.getSize(); i++) {
+    
+	public void añadirListaContactos(Contacto nuevoContacto) {
+		for (int i = 0; i < model.getSize(); i++) {
         	if (model.getElementAt(i).getContacto().equals(nuevoContacto)) {
-            	return; // El contacto ya está en la lista, no lo añadimos
+            	return; 
         	}
     	}
+		
     	model.addElement(new Elemento(nuevoContacto));
 	}
-    */
     
     private void enviarYRecibirMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño, int tipo) {
     	BubbleText m;
+    	String nombre;
+    	
     	Optional<String> textoMensaje = Optional.of(cuerpo);
+    	nombre = tipo == BubbleText.SENT  ? Controlador.INSTANCE.getUsuarioActual().getNombre() : seleccionado.getNombre();
     	
     	if(emote>=0) {
-    		m = new BubbleText(panelChat, emote, Color.CYAN, "Yo",tipo, tamaño);
+    		m = new BubbleText(panelChat, emote, Color.CYAN, nombre,tipo, tamaño);
     		
     	} else {
-    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, "Yo", tipo);
+    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, nombre, tipo);
     	}
     	
     	alturaAcumulada += m.getHeight();

@@ -12,9 +12,10 @@ import java.awt.event.ActionListener;
 @SuppressWarnings("serial")
 public class DialogoCrearContacto extends JDialog {
 	private JTextField txtNombre, txtTelefono;
+	private ContactoIndividual contacto;
 
-	public DialogoCrearContacto(JFrame parent, ContactoIndividual contacto) {
-		super(parent, "Crear Contacto", true);
+	public DialogoCrearContacto(VentanaPrincipal parent, ContactoIndividual _contacto) {
+		super(parent.getFrame(), "Crear Contacto", true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setSize(300, 150);
 		setLayout(new GridLayout(3, 2));
@@ -23,12 +24,14 @@ public class DialogoCrearContacto extends JDialog {
 		txtNombre = new JTextField();
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		txtTelefono = new JTextField();
-		
-		 // Verificamos si el contacto es nuevo o no agregado
-        if (contacto != null) { 
-            txtTelefono.setText(contacto.getMovil()); 
-            txtTelefono.setEditable(false); 
-        }
+
+		// Verificamos si el contacto es nuevo o no agregado
+		contacto = _contacto;
+		boolean nuevo = contacto == null;
+		if (!nuevo) {
+			txtTelefono.setText(contacto.getMovil());
+			txtTelefono.setEditable(false);
+		}
 
 		JButton btnGuardar = new JButton("Guardar");
 		btnGuardar.addActionListener(new ActionListener() {
@@ -37,22 +40,22 @@ public class DialogoCrearContacto extends JDialog {
 				String nombre = txtNombre.getText();
 				String telefono = txtTelefono.getText();
 				if (!nombre.isEmpty() && !telefono.isEmpty()) {
-					int error = 0;
-					if(contacto == null) error = Controlador.INSTANCE.añadirContacto(nombre, telefono);
-					else Controlador.INSTANCE.agregarContacto(contacto, nombre);
-					switch(error) {
-						case 0:
-							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Contacto creado correctamente.");
-							dispose(); // Cerrar el diálogo
-							break;
-						case -1:
-							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "No hay ningun Usuario asociado a dicho número.");				
-							break;
-						case -2:
-							JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Ya hay un contacto agregado con dicho número.");
-							break;
+					if (nuevo)
+						contacto = (ContactoIndividual) Controlador.INSTANCE.añadirContacto(nombre, telefono);
+					else
+						Controlador.INSTANCE.agregarContacto(contacto, nombre);
+
+					if (contacto == null) {
+						JOptionPane.showMessageDialog(DialogoCrearContacto.this,
+								"Error\n O no hay ningun Usuario asociado a dicho número\n O ya hay un contacto agregado con dicho número");
+					} else {
+						if (nuevo)
+							parent.añadirListaContactos(contacto);
+						else
+							parent.actualizarListaContactos(contacto);
+						dispose();
 					}
-					
+
 				} else {
 					JOptionPane.showMessageDialog(DialogoCrearContacto.this, "Debe rellenar todos los campos.");
 				}
@@ -69,8 +72,8 @@ public class DialogoCrearContacto extends JDialog {
 		add(btnGuardar);
 		add(btnCancelar);
 
-		setLocationRelativeTo(parent); // Centrar respecto al JFrame principal
-		
+		setLocationRelativeTo(parent.getFrame()); // Centrar respecto al JFrame principal
+
 	}
-	
+
 }

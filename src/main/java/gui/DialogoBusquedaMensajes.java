@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.List;
 
@@ -24,11 +23,13 @@ import dominio.TipoMensaje;
 
 @SuppressWarnings("serial")
 public class DialogoBusquedaMensajes extends JDialog {
+	
 
-	public DialogoBusquedaMensajes(Frame owner) {
-		super(owner, "Buscar Mensajes", true);
+	public DialogoBusquedaMensajes(VentanaPrincipal owner) {
+		
+		super(owner.getFrame(), "Buscar Mensajes", true);
 		setSize(400, 400);
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(owner.getFrame());
 
 		// Componentes de búsqueda
 		JLabel contactLabel = new JLabel("Contacto o Teléfono:");

@@ -19,11 +19,13 @@ public class DialogoGestionarGrupos extends JDialog {
 	private DefaultListModel<ContactoIndividual> contactsModel;
 	private DefaultListModel<ContactoIndividual> addedContactsModel;
 	private Grupo grupoModificar = null;
-
-	public DialogoGestionarGrupos(JFrame owner, boolean isNew) {
-		super(owner, "Seleccionar Contactos", true);
+	private VentanaPrincipal owner;
+	
+	public DialogoGestionarGrupos(VentanaPrincipal _owner, boolean isNew) {		
+		super(_owner.getFrame(), "Seleccionar Contactos", true);
+		owner = _owner;
 		setSize(400, 300);
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(owner.getFrame());
 
 		if (isNew)
 			initializeGroupCreator();
@@ -58,6 +60,7 @@ public class DialogoGestionarGrupos extends JDialog {
 		}
 
 		JOptionPane.showMessageDialog(DialogoGestionarGrupos.this, "Grupo creado con exito.");
+		owner.añadirListaContactos(grupoModificar);
 
 	}
 

@@ -108,13 +108,13 @@ public enum Controlador {
 		return usuarioActual.buscarMensajes(contact, text, type);
 	}
 	
-	public int añadirContacto(String nombre, String telefono) {
+	public Contacto añadirContacto(String nombre, String telefono) {
 		Usuario asociado = RepositorioUsuarios.getUnicaInstancia().getUsuario(telefono);
 		if (asociado == null)
-			return -1;
+			return null;
 
 		Contacto nuevo = usuarioActual.nuevoContactoIn(nombre, telefono, asociado);
-		if(nuevo == null) return -2;
+		if(nuevo == null) return null;
 		
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();
 		ContactoDAO contactoDAO = factoria.getContactoDAO(nuevo.getClass());
@@ -122,7 +122,7 @@ public enum Controlador {
 		contactoDAO.registrarContacto(nuevo);
 		usuarioDAO.modificarUsuario(usuarioActual);
 		
-		return 0;
+		return nuevo;
 	}
 
 	public Grupo añadirGrupo(String nombre) {
