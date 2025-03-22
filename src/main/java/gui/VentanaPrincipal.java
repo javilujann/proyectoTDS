@@ -17,7 +17,7 @@ import tds.BubbleText;
 
 public class VentanaPrincipal {
 	private JFrame frame;
-	DefaultListModel<Elemento> model = new DefaultListModel<>(); //Global para permitir actualizacion
+	DefaultListModel<Elemento> model = new DefaultListModel<>(); 
     private int alturaAcumulada = 0;
     private static int alturaPredeterminada = 400;
     private Contacto seleccionado;
@@ -30,22 +30,17 @@ public class VentanaPrincipal {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
 
-        // Main layout
         frame.setLayout(new BorderLayout());
 
-        // Top panel
-        JPanel topPanel = createTopPanel();
+        JPanel topPanel = createTopPanel();						//PANEL SUPERIOR (Botones JDialog, gestión de contactos y grupos, usuario)
         frame.add(topPanel, BorderLayout.NORTH);
 
-        // Left panel with contacts and last messages
-        leftPanel = createLeftPanel();
+        leftPanel = createLeftPanel();							//PANEL IZQUIERDO (Lista de chats, con contactos, grupos, último mensaje...)
         frame.add(leftPanel, BorderLayout.WEST);
         
-        // Right panel with chat messages
-        rightPanel = createRightPanel();
+        rightPanel = createRightPanel();						//PANEL DERECHO (Panel de chat)
         frame.add(rightPanel, BorderLayout.CENTER);
 
-        // Establecer tamaños mínimos para cada panel
         leftPanel.setMinimumSize(new Dimension(300, 540));
         leftPanel.setMaximumSize(new Dimension(300, 540));
         leftPanel.setPreferredSize(new Dimension(300, 540));
@@ -58,7 +53,6 @@ public class VentanaPrincipal {
 
         frame.setResizable(false);
        
-
     }
     
     public void mostrarVentana() {
@@ -67,13 +61,12 @@ public class VentanaPrincipal {
 	}
 
     private JPanel createTopPanel() {
-    		//Creas el panel
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.CYAN);
         UtilsGui.fixSize(topPanel, 800, 60);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
           
-        	// Boton de busquedas de mensajes
+        	// Buscar Mensajes Button
         JButton searchButton = new JButton("Buscar Mensajes");
         searchButton.addActionListener(e -> {
         	DialogoBusquedaMensajes dialogo = new DialogoBusquedaMensajes(this);
@@ -81,7 +74,7 @@ public class VentanaPrincipal {
         });
         topPanel.add(searchButton);
         
-        	//Boton de seleccion de contacto
+        	// Buscar Contactos Button
         JButton contactsButton = new JButton("Buscar Contactos");
         contactsButton.addActionListener(e -> {
         	DialogoBuscarContacto dialogo = new DialogoBuscarContacto(this);
@@ -90,7 +83,7 @@ public class VentanaPrincipal {
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(contactsButton);
         
-        	//Boton para añadir contactos
+        	// Añadir Contacto Button
         JButton newContactsButton = new JButton("Añadir Contacto");
         newContactsButton.addActionListener(e -> {
         	DialogoCrearContacto dialogo = new DialogoCrearContacto(this,null);
@@ -103,13 +96,13 @@ public class VentanaPrincipal {
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newContactsButton);
         
-        	//Boton para gestionar grupos
+        	// Gestionar Grupos Button
         JButton newGroupsButton = new JButton("Gestionar Grupos");
         newGroupsButton.addActionListener(e -> showGroupMenu(newGroupsButton));
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(newGroupsButton);
         
-        	//Boton para gestionar premium
+        	// Premium Button
         JButton premiumButton = new JButton("Premium");
         premiumButton.addActionListener(e -> {
         	DialogoPremium dialogo = new DialogoPremium(this,Controlador.INSTANCE.getUsuarioActual().isPremium());
@@ -117,9 +110,8 @@ public class VentanaPrincipal {
         });
         topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(premiumButton);
-
         
-        	// Etiqueta de usuario
+        	// Etiqueta de User
         JLabel lblimagen = new JLabel(Controlador.INSTANCE.getUsuarioActual().getNombre());
         lblimagen.setOpaque(true);
         lblimagen.setBackground(Color.CYAN);
@@ -134,7 +126,6 @@ public class VentanaPrincipal {
         lblimagen.setHorizontalTextPosition(SwingConstants.LEFT);
         lblimagen.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        	// Agregar espacio flexible antes del label
         topPanel.add(Box.createHorizontalGlue());
         topPanel.add(lblimagen);
 
@@ -145,8 +136,7 @@ public class VentanaPrincipal {
     private JPanel createLeftPanel() {
         JPanel leftPanel = new JPanel(new BorderLayout());
         UtilsGui.fixSize(leftPanel, 300, 540);
-
-        // Encabezado 
+ 
         JLabel encabezado = new JLabel("Mensajes", SwingConstants.CENTER);
         encabezado.setFont(new Font("Arial", Font.BOLD, 16));
         encabezado.setForeground(Color.WHITE);
@@ -155,14 +145,14 @@ public class VentanaPrincipal {
         encabezado.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         leftPanel.add(encabezado, BorderLayout.NORTH);
 
-        // Lista 
+        // Lista de chats
         lista = new JList<>();
         cargarListaContactos();
         
         lista.setModel(model);
         lista.setCellRenderer(new ElementoListRenderer());
         
-        	// Listener para selección del chat
+        	// Selección de chat
         lista.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 Elemento seleccionado = lista.getSelectedValue();
@@ -171,12 +161,12 @@ public class VentanaPrincipal {
                 	SwingUtilities.invokeLater(() -> {
             			JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
             			verticalBar.setValue(verticalBar.getMaximum());
-            		});//No basta con crear right panel cada vez, va a haber que llamar desde arriba
+            		});
                 }
             }
         });
         
-        	// Listener para los no agregados
+        	// Agregar contactos no agregados previamente
         lista.addMouseListener(new MouseAdapter() {
      		@Override
      		public void mouseClicked(MouseEvent e) {
@@ -204,11 +194,10 @@ public class VentanaPrincipal {
     }
 
     private JPanel createRightPanel() {
-        // Panel principal
         JPanel rightPanel = new JPanel(new BorderLayout());
         UtilsGui.fixSize(rightPanel, 600, 540);
 
-        // Área de mensajes (no editable)
+        // Area de mensajes
         messageArea = new JPanel();
         configurarAreaMensajes(messageArea);
 
@@ -219,26 +208,24 @@ public class VentanaPrincipal {
         messageScroll.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         rightPanel.add(messageScroll, BorderLayout.CENTER);
 
-        // Panel de entrada (campo de texto + botón)
+        // Panel de entrada (Campo de texto + Enviar Button + Emote Button)
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Campo de texto con placeholder
         JTextField messageInput = new JTextField();
         messageInput.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
-        // Botón "Enviar" con acción
         JButton sendButton = new JButton("Enviar");
         sendButton.addActionListener(e -> {
             String message = messageInput.getText().trim();
             if (!message.isEmpty() && seleccionado!=null) {
-                enviarYRecibirMensaje(messageArea, message, -1, -1, BubbleText.SENT);									//Se envía el mensaje al chat de forma gráfica	
+                enviarYRecibirMensaje(messageArea, message, -1, -1, BubbleText.SENT);									
                 messageInput.setText("");
                 SwingUtilities.invokeLater(() -> {
                     JScrollBar verticalBar = messageScroll.getVerticalScrollBar();
                     verticalBar.setValue(verticalBar.getMaximum());
                 });
-                Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, message, -1);			//Se envía el mensaje de forma real al contacto seleccionado
+                Controlador.INSTANCE.enviarYrecibirMensaje(seleccionado, message, -1);			
                 actualizarListaContactos(seleccionado);
             }
         });
@@ -257,8 +244,6 @@ public class VentanaPrincipal {
         	}
         });
         
-
-        // Agregar componentes al panel de entrada
         inputPanel.add(messageInput, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         inputPanel.add(emoteButton, BorderLayout.WEST);
@@ -267,12 +252,11 @@ public class VentanaPrincipal {
         return rightPanel;
     }
     
-  //Metodo para crear el menu contextual de la gestion de grupos
+    // Menú Gestionar Grupos Button
     private void showGroupMenu(JButton btn) {
-        // Crear el menú contextual
         JPopupMenu popupMenu = new JPopupMenu();
 
-        // Opción "Crear Grupo"
+        // Crear Grupo
         JMenuItem crearGrupoItem = new JMenuItem("Crear Grupo");
         crearGrupoItem.addActionListener(e -> {
         	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(this,true);
@@ -281,7 +265,7 @@ public class VentanaPrincipal {
         });
         popupMenu.add(crearGrupoItem);
 
-        // Opción "Modificar Grupo"
+        // Modificar Grupo
         JMenuItem modificarGrupoItem = new JMenuItem("Modificar Grupo");
         modificarGrupoItem.addActionListener(e -> {
         	DialogoGestionarGrupos dialogo = new DialogoGestionarGrupos(this,false);
@@ -289,16 +273,16 @@ public class VentanaPrincipal {
         });
         popupMenu.add(modificarGrupoItem);
 
-        // Opción "Eliminar Grupo" (deshabilitada)
+        // Eliminar Grupo (deshabilitada)
         JMenuItem eliminarGrupoItem = new JMenuItem("Eliminar Grupo");
-        eliminarGrupoItem.setEnabled(false);  // Deshabilitada
+        eliminarGrupoItem.setEnabled(false);
         popupMenu.add(eliminarGrupoItem);
 
-        // Mostrar el menú contextual
         popupMenu.show(btn, 0, btn.getHeight());
     }
     
-    	//Metodo para actualizar la lista del panel izquierdo
+    // Métodos para la gestión de la lista de chats del panel izquierdo:
+    
    public void cargarListaContactos() {
         model.clear(); 
         for (Contacto c : Controlador.INSTANCE.getContactos()) {
@@ -325,31 +309,8 @@ public class VentanaPrincipal {
 		
     	model.addElement(new Elemento(nuevoContacto));
 	}
-    
-    private void enviarYRecibirMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño, int tipo) {
-    	BubbleText m;
-    	String nombre;
-    	
-    	Optional<String> textoMensaje = Optional.of(cuerpo);
-    	nombre = tipo == BubbleText.SENT  ? Controlador.INSTANCE.getUsuarioActual().getNombre() : seleccionado.getNombre();
-    	
-    	if(emote>=0) {
-    		m = new BubbleText(panelChat, emote, Color.CYAN, nombre,tipo, tamaño);
-    		
-    	} else {
-    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, nombre, tipo);
-    	}
-    	
-    	alturaAcumulada += m.getHeight();
-    	UtilsGui.fixSize(panelChat, 550, Math.max(alturaAcumulada, alturaPredeterminada) + 10);
-    	panelChat.add(m /*, BorderLayout.EAST */);
-    	m.setVisible(true);
-
-    	panelChat.revalidate();
-    	panelChat.repaint();
-    };
-    
-    //Función para seleccionar un nuevo contacto, activando las consecuentes acciones en el panel de la derecha
+	
+	//Selección de un nuevo contacto, activando las consecuentes acciones en el panel de la derecha
     private void seleccionarContacto(Contacto contacto) {
     	
     	seleccionado = contacto;
@@ -373,6 +334,31 @@ public class VentanaPrincipal {
 
     	return;
     }
+    
+    // Función encargada del envío y la recepción de mensajes en el chat
+    
+    private void enviarYRecibirMensaje(JPanel panelChat, String cuerpo, int emote, int tamaño, int tipo) {
+    	BubbleText m;
+    	String nombre;
+    	
+    	Optional<String> textoMensaje = Optional.of(cuerpo);
+    	nombre = tipo == BubbleText.SENT  ? Controlador.INSTANCE.getUsuarioActual().getNombre() : seleccionado.getNombre();
+    	
+    	if(emote>=0) {
+    		m = new BubbleText(panelChat, emote, Color.CYAN, nombre,tipo, tamaño);
+    		
+    	} else {
+    		m = new BubbleText(panelChat, textoMensaje.get(), Color.CYAN, nombre, tipo);
+    	}
+    	
+    	alturaAcumulada += m.getHeight();
+    	UtilsGui.fixSize(panelChat, 550, Math.max(alturaAcumulada, alturaPredeterminada) + 10);
+    	panelChat.add(m /*, BorderLayout.EAST */);
+    	m.setVisible(true);
+
+    	panelChat.revalidate();
+    	panelChat.repaint();
+    };
     
     private void configurarAreaMensajes(JPanel messageArea) {
     	messageArea.setLayout(new BoxLayout(messageArea,BoxLayout.Y_AXIS));

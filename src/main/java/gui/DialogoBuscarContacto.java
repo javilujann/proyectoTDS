@@ -32,7 +32,7 @@ public class DialogoBuscarContacto extends JDialog {
         String[][] data = new String[contactos.size()][3];
         for (int i = 0; i < contactos.size(); i++) {
             Contacto contacto = contactos.get(i);
-            String[] detalles = contacto.obtenerDetalles(); // Método que ya implementaste
+            String[] detalles = contacto.obtenerDetalles(); 
             data[i][0] = detalles[0]; // Nombre
             data[i][1] = detalles[1]; // Teléfono
             data[i][2] = detalles[2]; // Saludo

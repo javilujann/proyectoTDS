@@ -27,9 +27,6 @@ public class LoginView {
 	private JTextField textUsuario;
 	private JPasswordField textPassword;
 
-	/**
-	 * Create the application.
-	 */
 	public LoginView() {
 		initialize();
 	}
@@ -38,11 +35,6 @@ public class LoginView {
 		frmLogin.setLocationRelativeTo(null);
 		frmLogin.setVisible(true);
 	}
-	
-	/********************************************************************** 
-	 * Procurar organizar la creación de una ventana en varios métodos
-	 * con el fin de facilitar su comprensión. Esta clase muestra un ejemplo
-	 **********************************************************************/
 	
 	private void initialize() {
 		frmLogin = new JFrame();
@@ -83,7 +75,6 @@ public class LoginView {
 		panelCampos.setBorder(new TitledBorder(null, "Login", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.Y_AXIS));
 
-		// Panel Campo Login
 		JPanel panelCampoUsuario = new JPanel();
 		panelCampos.add(panelCampoUsuario);
 		panelCampoUsuario.setLayout(new BorderLayout(0, 0));

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -39,7 +40,6 @@ import javax.swing.SwingConstants;
 @SuppressWarnings("serial")
 public class RegistroView extends JDialog {
 
-	//private JFrame frmRegistroView;
 	private JLabel lblNombre;
 	private JLabel lblApellidos;
 	private JLabel lblFechaNacimiento;
@@ -68,14 +68,12 @@ public class RegistroView extends JDialog {
 	private JLabel lblBioError;
 	private JLabel lblImagenError;
 	private JLabel lblFechaNacimientoError;
-	//private JLabel lblUsuarioError;
 	private JLabel lblPasswordError;
 	private JPanel panelCampoNombre;
 	private JPanel panel;
 	private JPanel panelCampoApellidos;
 	private JPanel panelCamposMovil;
 	private JPanel panelCampoBio;
-	//private JPanel panelCamposUsuario;
 	private JPanel panelCamposFechaNacimiento;
 	private JPanel panelCampoImg;
 	private boolean errorImg;
@@ -103,12 +101,10 @@ public class RegistroView extends JDialog {
 		datosPersonales.add(crearLineaFechaNacimiento());
 		datosPersonales.add(crearLineaBio());
 		datosPersonales.add(crearLineaImagen());
-		//datosPersonales.add(crearLineaUsuario());
 		JScrollPane scroll = new JScrollPane(datosPersonales); 
 		this.add(scroll);
 		
 		this.crearPanelBotones();
-
 		this.ocultarErrores();
 
 		this.revalidate();
@@ -126,6 +122,7 @@ public class RegistroView extends JDialog {
 		lblNombre = new JLabel("Nombre: ", JLabel.RIGHT);
 		panelCampoNombre.add(lblNombre);
 		fixedSize(lblNombre, 75, 20);
+		
 		txtNombre = new JTextField();
 		panelCampoNombre.add(txtNombre);
 		fixedSize(txtNombre, 270, 20);
@@ -149,11 +146,11 @@ public class RegistroView extends JDialog {
 		lblApellidos = new JLabel("Apellidos: ", JLabel.RIGHT);
 		panelCampoApellidos.add(lblApellidos);
 		fixedSize(lblApellidos, 75, 20);
+		
 		txtApellidos = new JTextField();
 		panelCampoApellidos.add(txtApellidos);
 		fixedSize(txtApellidos, 270, 20);
 
-		
 		lblApellidosError = new JLabel("Los apellidos son obligatorios", SwingConstants.CENTER);
 		lineaApellidos.add(lblApellidosError, BorderLayout.SOUTH);
 		fixedSize(lblApellidosError, 255, 15);
@@ -173,9 +170,11 @@ public class RegistroView extends JDialog {
 		lblMovil = new JLabel("Móvil: ", JLabel.RIGHT);
 		panelCamposMovil.add(lblMovil);
 		fixedSize(lblMovil, 75, 20);
+		
 		txtMovil = new JTextField();
 		panelCamposMovil.add(txtMovil);
 		fixedSize(txtMovil, 270, 20);
+		
 		lblMovilError = new JLabel("El teléfono móvil es obligatorio", SwingConstants.CENTER);
 		fixedSize(lblMovilError, 150, 15);
 		lblMovilError.setForeground(Color.RED);
@@ -195,6 +194,7 @@ public class RegistroView extends JDialog {
 		lblBio = new JLabel("Biografía: ", JLabel.RIGHT);
 		panelCampoBio.add(lblBio);
 		fixedSize(lblBio, 75, 20);
+		
 		txtBio = new JTextArea();
 		txtBio.setLineWrap(true);
 		txtBio.setWrapStyleWord(true);
@@ -221,12 +221,15 @@ public class RegistroView extends JDialog {
 		lblPassword = new JLabel("Password: ", JLabel.RIGHT);
 		panel.add(lblPassword);
 		fixedSize(lblPassword, 75, 20);
+		
 		txtPassword = new JPasswordField();
 		panel.add(txtPassword);
 		fixedSize(txtPassword, 100, 20);
+		
 		lblPasswordChk = new JLabel("Otra vez:", JLabel.RIGHT);
 		panel.add(lblPasswordChk);
 		fixedSize(lblPasswordChk, 60, 20);
+		
 		txtPasswordChk = new JPasswordField();
 		panel.add(txtPasswordChk);
 		fixedSize(txtPasswordChk, 100, 20);
@@ -249,6 +252,7 @@ public class RegistroView extends JDialog {
 		lblFechaNacimiento = new JLabel("Fecha de Nacimiento: ", JLabel.RIGHT);
 		panelCamposFechaNacimiento.add(lblFechaNacimiento);
 		fixedSize(lblFechaNacimiento, 130, 20);
+		
 		txtFechaNacimiento = new JDateChooser();
 		panelCamposFechaNacimiento.add(txtFechaNacimiento);
 		fixedSize(txtFechaNacimiento, 215, 20);
@@ -261,7 +265,6 @@ public class RegistroView extends JDialog {
 	}
 	
 	private JPanel crearLineaImagen() {
-		//
 		JPanel lineaImagen = new JPanel();
 		lineaImagen.setAlignmentX(JLabel.LEFT_ALIGNMENT);
 		lineaImagen.setLayout(new BorderLayout(0, 0));
@@ -270,10 +273,11 @@ public class RegistroView extends JDialog {
 		lineaImagen.add(panelCampoImg, BorderLayout.CENTER);
 		
 		lblImg = new JLabel("Imagen: ", JLabel.RIGHT);
-		lblImg.setHorizontalTextPosition(SwingConstants.LEFT); // Texto a la izquierda
+		lblImg.setHorizontalTextPosition(SwingConstants.LEFT); 
         lblImg.setVerticalTextPosition(SwingConstants.TOP);
 		panelCampoImg.add(lblImg);
 		fixedSize(lblImg, 200, 40);
+		
 		txtImagen = new JTextField();
 		
 		btnURL = new JButton("Confirmar URL");
@@ -291,6 +295,7 @@ public class RegistroView extends JDialog {
 		lblImagenError = new JLabel("Error al introducir la imagen", JLabel.CENTER);
 		lineaImagen.add(lblImagenError, BorderLayout.SOUTH);
 		lblImagenError.setForeground(Color.RED);
+		
 		return lineaImagen;
 
 	}
@@ -323,8 +328,7 @@ public class RegistroView extends JDialog {
 						lblImg.setForeground(Color.BLACK);
 						txtImagen.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						lblImg.setIcon(null); // Limpia cualquier imagen previa
+						lblImg.setIcon(null); 												// Limpia cualquier imagen previa
 						lblImagenError.setText("Ha de introducirse una imagen válida");
 						lblImagenError.setVisible(true);
 						lblImg.setForeground(Color.RED);
@@ -337,7 +341,6 @@ public class RegistroView extends JDialog {
 		});
 	}
 
-	//Cambiar para que el registro guarde los campos de nuestro usuario correctamente
 	private void crearManejadorBotonRegistrar() {
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -381,12 +384,9 @@ public class RegistroView extends JDialog {
 		});
 	}
 
-	/**
-	 * Comprueba que los campos de registro están bien
-	 */
 	private boolean checkFields() {
 		boolean salida = true;
-		/* borrar todos los errores en pantalla */
+		
 		ocultarErrores();
 		if (txtNombre.getText().trim().isEmpty()) {
 			lblNombreError.setVisible(true);
@@ -410,21 +410,21 @@ public class RegistroView extends JDialog {
 		String password2 = new String(txtPasswordChk.getPassword());
 		
 		if (password.isEmpty()) {
-			lblPasswordError.setText("El password no puede estar vacio");
+			lblPasswordError.setText("Ha de introducirse una contraseña");
 			lblPasswordError.setVisible(true);
 			lblPassword.setForeground(Color.RED);
 			txtPassword.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		} 
 		if (password2.isEmpty()) {
-			lblPasswordError.setText("El password no puede estar vacio");
+			lblPasswordError.setText("Introduzca de nuevo su contraseña");
 			lblPasswordError.setVisible(true);
 			lblPasswordChk.setForeground(Color.RED);
 			txtPasswordChk.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		} 
 		if (!password.equals(password2)) {
-			lblPasswordError.setText("Los dos passwords no coinciden");
+			lblPasswordError.setText("Las contraseñas no coinciden");
 			lblPasswordError.setVisible(true);
 			lblPassword.setForeground(Color.RED);
 			lblPasswordChk.setForeground(Color.RED);
@@ -432,7 +432,7 @@ public class RegistroView extends JDialog {
 			txtPasswordChk.setBorder(BorderFactory.createLineBorder(Color.RED));
 			salida = false;
 		}
-		/* Comprobar que no exista otro usuario con igual login */
+		// Comprobar que no exista otro usuario con igual login
 		if (!lblMovilError.getText().isEmpty() && Controlador.INSTANCE.esUsuarioRegistrado(txtMovil.getText())) {
 			lblMovilError.setText("Ya existe ese usuario");
 			lblMovilError.setVisible(true);
@@ -469,9 +469,6 @@ public class RegistroView extends JDialog {
 		return salida;
 	}
 
-	/**
-	 * Oculta todos los errores que pueda haber en la pantalla
-	 */
 	private void ocultarErrores() {
 		lblNombreError.setVisible(false);
 		lblApellidosError.setVisible(false);
@@ -503,9 +500,6 @@ public class RegistroView extends JDialog {
 		lblImg.setForeground(Color.BLACK);
 	}
 
-	/**
-	 * Fija el tamaño de un componente
-	 */
 	private void fixedSize(JComponent o, int x, int y) {
 		Dimension d = new Dimension(x, y);
 		o.setMinimumSize(d);
@@ -516,13 +510,13 @@ public class RegistroView extends JDialog {
 	private void actualizarImagen() {
 		if (imagen != null) {
 			imagen = UtilsGui.adjustAspectRatio(imagen, 1, 1, 100, 100);
-			//imagen.getScaledInstance(50,50,Image.SCALE_SMOOTH);
+			imagen.getScaledInstance(50,50,Image.SCALE_SMOOTH);
 			ImageIcon icono = new ImageIcon(imagen);
 	        lblImg.setOpaque(true);
 	        UtilsGui.fixSize(lblImg, 100, 100);
 			lblImg.setIcon(icono);
 	    } else {
-	        lblImg.setIcon(null); // Si no hay imagen, quita el ícono
+	        lblImg.setIcon(null); 
 	    }
 	    panelCampoImg.revalidate();
 	    panelCampoImg.repaint();

@@ -52,7 +52,6 @@ public class UtilsGui {
         float targetAspect = (float) aspectNumerator / aspectDenominator;
         float originalAspect = (float) originalWidth / originalHeight;
 
-        // Variables para el recorte
         int cropWidth = originalWidth;
         int cropHeight = originalHeight;
         int cropX = 0;
@@ -60,11 +59,10 @@ public class UtilsGui {
 
         // Ajustar las dimensiones de recorte según la relación de aspecto
         if (originalAspect > targetAspect) {
-            // Imagen más ancha que el aspecto deseado: recortar los lados
             cropWidth = (int) (originalHeight * targetAspect);
             cropX = (originalWidth - cropWidth) / 2;
+            
         } else if (originalAspect < targetAspect) {
-            // Imagen más alta que el aspecto deseado: recortar la parte superior e inferior
             cropHeight = (int) (originalWidth / targetAspect);
             cropY = (originalHeight - cropHeight) / 2;
         }
@@ -72,7 +70,7 @@ public class UtilsGui {
         // Recortar la imagen al nuevo aspecto
         BufferedImage croppedImage = originalImage.getSubimage(cropX, cropY, cropWidth, cropHeight);
 
-        // Escalar la imagen recortada al tamaño objetivo
+        // Escalar la imagen
         BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = outputImage.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -87,14 +85,14 @@ public class UtilsGui {
             URL url = new URL(urlText);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("HEAD");
-            connection.setConnectTimeout(3000); // Tiempo de espera
+            connection.setConnectTimeout(3000);
             connection.setReadTimeout(3000);
             int responseCode = connection.getResponseCode();
             String contentType = connection.getContentType();
 
             return responseCode == HttpURLConnection.HTTP_OK && contentType.startsWith("image/");
         } catch (Exception e) {
-            return false; // Si hay un error, no es válida
+            return false; 
         }
     }
 	

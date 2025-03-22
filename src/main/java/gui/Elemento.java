@@ -44,7 +44,7 @@ public class Elemento extends JPanel{
 		// Añadimos el último mensaje
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setOpaque(false);
-        UtilsGui.fixSize(messagePanel, 180, 84); // Ajusta según sea necesario
+        UtilsGui.fixSize(messagePanel, 180, 84); // Ajustamos según sea necesario
         
         JLabel lastMessageLabel = new JLabel();
         lastMessageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -53,7 +53,7 @@ public class Elemento extends JPanel{
         // Obtener el último mensaje
         String lastMessage = contacto.ultimoMensaje()
                                      .map(Mensaje::getTexto)
-                                     .map(this::truncateMessage) // Truncar si es muy largo
+                                     .map(this::truncateMessage) // Truncar si es necesario
                                      .orElse("Sin mensajes");
         
         lastMessageLabel.setText("<html><i>" + lastMessage + "</i></html>");
