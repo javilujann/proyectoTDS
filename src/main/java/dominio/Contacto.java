@@ -19,7 +19,8 @@ public abstract class Contacto {
 		this.codigo = 0;
 		this.listaMensajes = new ArrayList<Mensaje>();
 	}
-
+	
+	//Getters y Setters
 	public String getNombre() {
 		return nombre;
 	}
@@ -47,31 +48,31 @@ public abstract class Contacto {
 	public void addMensaje(Mensaje mensaje) {
 		this.listaMensajes.add(mensaje);
 	}
-
-	public boolean isGroup() {
-		return false;
-	}
+	
+	//Metodos para la herencia
 
 	public abstract String[] obtenerDetalles();
 
 	public abstract Image getImage();
 
-	// METODOS
-
-	// True si el movil pasado corresponde al contacto
 	public abstract boolean corresponde(String movil);
-
+	
+	// METODOS NORMALES
+	
+	public boolean isGroup() {
+		return false;
+	}
+	
+	public boolean comparar(String contact) {
+		return contact.equals(nombre);
+	}
+	
 	public Optional<Mensaje> ultimoMensaje() {
-		// Cambiar a -1 y todavia mejor metodo de clase
 		return listaMensajes.stream().filter(m -> !m.isEmoticon()) // Filtrar mensajes sin emoticono
 				.reduce((primero, segundo) -> segundo); // Mantener solo el último
 	}
 
-	public boolean comparar(String contact) {
-		return contact.equals(nombre);
-	}
-
-	public List<Mensaje> buscarMensajes(String text, TipoMensaje type) {
+	public List<Mensaje> getMensajesTipo(String text, TipoMensaje type) {
 		return listaMensajes.stream().filter(m -> m.filtro(text, type)).collect(Collectors.toList());
 	}
 	

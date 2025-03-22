@@ -42,7 +42,7 @@ public class Usuario {
 		this.contactos = new ArrayList<Contacto>();
 		this.biografia =  biografia;
 		this.fechaNacimiento = fechaNacimiento;
-		this.descuento = null; //POSIBLE QUE SEA OBLIGATORIO
+		this.descuento = null; 
 		
 	}
 
@@ -189,7 +189,7 @@ public class Usuario {
 	
 	public List<Mensaje> buscarMensajes(String contact, String text, TipoMensaje type) {
 		return contactos.stream().filter(c -> contact.equals("") || c.comparar(contact))
-				.flatMap(c -> c.buscarMensajes(text,type).stream()).collect(Collectors.toList());
+				.flatMap(c -> c.getMensajesTipo(text,type).stream()).collect(Collectors.toList());
 	}
 	
 

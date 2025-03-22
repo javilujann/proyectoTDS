@@ -16,6 +16,7 @@ public class ContactoIndividual extends Contacto{
 		this.usuarioAsociado = user;
 	}
 
+	//Getters y Setters
 	public String getMovil() {
 		return movil;
 	}
@@ -40,25 +41,29 @@ public class ContactoIndividual extends Contacto{
 		usuarioAsociado = user;
 	}
 	
+	//Implementacion de herenecia 
+	
 	@Override
     public String[] obtenerDetalles() {
         return new String[]{getNombre(), movil, usuarioAsociado.getBiografia()};
     }
-
+	
+	@Override
+	public Image getImage() {
+		return usuarioAsociado.getImagen();
+	}
 
 	@Override
 	public boolean corresponde(String _movil) {
 		return this.movil.equals(_movil);
 	}
 	
+	//Metodos Normales
+	
 	@Override 
 	public boolean comparar(String contact) {
 		return super.comparar(contact) || contact.equals(movil);
 		
-	}
-	
-	public Image getImage() {
-		return usuarioAsociado.getImagen();
 	}
 	
 	public Mensaje recibirMensaje(String texto, int emoticono, Contacto contacto) {

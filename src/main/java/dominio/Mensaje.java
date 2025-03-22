@@ -20,41 +20,35 @@ public class Mensaje {
 		this.contacto = contacto;
 	}
 	
+	//Getters y Setters
 	
 	public int getCodigo() {
 		return codigo;
 	}
 
-
 	public void setCodigo(int codigo) {
 		this.codigo = codigo;
 	}
-
 
 	public String getTexto() {
 		return texto;
 	}
 
-
 	public void setTexto(String texto) {
 		this.texto = texto;
 	}
-
 
 	public LocalDateTime getHora() {
 		return hora;
 	}
 
-
 	public void setHora(LocalDateTime hora) {
 		this.hora = hora;
 	}
 
-
 	public int getEmoticon() {
 		return emoticon;
 	}
-
 
 	public void setEmoticon(int emoticon) {
 		this.emoticon = emoticon;
@@ -64,11 +58,9 @@ public class Mensaje {
 		return emoticon != -1;
 	}
 
-
 	public TipoMensaje getTipo() {
 		return tipo;
 	}
-
 
 	public void setTipo(TipoMensaje tipo) {
 		this.tipo = tipo;
@@ -82,13 +74,12 @@ public class Mensaje {
 		this.contacto = contacto;
 	}
 	
-	//Como posible expansion aplicar los filtros mediante el patron estrategia
+	//METODOS
+	
 	public boolean filtro(String text, TipoMensaje type) {
 		return (text.equals("") || texto.contains(text)) && 
 				(type.equals(TipoMensaje.BOTH) || tipo.equals(type));
 	}
-
-	
 	
 
 }

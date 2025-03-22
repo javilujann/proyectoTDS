@@ -104,10 +104,12 @@ public class AdaptadorMensajeDAO implements MensajeDAO {
 		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
 		int codigoContacto = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "contacto"));
 		
-		Contacto contacto = AdaptadorGrupoDAO.getUnicaInstancia().recuperarContacto(codigoContacto); // Bidireccion?
-		contacto = contacto != null ? contacto
-				: AdaptadorContactoInDAO.getUnicaInstancia().recuperarContacto(codigoContacto);
+		// No se llama al Pool pues no hay bidireccion al ser el Contacto el que recupera los mensajes
+		// Si hay que diferenciar entre si es un Grupo o un ContactoIndividual
+		Contacto contacto = AdaptadorGrupoDAO.getUnicaInstancia().recuperarContacto(codigoContacto); 
+		contacto = contacto != null ? contacto : AdaptadorContactoInDAO.getUnicaInstancia().recuperarContacto(codigoContacto);
 		
+		//Se crea el objeto y se devuelve
 		Mensaje mensaje = new Mensaje(texto, hora,emoticon,contacto); 
 		mensaje.setCodigo(codigo);
 		mensaje.setTipo(tipo);

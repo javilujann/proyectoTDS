@@ -40,7 +40,8 @@ public class AdaptadorGrupoDAO implements ContactoDAO {
 		}
 		if (eGrupo != null)
 			return;
-
+		
+		// Casteamos a Grupo, Se asume que la llamada es correcta
 		Grupo grupo = (Grupo) _grupo;
 
 		// registrar primero los atributos que son objetos(En este caso es la lista de
@@ -95,10 +96,11 @@ public class AdaptadorGrupoDAO implements ContactoDAO {
 		}
 
 	}
-
+	
+	//Este funcion se llama ante duda de Grupo o ContactoIndvidual, luego debe discernir entre estos
 	public Contacto recuperarContacto(int codigo) {
 
-		// Si la entidad esta en el pool la devuelve directamente
+		// Si la entidad esta en el pool y es un Grupo la devuelve directamente
 		if (PoolDAO.getUnicaInstancia().contiene(codigo)) {
 			Object objeto = PoolDAO.getUnicaInstancia().getObjeto(codigo);
 			if (objeto instanceof Grupo)
@@ -109,9 +111,10 @@ public class AdaptadorGrupoDAO implements ContactoDAO {
 
 		// recuperar entidad
 		Entidad eGrupo = servPersistencia.recuperarEntidad(codigo);
-
+		
+		// En caso de que lo llamen para ContactoIndividual y no estaba en el Pool
 		if (!eGrupo.getNombre().equals("Grupo"))
-			return null; // En caso de que lo llamen para contactoIndividual
+			return null; 
 
 		// recuperar propiedades que no son objetos
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, "nombre");

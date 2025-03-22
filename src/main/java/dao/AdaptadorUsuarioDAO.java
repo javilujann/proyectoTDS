@@ -16,7 +16,6 @@ import dominio.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-//Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioDAO implements UsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
 	private FactoriaDAO factoria;
